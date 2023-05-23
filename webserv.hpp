@@ -17,5 +17,3 @@
 // };
 
 # endif
-
-git checkout new_branche
