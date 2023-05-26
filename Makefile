@@ -9,3 +9,6 @@ SRC	=	main.cpp \
 		parsing/parse_utils.cpp \
 		parsing/lexer.cpp \
 		parsing/lexer_utils.cpp \
+
+
+all:

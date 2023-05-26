@@ -10,10 +10,4 @@
 # include <arpa/inet.h>
 # include <fstream>
 
-// class Tcpserver {
-// 	public:
-// 		// Tcpserver ();
-// 		// ~Tcpserver ();
-// };
-
 # endif
