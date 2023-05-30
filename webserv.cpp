@@ -17,7 +17,7 @@ int main () {
 
 	address.sin_family = AF_INET;
     address.sin_port = htons(8080);
-    address.sin_addr.s_addr = inet_addr("127.0.0.1");
+    address.sin_addr.s_addr = INADDR_ANY;
 
 	if (bind(sockfd, (struct sockaddr*)&address, sizeof(address)) < 0)
 		throw_error("Error while trying to bind socket.");
