@@ -1,4 +1,5 @@
 # include "webserv.hpp"
+# include "request/request.hpp"
 
 void	throw_error(std::string msg)
 {
@@ -43,6 +44,9 @@ int main () {
 		close (new_socket);
 		std::exit(1);
 	}
+	ParseRequest request;
+
+	request.ParseHttpRequest(buffer);
 
 	std::string response = "HTTP/1.1 200 OK\r\n"
                            "Content-Type: text/plain\r\n"
@@ -51,10 +55,10 @@ int main () {
                            "Hello, from the server!";
 
     write(new_socket, response.c_str(), response.length());
-    std::cout << "Response sent: " << response << std::endl;
+    // std::cout << "Response sent: " << response << std::endl;
 
 
-	std::cout << "read success\n" << buffer << std::endl;
+	// std::cout << "read success\n" << buffer << std::endl;
 	close(new_socket);
 	close(sockfd);
 	return (0);

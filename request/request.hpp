@@ -1,11 +1,13 @@
 # pragma once
 
 # include <iostream>
+# include <map>
+# include <string>
+# include <sstream>
+# include <cstring>
 
-enum Method {GET, POST, DELETE, UNKNOWN};
-
-typedef struct RequestLine {
-	Method 		method;
+struct RequestLine {
+	std::string method;
 	std::string url;
 	std::string http_v;
 };
@@ -13,11 +15,16 @@ typedef struct RequestLine {
 class ParseRequest {
 	private:
 		RequestLine requestLine;
+		std::map<std::string, std::string> header;
 		std::string body;
 	public:
-		ParseRequest ();
-		~ParseRequest ();
+		// ParseRequest ();
+		// ~ParseRequest ();
 
-		void ParseHttpRequest(const std::string& request) const;
+		void ParseHttpRequest(const std::string& request);
+
+		void ParseStartLine (const std::string& StartLine);
+		void ParseMethod (std::string& method);
+		void ParseBody (const std::string& body);
 
 };
