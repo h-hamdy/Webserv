@@ -1,28 +1,50 @@
 #include <iostream>
+#include <sstream>
 #include <string>
 
-int main() {
-    std::string request = "GET /index.html HTTP/1.1\r\n"
-                          "Host: example.com\r\n"
-                          "Content-Type: application/json\r\n"
-                          "\r\n" // Empty line indicating end of headers
-                          "Request body goes here...";
+// Function to parse a chunked body from a string
+std::string parseChunkedBody(const std::string& body) {
+    std::istringstream input(body);
+    std::ostringstream bodyStream;
 
-    // Find the position of the empty line
-    size_t emptyLinePos = request.find("\r\n\r\n");
+    while (true) {
+        // Read the chunk size
+        std::string line;
+        std::getline(input, line);
+        if (line.empty()) {
+            break; // End of chunks
+        }
 
-    if (emptyLinePos != std::string::npos) {
-        // Headers found before empty line
-        std::string headers = request.substr(0, emptyLinePos);
-        std::cout << "Headers:\n" << headers << std::endl;
+        // Convert the chunk size from hexadecimal to integer
+        std::istringstream sizeStream(line);
+        size_t chunkSize = 0;
+        sizeStream >> std::hex >> chunkSize;
 
-        // Body starts after the empty line
-        std::string body = request.substr(emptyLinePos + 4);
-        std::cout << "Body:\n" << body << std::endl;
-    } else {
-        std::cerr << "Invalid request: No empty line found" << std::endl;
-        return 1;
+        // Read the chunk data
+        std::string chunkData;
+        chunkData.resize(chunkSize);
+        input.read(&chunkData[0], chunkSize);
+
+        // Read and discard the CRLF after the chunk data
+        std::getline(input, line);
+
+        // Append the chunk data to the body stream
+        bodyStream << chunkData;
     }
+
+    return bodyStream.str();
+}
+
+int main() {
+    // Assuming you have the chunked body stored as a string
+    std::string requestBody = "4\r\ndata\r\n5\r\nchunk\r\n0\r\n\r\n";
+
+    // Parse the chunked body
+    std::string parsedBody = parseChunkedBody(requestBody);
+
+    // Process the parsed body as needed
+    std::cout << "Parsed request body: " << parsedBody << std::endl;
 
     return 0;
 }
+

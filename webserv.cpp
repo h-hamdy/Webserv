@@ -14,6 +14,7 @@ int main () {
 		throw_error("Error while trying to create socket.");
 	else
 		std::cout << "Creating socket succsefully!" << std::endl;
+		
 	sockaddr_in address;
 
 	address.sin_family = AF_INET;
@@ -36,17 +37,16 @@ int main () {
 	else
 		std::cout << "Accepting done!" << std::endl;
 	
-	char buffer[30000] = {0};
-	int valread = read(new_socket, buffer, 1024);
-	if (valread < 0) {
-		std::cerr << "error read" << std::endl;
-		close (sockfd);
-		close (new_socket);
-		std::exit(1);
+	char buffer[1024];
+	std::string Request;
+	int valread;
+	while ( (valread = read(new_socket, buffer, 1024)) > 0 ) {
+		Request.append(buffer, valread);
+		memset(buffer, 0, sizeof(buffer));
 	}
-	ParseRequest request;
 
-	request.ParseHttpRequest(buffer);
+	ParseRequest request;
+	request.ParseHttpRequest(Request);
 
 	std::string response = "HTTP/1.1 200 OK\r\n"
                            "Content-Type: text/plain\r\n"
@@ -55,10 +55,7 @@ int main () {
                            "Hello, from the server!";
 
     write(new_socket, response.c_str(), response.length());
-    // std::cout << "Response sent: " << response << std::endl;
 
-
-	// std::cout << "read success\n" << buffer << std::endl;
 	close(new_socket);
 	close(sockfd);
 	return (0);
