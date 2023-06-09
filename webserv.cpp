@@ -46,7 +46,12 @@ int main () {
 	}
 
 	ParseRequest request;
-	request.ParseHttpRequest(Request);
+	try {
+		request.ParseHttpRequest(Request);
+	}
+	catch (int exeption) {
+		std::cout << exeption << std::endl;
+	}
 
 	std::string response = "HTTP/1.1 200 OK\r\n"
                            "Content-Type: text/plain\r\n"

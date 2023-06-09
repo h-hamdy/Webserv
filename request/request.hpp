@@ -5,6 +5,8 @@
 # include <string>
 # include <sstream>
 # include <cstring>
+# include <exception>
+# include <fstream>
 
 struct RequestLine {
 	std::string method;
@@ -16,15 +18,18 @@ class ParseRequest {
 	private:
 		RequestLine requestLine;
 		std::map<std::string, std::string> header;
-		std::string body;
+		std::fstream file;
 	public:
 		// ParseRequest ();
 		// ~ParseRequest ();
 
-		void ParseHttpRequest(const std::string& request);
+		void ParseHttpRequest(std::string request);
 
 		void ParseStartLine (const std::string& StartLine);
 		void ParseMethod (std::string& method);
 		void ParseBody (const std::string& body);
+
+		void	requestStatusCode ();
+		void	ParseChunked (std::string _body);
 
 };
