@@ -5,7 +5,7 @@ CC =clang++ -g -fsanitize=address
 CFLAGS = -Wall -Wextra -Werror -g
 CFLAGS += -std=c++98
 
-SRCS = socket.cpp main.cpp
+SRCS = socket.cpp main.cpp request/request.cpp
 # CONFIG = 
 
 all: webserv
