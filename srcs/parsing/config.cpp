@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/07 19:19:39 by omanar            #+#    #+#             */
-/*   Updated: 2023/06/10 14:23:50 by omanar           ###   ########.fr       */
+/*   Updated: 2023/06/10 19:05:03 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,11 +15,11 @@
 Location::Location() {
 	this->_url = "";
 	this->_root = "";
-	this->_autoindex = "";
+	this->_redirect = "";
 	this->_upload_path = "";
-	this->_directory_listing = "";
 	this->_cgi_pass = "";
 	this->_cgi_extension = "";
+	this->_directory_listing = false;
 }
 
 Config::Config() {
