@@ -1,18 +1,17 @@
 # makefile that compile all cpp files in the current directory
 # and creates a binary file named "main"
 
-CC =clang++ -g -fsanitize=address
-CFLAGS = -Wall -Wextra -Werror -g
-CFLAGS += -std=c++98
+CC = clang++ -g -fsanitize=address
+FLAGS = -Wall -Wextra -Werror -Iincludes -std=c++98
 
-SRCS = socket.cpp main.cpp request/request.cpp
+SRCS =	main.cpp srcs/socket.cpp srcs/request/request.cpp srcs/Server.cpp srcs/config/config.cpp srcs/config/configUtils.cpp 
 # CONFIG = 
 
 all: webserv
 
-# webserv: $(SRCS) $(CONFIG) # $(CC) $(CFLAGS) $(SRCS) $(CONFIG) -o webserv 
+# webserv: $(SRCS) $(CONFIG) # $(CC) $(FLAGS) $(SRCS) $(CONFIG) -o webserv 
 webserv: $(SRCS) 
-	 @$(CC) $(CFLAGS) $(SRCS) -o webserv 
+	 @$(CC) $(FLAGS) $(SRCS) -o webserv 
 	 @echo "\033[0;32m®webserv CREATED 🐲\033[0m"
 clean:
 	@rm -rf webserv.o
