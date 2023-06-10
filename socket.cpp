@@ -73,10 +73,10 @@ void    Socket::setupServer(int port,std::string ip){
 void    Socket::acceptConnection(){
     ParseRequest   request;
     while (true){
-        FD_SET(_ServerSocket,&_read_set);
         // FD_SET(_ServerSocket,&_write_set);
         // if(_pollfds[i].events == POLLIN)
-            select(_maxFd,&_read_set,NULL,NULL,NULL);
+            FD_SET(_ServerSocket,&_read_set);
+            select(_maxFd,&_read_set,0,0,0);
         if (FD_ISSET(_ServerSocket,&_read_set)) {
             int clientSocket = accept(_ServerSocket,(struct sockaddr *)&_ClientAddress, &_ClientAddressSize);
             if (clientSocket == -1) {
@@ -92,7 +92,6 @@ void    Socket::acceptConnection(){
             _nclients++;
             _maxFd = clientSocket + 1;
         }
-
         for(unsigned long i = 0 ; i < _pollfds.size(); i++){
             if (FD_ISSET(_pollfds[i].fd,&_read_set)) {
                 char buffer[1024] = {0};
@@ -104,47 +103,21 @@ void    Socket::acceptConnection(){
                         exit(1);
                     }
                 }
-                if (_pollfds[i].events == POLLOUT) {
+                else if (_bytesRead == 0) {
                     std::cout << "Socket closed" << std::endl;
-                    FD_CLR(_pollfds[i].fd,&_read_set);
                     close(_pollfds[i].fd);
+                    FD_CLR(_pollfds[i].fd,&_read_set);
                     _pollfds.erase(_pollfds.begin() + i);
-                    _nclients--;
-                    _maxFd--;
-                    if(_maxFd < _ServerSocket + 1)
-                        _maxFd = _ServerSocket + 1;
                 }
-                else{
+                else if (_bytesRead > 0){
                     std::cout << "Socket read" << std::endl;
-                    // std::cout << buffer << std::endl;
-                    request.ParseHttpRequest(buffer);
-                    close(_pollfds[i].fd);
-                    FD_CLR(_pollfds[i].fd,&_read_set);
-                    _pollfds.erase(_pollfds.begin() + i);
-                    _nclients--;
-                    _maxFd--;
-                    if(_maxFd < _ServerSocket + 1)
-                        _maxFd = _ServerSocket + 1;
-                    
-                    // detect the end of the request
-                    // if(strstr(buffer,"\r\n\r\n") != NULL){
-                        // std::cout << "End of request" << std::endl;
-                        // FD_CLR(_pollfds[i].fd,&_read_set);
-                        // FD_SET(_pollfds[i].fd,&_write_set);
-                        // _pollfds[i].events = POLLOUT;
-                    // }
-                    // std::string hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
-                    // send(_pollfds[i].fd , hello.c_str() , hello.length() , 0 );
+                    std::cout << buffer << std::endl;
+                    // request.ParseHttpRequest(buffer);
+                    std::string hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
+                    send(_pollfds[i].fd , hello.c_str() , hello.length() , 0 );
                     // _pollfds[i].events = POLLOUT;
                 }
             }
-            // else if(FD_ISSET(_pollfds[i].fd,&_write_set)){
-            //     std::string hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
-            //     send(_pollfds[i].fd , hello.c_str() , hello.length() , 0 );
-            //     FD_CLR(_pollfds[i].fd,&_write_set);
-            //     FD_SET(_pollfds[i].fd,&_read_set);
-            //     _pollfds[i].events = POLLOUT;
-            // }
         }
     }
     
