@@ -74,9 +74,8 @@ void    Socket::acceptConnection(){
     ParseRequest   request;
     while (true){
         // FD_SET(_ServerSocket,&_write_set);
-        // if(_pollfds[i].events == POLLIN)
-            FD_SET(_ServerSocket,&_read_set);
-            select(_maxFd,&_read_set,0,0,0);
+        FD_SET(_ServerSocket,&_read_set);
+        select(_maxFd,&_read_set,0,0,0);
         if (FD_ISSET(_ServerSocket,&_read_set)) {
             int clientSocket = accept(_ServerSocket,(struct sockaddr *)&_ClientAddress, &_ClientAddressSize);
             if (clientSocket == -1) {
@@ -86,11 +85,13 @@ void    Socket::acceptConnection(){
                     exit(1);
                 }
             }
-            std::cout << "Socket accepted" << std::endl;
-            _pollfds.push_back((struct pollfd){clientSocket,POLLIN,0});
-            FD_SET(_pollfds.back().fd,&_read_set);
-            _nclients++;
-            _maxFd = clientSocket + 1;
+            else{
+                std::cout << "Socket accepted" << std::endl;
+                _pollfds.push_back((struct pollfd){clientSocket,POLLIN,0});
+                FD_SET(_pollfds.back().fd,&_read_set);
+                _nclients++;
+                _maxFd = clientSocket + 1;
+            }
         }
         for(unsigned long i = 0 ; i < _pollfds.size(); i++){
             if (FD_ISSET(_pollfds[i].fd,&_read_set)) {
@@ -108,14 +109,26 @@ void    Socket::acceptConnection(){
                     close(_pollfds[i].fd);
                     FD_CLR(_pollfds[i].fd,&_read_set);
                     _pollfds.erase(_pollfds.begin() + i);
+                    _nclients--;
+                    _maxFd --;
+                    if(_maxFd <= _ServerSocket + 1)
+                        _maxFd = _ServerSocket + 1;
                 }
                 else if (_bytesRead > 0){
                     std::cout << "Socket read" << std::endl;
-                    std::cout << buffer << std::endl;
-                    // request.ParseHttpRequest(buffer);
-                    std::string hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
+                    //server response html file to client
+                    request.ParseHttpRequest(buffer);
+                    std::string hello = "HTTP/1.1 200 OK\nContent-Type: text/html\n";
+                    std::ifstream file("index.html");
+                    std::string str;
+                    std::string html;
+                    while (std::getline(file,str)) {
+                        html += str;
+                    }
+                    hello += "Content-Length: " + std::to_string(html.length()) + "\n\n" + html;
+                    // std::cout << buffer << std::endl;
                     send(_pollfds[i].fd , hello.c_str() , hello.length() , 0 );
-                    // _pollfds[i].events = POLLOUT;
+
                 }
             }
         }

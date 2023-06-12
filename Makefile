@@ -1,8 +1,8 @@
 # makefile that compile all cpp files in the current directory
 # and creates a binary file named "main"
 
-CC =clang++ -g #-fsanitize=address
-CFLAGS = -Wall -Wextra -Werror -g
+CC =c++ -g #-fsanitize=address
+CFLAGS = -Wall -Wextra -Werror
 CFLAGS += -std=c++98
 
 SRCS = socket.cpp main.cpp request/request.cpp
