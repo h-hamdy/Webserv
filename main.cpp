@@ -1,13 +1,25 @@
-#include "socket.hpp"
+#include "webserv.hpp"
 
-int main(int ac, char** av) {
-    if (ac < 2) {
-        return 1;
-    }
-    (void)av;
-    Socket s;
-    s.setupServer(8080,"0.0.0.0");
-    s.~Socket();
+int	main(int ac, char **av)
+{
+	try {
+		if (ac != 2)
+			throw std::runtime_error("Usage: ./webserv [configuration file]");
+		std::vector<Server *> servers = getServers(av[1]);
+		
+		std::vector<Server *>::iterator it = servers.begin();
+		while (it != servers.end()) {
+			(*it)->printServerConfig();
+			delete *it++;
+		}
 
-    return 0;
+		// Socket s;
+		// s.setupServer(8080,"0.0.0.0");
+		// s.~Socket();
+	}
+	catch(const std::exception& e) {
+		std::cerr << e.what() << std::endl;
+	}
+
+	return 0;
 }
