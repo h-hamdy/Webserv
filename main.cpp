@@ -3,18 +3,19 @@
 int	main(int ac, char **av)
 {
 	try {
+		Socket s;
 		if (ac != 2)
 			throw std::runtime_error("Usage: ./webserv [configuration file]");
 		std::vector<Server *> servers = getServers(av[1]);
 		
 		std::vector<Server *>::iterator it = servers.begin();
 		while (it != servers.end()) {
+			
 			(*it)->printServerConfig();
 			delete *it++;
 		}
 
-		// Socket s;
-		// s.setupServer(8080,"0.0.0.0");
+		// s.setupServer(,"0.0.0.0");
 		// s.~Socket();
 	}
 	catch(const std::exception& e) {

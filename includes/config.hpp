@@ -39,7 +39,7 @@ class Config {
 	public:
 		std::string		_server_name;
 		std::string		_host;
-		std::string		_port;
+		std::string		_port;//must be int
 		std::string		_max_body_size;
 		std::map<int, std::string> errorPages;
 		std::vector<Location>	*_locations;

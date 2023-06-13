@@ -27,6 +27,7 @@
 class Server {
 	private:
 		Config *config;
+		Socket *socket;
 	public:
 		Server(Config *config);
 		~Server();

@@ -119,7 +119,7 @@ void    Socket::acceptConnection(){
                     //server response html file to client
                     request.ParseHttpRequest(buffer);
                     std::string hello = "HTTP/1.1 200 OK\nContent-Type: text/html\n";
-                    std::ifstream file("index.html");
+                    std::ifstream file("assests/index.html");
                     std::string str;
                     std::string html;
                     while (std::getline(file,str)) {

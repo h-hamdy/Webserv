@@ -14,10 +14,19 @@
 
 Server::Server(Config *config) {
 	this->config = config;
+	this->socket = new Socket();
+	std::istringstream s(this->config->_port);
+	int port;
+	s >> port;
+	if(port < 0 || port > 65535)
+		throw std::runtime_error("Invalid port number"	);
+	this->socket->setupServer(port, this->config->_host);
+
 }
 
 Server::~Server() {
 	delete this->config;
+	delete this->socket;
 }
 
 void Server::printServerConfig() {
