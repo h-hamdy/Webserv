@@ -6,58 +6,52 @@
 /*   By: omanar <omanar@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/10 14:23:17 by omanar            #+#    #+#             */
-/*   Updated: 2023/06/10 19:05:53 by omanar           ###   ########.fr       */
+/*   Updated: 2023/06/16 15:12:26 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "webserv.hpp"
 
-Server::Server(Config *config) {
-	this->config = config;
-	this->socket = new Socket();
-	std::istringstream s(this->config->_port);
-	int port;
-	s >> port;
-	if(port < 0 || port > 65535)
-		throw std::runtime_error("Invalid port number"	);
-	this->socket->setupServer(port, this->config->_host);
-
-}
+Server::Server() {}
 
 Server::~Server() {
-	delete this->config;
-	delete this->socket;
+	for (std::vector<Config *>::iterator it = this->configs.begin(); it != this->configs.end(); ++it)
+		delete *it;
 }
 
-void Server::printServerConfig() {
-	std::cout << "--------------- Server ---------------" << std::endl;
-    std::cout << "  Server Name: " << this->config->_server_name << std::endl;
-	std::cout << "  Host: " << this->config->_host << std::endl;
-	std::cout << "  Port: " << this->config->_port << std::endl;
-	std::cout << "  Max Body Size: " << this->config->_max_body_size << std::endl;
+void	Server::addConfig(Config *config) {
+	this->configs.push_back(config);
+}
 
-	std::map<int, std::string>::iterator mit = this->config->errorPages.begin();
-	while (mit != this->config->errorPages.end()) {
-		std::cout << "  Error " << mit->first << " : " << mit->second << std::endl;
-		mit++;
-	}
-
-	std::vector<Location>::iterator it = this->config->_locations->begin();
-	while (it != this->config->_locations->end()) {
-		std::cout << "  Location: " << it->_url << " {" << std::endl;
-		std::cout << "      Root: " << it->_root << std::endl;
-		std::cout << "      Upload Path: " << it->_upload_path << std::endl;
-		std::cout << "      Directory Listing: " << it->_directory_listing << std::endl;
-		std::cout << "      CGI Pass: " << it->_cgi_pass << std::endl;
-		std::cout << "      CGI Extension: " << it->_cgi_extension << std::endl;
-		std::cout << "      Methods: ";
-		std::vector<std::string>::iterator it2 = it->_methods.begin();
-		while (it2 != it->_methods.end()) {
-			std::cout << *it2 << " ";
-			it2++;
+void	Server::printConfigs() {
+	std::cout << "<---------------- Server ---------------->" << std::endl;
+	for (std::vector<Config *>::iterator it = this->configs.begin(); it != this->configs.end(); ++it) {
+		std::cout << "Config {" << std::endl;
+		std::cout << "   port: " << (*it)->_port << std::endl;
+		std::cout << "   max_body_size: " << (*it)->_max_body_size << std::endl;
+		std::cout << "   server_name: " << (*it)->_server_name << std::endl;
+		std::cout << "   host: " << (*it)->_host << std::endl;
+		std::cout << "   error_page: " << std::endl;
+		for (std::map<int, std::string>::iterator it2 = (*it)->_error_pages.begin(); it2 != (*it)->_error_pages.end(); ++it2) {
+			std::cout << "      " << it2->first << ": " << it2->second << std::endl;
 		}
-		std::cout << std::endl << "  }" << std::endl;
-		it++;
+		std::cout << "   locations:" << std::endl;
+		for (std::vector<Location>::iterator it2 = (*it)->_locations->begin(); it2 != (*it)->_locations->end(); ++it2) {
+			std::cout << "   Location {" << std::endl;
+			std::cout << "      url: " << it2->_url << std::endl;
+			std::cout << "      root: " << it2->_root << std::endl;
+			std::cout << "      redirect: " << it2->_redirect << std::endl;
+			std::cout << "      upload_path: " << it2->_upload_path << std::endl;
+			std::cout << "      cgi_pass: " << it2->_cgi_pass << std::endl;
+			std::cout << "      cgi_extension: " << it2->_cgi_extension << std::endl;
+			std::cout << "      directory_listing: " << it2->_directory_listing << std::endl;
+			std::cout << "      methods: ";
+			for (std::vector<std::string>::iterator it3 = it2->_methods.begin(); it3 != it2->_methods.end(); ++it3) {
+				std::cout << *it3 << " ";
+			}
+			std::cout << "\n   }" << std::endl;
+		}
+		std::cout << "}" << std::endl;
 	}
-	std::cout << "--------------------------------------" << std::endl;
+	std::cout << "<---------------- End Server ---------------->" << std::endl;
 }
