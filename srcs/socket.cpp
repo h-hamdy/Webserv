@@ -53,12 +53,12 @@ void    Socket::setupServer(){
         exit(1);
     }
     _servers[i]->_ServerAddress.sin_family = AF_INET;
-    if(_servers[i]->config->_host == "0.0.0.0")
+    if(_servers[i]->configs.front()->_host == "0.0.0.0")
          _servers[i]->_ServerAddress.sin_addr.s_addr = INADDR_ANY;
     else
-         _servers[i]->_ServerAddress.sin_addr.s_addr = inet_addr(_servers[i]->config->_host.c_str());
+         _servers[i]->_ServerAddress.sin_addr.s_addr = inet_addr(_servers[i]->configs.front()->_host.c_str());
     int port;
-    std::istringstream iss(_servers[i]->config->_port);//must be int
+    std::istringstream iss(_servers[i]->configs.front()->_port);//must be int
     iss >> port;
     _servers[i]->_ServerAddress.sin_port = htons(port);
     if (bind(ServerSocket,(struct sockaddr *)& _servers[i]->_ServerAddress,sizeof( _servers[i]->_ServerAddress)) < 0) {

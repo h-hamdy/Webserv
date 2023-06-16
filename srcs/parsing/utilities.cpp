@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/10 14:26:21 by omanar            #+#    #+#             */
-/*   Updated: 2023/06/10 19:05:12 by omanar           ###   ########.fr       */
+/*   Updated: 2023/06/16 15:40:32 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,7 @@ void	ParseErrorPage(std::ifstream &configFile, Config *config) {
 				token.erase(std::remove(token.begin(), token.end(), ';'), token.end());
 				std::vector<std::pair<int, std::string> >::iterator it = errors.begin();
 				for (; it != errors.end(); it++)
-					config->errorPages[it->first] = token;
+					config->_error_pages[it->first] = token;
 				break;
 			}
 		}
@@ -113,10 +113,24 @@ Config*	ParseServer(std::ifstream &configFile) {
 			parseValue(iss, config->_server_name);
 		else if (directive == "host")
 			parseValue(iss, config->_host);
-		else if (directive == "port")
-			parseValue(iss, config->_port);
-		else if (directive == "max_body_size")
-			parseValue(iss, config->_max_body_size);
+		else if (directive == "port") {
+			std::string port;
+			iss >> port;
+			port.erase(std::remove(port.begin(), port.end(), ';'), port.end());
+			if (isNumber(port))
+				config->_port = atoi(port.c_str());
+			else
+				throw std::runtime_error("Error: Invalid port number");
+		}
+		else if (directive == "max_body_size") {
+			std::string size;
+			iss >> size;
+			size.erase(std::remove(size.begin(), size.end(), ';'), size.end());
+			if (isNumber(size))
+				config->_max_body_size = atoi(size.c_str());
+			else
+				throw std::runtime_error("Error: Invalid client_max_body_size value");
+		}
 		else if (directive == "error_pages")
 			ParseErrorPage(configFile, config);
 		else if (directive == "location")
@@ -149,10 +163,6 @@ void	missing(Config *config) {
 		throw std::runtime_error("Error: Missing server_name directive");
 	if (config->_host.empty())
 		throw std::runtime_error("Error: Missing host directive");
-	if (config->_port.empty())
-		throw std::runtime_error("Error: Missing port directive");
-	if (config->_max_body_size.empty())
-		throw std::runtime_error("Error: Missing max_body_size directive");
 	std::vector<Location>::iterator it = config->_locations->begin();
 	for (; it != config->_locations->end(); it++) {
 		if (it->_url.empty())
@@ -170,12 +180,12 @@ void	missing(Config *config) {
 	}
 }
 
-Server*	getNextServer(std::ifstream &configFile) {
-	Config *config = getNextConfig(configFile);
-	if (!config)
-		return NULL;
-	missing(config);
-	return new Server(config);
+Server*	findPort(std::vector<Server *> &servers, std::string host, int port) {
+	for (std::vector<Server*>::iterator it = servers.begin(); it != servers.end(); ++it) {
+		if ((*it)->configs[0]->_host == host && (*it)->configs[0]->_port == port)
+			return *it;
+	}
+	return nullptr;
 }
 
 std::vector<Server *>	getServers(char *file) {
@@ -183,10 +193,22 @@ std::vector<Server *>	getServers(char *file) {
 	if (!configFile.is_open())
 		throw std::runtime_error("Error: Failed to open configuration file: " + std::string(file));
 
-	Server *server;
 	std::vector<Server *> servers;
-	while ((server = getNextServer(configFile)))
-		servers.push_back(server);
+
+	Config *config = getNextConfig(configFile);
+	while (config) {
+		missing(config);
+		Server *found = findPort(servers, config->_host, config->_port);
+		if (found != nullptr)
+			found->configs.push_back(config);
+		else {
+			Server *server = new Server();
+			server->addConfig(config);
+			servers.push_back(server);
+		}
+		config = getNextConfig(configFile);
+	}
+
 	configFile.close();
 	return servers;
 }

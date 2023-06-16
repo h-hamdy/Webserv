@@ -27,7 +27,7 @@
 class Server {
 	private:
 	public:
-		Config *config;
+		std::vector<Config *>	configs;
 		int _ServerSocket;
         struct sockaddr_in _ServerAddress;
 		int _ClientSocket;
@@ -41,13 +41,14 @@ class Server {
         std::vector<struct pollfd> _pollfds;
 
 		//-----------------------------//
-		Server(Config *config);
+		// Server(Config *config);
+		// Server();
 		~Server();
-		void printServerConfig();
+		void	addConfig(Config *config);
+		void	printConfigs();
 };
 
-std::vector<Server *>	getServers(char *file);
-Server*	getNextServer(std::ifstream &configFile);
 Config*	getNextConfig(std::ifstream &configFile);
+std::vector<Server *>	getServers(char *file);
 
 # endif
