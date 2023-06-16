@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/10 14:26:21 by omanar            #+#    #+#             */
-/*   Updated: 2023/06/16 15:09:02 by omanar           ###   ########.fr       */
+/*   Updated: 2023/06/16 15:40:32 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -180,9 +180,9 @@ void	missing(Config *config) {
 	}
 }
 
-Server*	findPort(std::vector<Server *> &servers, int port) {
+Server*	findPort(std::vector<Server *> &servers, std::string host, int port) {
 	for (std::vector<Server*>::iterator it = servers.begin(); it != servers.end(); ++it) {
-		if ((*it)->configs[0]->_port == port)
+		if ((*it)->configs[0]->_host == host && (*it)->configs[0]->_port == port)
 			return *it;
 	}
 	return nullptr;
@@ -198,7 +198,7 @@ std::vector<Server *>	getServers(char *file) {
 	Config *config = getNextConfig(configFile);
 	while (config) {
 		missing(config);
-		Server *found = findPort(servers, config->_port);
+		Server *found = findPort(servers, config->_host, config->_port);
 		if (found != nullptr)
 			found->configs.push_back(config);
 		else {
