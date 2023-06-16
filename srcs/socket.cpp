@@ -1,122 +1,151 @@
 #include"socket.hpp"
 #include "request/request.hpp"
 
-Socket::Socket(){
-    _ServerSocket = 0;
-    _ClientSocket = 0;
-    _maxFd = 0;
-    _nclients = 0;
-    _bytesRead = 0;
-    FD_ZERO(&_read_set);
-    FD_ZERO(&_write_set);
-    _ClientAddressSize = sizeof(_ClientAddress);
-    memset(&_ServerAddress,0,sizeof(_ServerAddress));
-    memset(&_ClientAddress,0,sizeof(_ClientAddress));
+Socket::Socket(char *file){
+    std::cout<<"creating Socket"<<std::endl;
+    std::cout<<"file: "<<file<<std::endl;
+    std::vector<Server *> servers = getServers(file);
+    std::cout<<"servers size: "<<servers.size()<<std::endl;
+    this->_servers = servers;
+    // _ServerSocket = 0;
+    // _ClientSocket = 0;
+    // _maxFd = 0;
+    // _nclients = 0;
+    // _bytesRead = 0;
+    // FD_ZERO(&_read_set);
+    // FD_ZERO(&_write_set);
+    // _ClientAddressSize = sizeof(_ClientAddress);
+    // memset(&_ServerAddress,0,sizeof(_ServerAddress));
+    // memset(&_ClientAddress,0,sizeof(_ClientAddress));
 }
 
 Socket::~Socket(){
-    close(_ServerSocket);
-    for(int i = 0 ; i < _nclients; i++){
-        close(_pollfds[i].fd);
-    }
+    // close(_ServerSocket);
+    // for(int i = 0 ; i < _nclients; i++){
+    //     close(_pollfds[i].fd);
+    // }
 }
 
-void    Socket::setupServer(int port,std::string ip){
-    _ServerSocket = socket(AF_INET,SOCK_STREAM,0);
-    if (_ServerSocket < 0) {
+void    Socket::setupServer(){
+    std::cout<<"setuping Server"<<std::endl;
+    std::cout<<"servers size: "<<_servers.size()<<std::endl;
+    // return;
+    for(size_t i = 0 ; i < _servers.size(); i++){
+    int ServerSocket = socket(AF_INET,SOCK_STREAM,0);
+    this->_servers[i]->_ServerSocket = ServerSocket;
+    if (ServerSocket < 0) {
         std::cout << "Error creating socket" << std::endl;
-        close(_ServerSocket);
+        close(ServerSocket);
         exit(1);
     }
     std::cout << "Socket created" << std::endl;
-    int server_flag = fcntl(_ServerSocket,F_GETFL,0);
+    int server_flag = fcntl(ServerSocket,F_GETFL,0);
     if (server_flag == -1 ) {
         std::cout << "Error getting socket flags" << std::endl;
-        close(_ServerSocket);
+        close(ServerSocket);
         exit(1);
     }
-    if(fcntl(_ServerSocket,F_SETFL,server_flag | O_NONBLOCK) == -1){
+    if(fcntl(ServerSocket,F_SETFL,O_NONBLOCK) == -1){  //fcntl(fd, F_SETFL, O_NONBLOCK);
         std::cout << "Error setting socket flags" << std::endl;
-        close(_ServerSocket);
+        close(ServerSocket);
         exit(1);
     }
     std::cout << "Socket flags set" << std::endl;
     int opt = 1;
-    if (setsockopt(_ServerSocket,SOL_SOCKET,SO_REUSEADDR ,&opt,sizeof(opt))) {  //segpipe
+    if (setsockopt(ServerSocket,SOL_SOCKET,SO_REUSEADDR ,&opt,sizeof(opt))) {  //segpipe
         std::cout << "Error setting socket options" << std::endl;
-        close(_ServerSocket);
+        close(ServerSocket);
         exit(1);
     }
-    _ServerAddress.sin_family = AF_INET;
-    if(ip == "0.0.0.0")
-        _ServerAddress.sin_addr.s_addr = INADDR_ANY;
+    _servers[i]->_ServerAddress.sin_family = AF_INET;
+    if(_servers[i]->config->_host == "0.0.0.0")
+         _servers[i]->_ServerAddress.sin_addr.s_addr = INADDR_ANY;
     else
-        _ServerAddress.sin_addr.s_addr = inet_addr(ip.c_str());
-    _ServerAddress.sin_port = htons(port);
-    if (bind(_ServerSocket,(struct sockaddr *)&_ServerAddress,sizeof(_ServerAddress)) < 0) {
+         _servers[i]->_ServerAddress.sin_addr.s_addr = inet_addr(_servers[i]->config->_host.c_str());
+    int port;
+    std::istringstream iss(_servers[i]->config->_port);
+    iss >> port;
+    _servers[i]->_ServerAddress.sin_port = htons(port);
+    if (bind(ServerSocket,(struct sockaddr *)& _servers[i]->_ServerAddress,sizeof( _servers[i]->_ServerAddress)) < 0) {
         std::cout << "Error binding socket" << std::endl;
-        close(_ServerSocket);
+        close(ServerSocket);
         exit(1);
     }
     std::cout << "Socket binded" << std::endl;
-    if (listen(_ServerSocket,SOMAXCONN) < 0) {
+    if (listen(ServerSocket,SOMAXCONN) < 0) {
         std::cout << "Error listening socket" << std::endl;
-        close(_ServerSocket);
+        close(ServerSocket);
         exit(1);
     }
     std::cout << "Socket listening" << std::endl;
-    _maxFd = _ServerSocket + 1;
+     _servers[i]->_maxFd = ServerSocket + 1;
     std::cout << "Server setup complete" << std::endl;
+    }
     acceptConnection();
 }
 
 void    Socket::acceptConnection(){
     ParseRequest   request;
+    size_t i = 0;
+    timeval timeout;
+    timeout.tv_sec = 0;
+    timeout.tv_usec = 0;
     while (true){
         // FD_SET(_ServerSocket,&_write_set);
-        FD_SET(_ServerSocket,&_read_set);
-        select(_maxFd,&_read_set,0,0,0);
-        if (FD_ISSET(_ServerSocket,&_read_set)) {
-            int clientSocket = accept(_ServerSocket,(struct sockaddr *)&_ClientAddress, &_ClientAddressSize);
+        if(i == _servers.size())
+            i = 0;
+        FD_SET( _servers[i]->_ServerSocket,& _servers[i]->_read_set);
+        fd_set copy_read_set = _servers[i]->_read_set;
+        if(select( _servers[i]->_maxFd,&copy_read_set,0,0,&timeout) == -1){
+            std::cout << "Error selecting socket" << std::endl;
+            this->~Socket();
+            exit(1);
+        }
+        if (FD_ISSET( _servers[i]->_ServerSocket,& _servers[i]->_read_set)) {
+            int clientSocket = accept( _servers[i]->_ServerSocket,(struct sockaddr *)& _servers[i]->_ClientAddress, & _servers[i]->_ClientAddressSize);
             if (clientSocket == -1) {
                 if(errno != EWOULDBLOCK && errno != EAGAIN){
                     std::cout << "Error accepting socket" << std::endl;
-                    close(_ServerSocket);
+                    close( _servers[i]->_ServerSocket);
                     exit(1);
                 }
             }
             else{
+                if(fcntl(clientSocket,F_SETFL,O_NONBLOCK) == -1){  //fcntl(fd, F_SETFL, O_NONBLOCK);
+                    std::cout << "Error setting socket flags" << std::endl;
+                    this->~Socket();
+                    exit(1);
+                }
                 std::cout << "Socket accepted" << std::endl;
-                _pollfds.push_back((struct pollfd){clientSocket,POLLIN,0});
-                FD_SET(_pollfds.back().fd,&_read_set);
-                _nclients++;
-                _maxFd = clientSocket + 1;
+                 _servers[i]->_pollfds.push_back((struct pollfd){clientSocket,POLLIN,0});
+                FD_SET( _servers[i]->_pollfds.back().fd,& _servers[i]->_read_set);
+                 _servers[i]->_nclients++;
+                 _servers[i]->_maxFd = clientSocket + 1;
             }
         }
-        for(unsigned long i = 0 ; i < _pollfds.size(); i++){
-            if (FD_ISSET(_pollfds[i].fd,&_read_set)) {
+        for(unsigned long j = 0 ; j <  _servers[i]->_pollfds.size(); j++){
+            if (FD_ISSET( _servers[i]->_pollfds[j].fd,& _servers[i]->_read_set)) {
                 char buffer[1024] = {0};
-                _bytesRead = recv(_pollfds[i].fd,buffer,sizeof(buffer) - 1,0);
-                if (_bytesRead == -1) {
+                 _servers[i]->_bytesRead = recv( _servers[i]->_pollfds[j].fd,buffer,sizeof(buffer) - 1,0);
+                if ( _servers[i]->_bytesRead == -1) {
                     if(errno != EWOULDBLOCK && errno != EAGAIN){
                         std::cout << "Error reading socket" << std::endl;
-                        close(_ServerSocket);
+                        close( _servers[i]->_ServerSocket);
                         exit(1);
                     }
                 }
-                else if (_bytesRead == 0) {
-                    std::cout << "Socket closed" << std::endl;
-                    close(_pollfds[i].fd);
-                    FD_CLR(_pollfds[i].fd,&_read_set);
-                    _pollfds.erase(_pollfds.begin() + i);
-                    _nclients--;
-                    _maxFd --;
-                    if(_maxFd <= _ServerSocket + 1)
-                        _maxFd = _ServerSocket + 1;
-                }
-                else if (_bytesRead > 0){
+                // else if ( _servers[i]->_bytesRead == 0) {
+                    // std::cout << "Socket closed" << std::endl;
+                    // close( _servers[i]->_pollfds[j].fd);
+                    // FD_CLR( _servers[i]->_pollfds[j].fd,& _servers[i]->_read_set);
+                    //  _servers[i]->_pollfds.erase( _servers[i]->_pollfds.begin() + j);
+                    //  _servers[i]->_nclients--;
+                    //  _servers[i]->_maxFd --;
+                    // if( _servers[i]->_maxFd <=  _servers[i]->_ServerSocket + 1)
+                    //      _servers[i]->_maxFd =  _servers[i]->_ServerSocket + 1;
+                // }
+                else if ( _servers[i]->_bytesRead > 0){
                     std::cout << "Socket read" << std::endl;
-                    //server response html file to client
                     request.ParseHttpRequest(buffer);
                     std::string hello = "HTTP/1.1 200 OK\nContent-Type: text/html\n";
                     std::ifstream file("assests/index.html");
@@ -127,11 +156,19 @@ void    Socket::acceptConnection(){
                     }
                     hello += "Content-Length: " + std::to_string(html.length()) + "\n\n" + html;
                     // std::cout << buffer << std::endl;
-                    send(_pollfds[i].fd , hello.c_str() , hello.length() , 0 );
-
+                    send( _servers[i]->_pollfds[j].fd , hello.c_str() , hello.length() , 0 );
+                     std::cout << "Socket closed" << std::endl;
+                    close( _servers[i]->_pollfds[j].fd);
+                    FD_CLR( _servers[i]->_pollfds[j].fd,& _servers[i]->_read_set);
+                     _servers[i]->_pollfds.erase( _servers[i]->_pollfds.begin() + j);
+                     _servers[i]->_nclients--;
+                     _servers[i]->_maxFd --;
+                    if( _servers[i]->_maxFd <=  _servers[i]->_ServerSocket + 1)
+                         _servers[i]->_maxFd =  _servers[i]->_ServerSocket + 1;
                 }
             }
         }
+        i++;
     }
     
 }

@@ -14,19 +14,23 @@
 
 Server::Server(Config *config) {
 	this->config = config;
-	this->socket = new Socket();
-	std::istringstream s(this->config->_port);
-	int port;
-	s >> port;
-	if(port < 0 || port > 65535)
-		throw std::runtime_error("Invalid port number"	);
-	this->socket->setupServer(port, this->config->_host);
-
+	_ServerSocket = 0;
+    _ClientSocket = 0;
+    _maxFd = 0;
+    _nclients = 0;
+    _bytesRead = 0;
+    FD_ZERO(&_read_set);
+    FD_ZERO(&_write_set);
+    _ClientAddressSize = sizeof(_ClientAddress);
+    memset(&_ServerAddress,0,sizeof(_ServerAddress));
+    memset(&_ClientAddress,0,sizeof(_ClientAddress));
 }
 
 Server::~Server() {
 	delete this->config;
-	delete this->socket;
+	for (std::vector<struct pollfd>::iterator it = _pollfds.begin(); it != _pollfds.end(); it++) {
+		close(it->fd);
+	}
 }
 
 void Server::printServerConfig() {

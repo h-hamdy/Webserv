@@ -26,9 +26,21 @@
 
 class Server {
 	private:
-		Config *config;
-		Socket *socket;
 	public:
+		Config *config;
+		int _ServerSocket;
+        struct sockaddr_in _ServerAddress;
+		int _ClientSocket;
+        int _maxFd;
+        int _nclients;
+        fd_set _read_set;
+        fd_set _write_set;
+        ssize_t _bytesRead;
+		struct sockaddr_in _ClientAddress;
+        socklen_t _ClientAddressSize;
+        std::vector<struct pollfd> _pollfds;
+
+		//-----------------------------//
 		Server(Config *config);
 		~Server();
 		void printServerConfig();
