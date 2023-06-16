@@ -26,16 +26,15 @@
 
 class Server {
 	private:
-		Config *config;
-		Socket *socket;
 	public:
-		Server(Config *config);
+		std::vector<Config *>	configs;
+		Server();
 		~Server();
-		void printServerConfig();
+		void	addConfig(Config *config);
+		void	printConfigs();
 };
 
-std::vector<Server *>	getServers(char *file);
-Server*	getNextServer(std::ifstream &configFile);
 Config*	getNextConfig(std::ifstream &configFile);
+std::vector<Server *>	getServers(char *file);
 
 # endif
