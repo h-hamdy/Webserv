@@ -7,29 +7,24 @@ Socket::Socket(char *file){
     std::vector<Server *> servers = getServers(file);
     std::cout<<"servers size: "<<servers.size()<<std::endl;
     this->_servers = servers;
-    // _ServerSocket = 0;
-    // _ClientSocket = 0;
-    // _maxFd = 0;
-    // _nclients = 0;
-    // _bytesRead = 0;
-    // FD_ZERO(&_read_set);
-    // FD_ZERO(&_write_set);
-    // _ClientAddressSize = sizeof(_ClientAddress);
-    // memset(&_ServerAddress,0,sizeof(_ServerAddress));
-    // memset(&_ClientAddress,0,sizeof(_ClientAddress));
+    this->timeout.tv_sec = 0;
+    this->timeout.tv_usec = 0;   
 }
 
 Socket::~Socket(){
-    // close(_ServerSocket);
-    // for(int i = 0 ; i < _nclients; i++){
-    //     close(_pollfds[i].fd);
-    // }
+    for (size_t i = 0; i < _servers.size(); i++)
+    {
+        close(_servers[i]->_ServerSocket);
+        for (size_t j = 0; j < _servers[i]->_pollfds.size(); j++)
+        {
+            close(_servers[i]->_pollfds[j].fd);
+        }
+    }
+    std::cout<<"Socket destroyed"<<std::endl;
 }
 
 void    Socket::setupServer(){
-    std::cout<<"setuping Server"<<std::endl;
-    std::cout<<"servers size: "<<_servers.size()<<std::endl;
-    // return;
+    std::cout<<"Setuping Servers"<<std::endl;
     for(size_t i = 0 ; i < _servers.size(); i++){
     int ServerSocket = socket(AF_INET,SOCK_STREAM,0);
     this->_servers[i]->_ServerSocket = ServerSocket;
@@ -63,7 +58,7 @@ void    Socket::setupServer(){
     else
          _servers[i]->_ServerAddress.sin_addr.s_addr = inet_addr(_servers[i]->config->_host.c_str());
     int port;
-    std::istringstream iss(_servers[i]->config->_port);
+    std::istringstream iss(_servers[i]->config->_port);//must be int
     iss >> port;
     _servers[i]->_ServerAddress.sin_port = htons(port);
     if (bind(ServerSocket,(struct sockaddr *)& _servers[i]->_ServerAddress,sizeof( _servers[i]->_ServerAddress)) < 0) {
@@ -79,17 +74,14 @@ void    Socket::setupServer(){
     }
     std::cout << "Socket listening" << std::endl;
      _servers[i]->_maxFd = ServerSocket + 1;
-    std::cout << "Server setup complete" << std::endl;
+    std::cout << "Servers setup complete" << std::endl;
     }
     acceptConnection();
 }
 
 void    Socket::acceptConnection(){
-    ParseRequest   request;
+    ParseRequest   request;//houssam add this to the class //request.parseRequest();
     size_t i = 0;
-    timeval timeout;
-    timeout.tv_sec = 0;
-    timeout.tv_usec = 0;
     while (true){
         // FD_SET(_ServerSocket,&_write_set);
         if(i == _servers.size())
@@ -102,6 +94,7 @@ void    Socket::acceptConnection(){
             exit(1);
         }
         if (FD_ISSET( _servers[i]->_ServerSocket,& _servers[i]->_read_set)) {
+            memset(&_servers[i]->_ClientAddress,0,sizeof(_servers[i]->_ClientAddress));
             int clientSocket = accept( _servers[i]->_ServerSocket,(struct sockaddr *)& _servers[i]->_ClientAddress, & _servers[i]->_ClientAddressSize);
             if (clientSocket == -1) {
                 if(errno != EWOULDBLOCK && errno != EAGAIN){
@@ -134,16 +127,6 @@ void    Socket::acceptConnection(){
                         exit(1);
                     }
                 }
-                // else if ( _servers[i]->_bytesRead == 0) {
-                    // std::cout << "Socket closed" << std::endl;
-                    // close( _servers[i]->_pollfds[j].fd);
-                    // FD_CLR( _servers[i]->_pollfds[j].fd,& _servers[i]->_read_set);
-                    //  _servers[i]->_pollfds.erase( _servers[i]->_pollfds.begin() + j);
-                    //  _servers[i]->_nclients--;
-                    //  _servers[i]->_maxFd --;
-                    // if( _servers[i]->_maxFd <=  _servers[i]->_ServerSocket + 1)
-                    //      _servers[i]->_maxFd =  _servers[i]->_ServerSocket + 1;
-                // }
                 else if ( _servers[i]->_bytesRead > 0){
                     std::cout << "Socket read" << std::endl;
                     request.ParseHttpRequest(buffer);
