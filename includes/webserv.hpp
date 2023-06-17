@@ -42,7 +42,7 @@ class Server {
 
 		//-----------------------------//
 		// Server(Config *config);
-		// Server();
+		Server();
 		~Server();
 		void	addConfig(Config *config);
 		void	printConfigs();
