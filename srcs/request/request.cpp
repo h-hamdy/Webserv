@@ -1,4 +1,4 @@
-# include "request.hpp"
+# include "../../includes/webserv.hpp"
 
 void	ParseRequest::ParseStartLine (const std::string& StartLine) {
 	std::istringstream iss(StartLine);
@@ -10,8 +10,6 @@ void ParseRequest::ParseMethod (std::string& method) {
 	std::istringstream iss(method);
     std::string line, key, value;
 	int space, pos;
-	std::cout << method << std::endl;
-	std::cout << "----------------------------------" << std::endl;
 
     while (std::getline(iss, line)) {
 		if (line == "\n" || line == "\r")
@@ -63,35 +61,53 @@ std::string get_ContentType (std::string value)
 	throw 400;
 }
 
-void	ParseRequest::ParseChunked (std::string _body)
+void	ParseRequest::ParseChunked (std::string _body, ssize_t byteRead, std::fstream &file)
 {
 	int size = 1;
 	std::string hex;
-	std::string filename;
-	std::map<std::string, std::string>::iterator it = header.find("Content-Type");
-	if (it != header.end())
-		filename = get_ContentType(it->second);
-	else
-		filename = "file.txt";
-	std::fstream file(filename, std::ios::out);
 	std::string body;
-	for (; size != 0; ) {
+	if (_bread > 0) {
+		body.append(_body, 0, _bread);
+		file << body;
+		_body = _body.substr(0, _bread);
+		body.clear();
+		byteRead -= _bread;
+		_bread = 0;
+	}
+	for (; byteRead > 0; ) {
 		hex = get_hex(_body);
 		size = convert_hex(hex);
 		_body = _body.substr((hex.length() + 2));
-		body.append(_body, 0, size);
-		file << body;
-		_body = _body.substr(size + 2);
+		byteRead -= (hex.length() + 2);
+		if (size >= byteRead) {
+			_bread = size - byteRead;
+			body.append(_body, 0, byteRead);
+			file << body;
+			_body = _body.substr(byteRead);
+			byteRead = 0;
+		}
+		else {
+			body.append(_body, 0, size);
+			file << body;
+			_body = _body.substr(size + 2);
+			byteRead -= size;
+		}
 		body.clear();
 	}
+	if (size == 0)
+		_EOF = 0;
+	else
+		_EOF = 1;
 }
 
-void ParseRequest::ParseBody (const std::string& _body) {
-	if (_body.empty())
+void ParseRequest::ParseBody (const std::string& _body, ssize_t byteRead) {
+	if (_body.empty()) {
 		std::cout << "No body found in the request." << std::endl;
-		std::map<std::string, std::string>::iterator it = header.find("Content-Length");
-		if (it != header.end()) {
-			std::string filename;
+		return ;
+	}
+	std::map<std::string, std::string>::iterator it = header.find("Content-Length");
+	if (it != header.end()) {
+		std::string filename;
 		std::map<std::string, std::string>::iterator it = header.find("Content-Type");
 		if (it != header.end())
 			filename = get_ContentType(it->second);
@@ -103,7 +119,16 @@ void ParseRequest::ParseBody (const std::string& _body) {
 	}
 	it = header.find("Transfer-Encoding");
 	if (it != header.end()) {
-		ParseChunked(_body);
+		if (_EOF == 3) {
+			std::string filename;
+			std::map<std::string, std::string>::iterator it = header.find("Content-Type");
+			if (it != header.end())
+				filename = get_ContentType(it->second);
+			else
+				filename = "file.txt";
+			std::fstream file(filename, std::ios::out);
+		}
+		ParseChunked(_body, byteRead, file);
 	}
 }
 
@@ -130,36 +155,26 @@ void	ParseRequest::requestStatusCode () {
 		throw 400;
 }
 
-void ParseRequest::ParseHttpRequest( std::string request) {
+void ParseRequest::ParseHttpRequest( std::string request, ssize_t byteRead) {
 	std::string line;
+	size_t headers = 0;
 	size_t startline = request.find("\r\n");
-	if (startline != std::string::npos) {
+	if (startline != std::string::npos && requestLine.method.empty()) {
 		line = request.substr(0, startline);
 		ParseStartLine(line);
 		request = request.substr(startline + 2);
+		byteRead -= (startline + 2);
+		headers = request.find("\r\n\r\n");
+		if (headers != std::string::npos) {
+			line = request.substr(0, headers);
+			ParseMethod(line);
+			headers += 4;
+			byteRead -= headers;
+		}
+		requestStatusCode();
 	}
-	size_t headers = request.find("\r\n\r\n");
-	if (headers != std::string::npos) {
-		line = request.substr(0, headers);
-		ParseMethod(line);
-		headers += 4;
-	}
-	requestStatusCode();
 	line = request.substr(headers);
-	ParseBody(line);
-
-	// std::cout << "_______________START_LINE____________" << std::endl;
-	// std::cout << "METHOD = " << requestLine.method << "       ";
-	// std::cout << "URL = " << requestLine.url << "       ";
-	// std::cout << "VERSION = " << requestLine.http_v << std::endl << std::endl;
-
-
-
-	// std::cout << "_______________HEADERS____________" << std::endl << std::endl;
-	// std::map<std::string, std::string>::iterator iter = header.begin();
-    // for (; iter != header.end(); iter++) {
-    //     std::cout << iter->first << ": " << iter->second << std::endl;
-    // }
-
-	// std::cout << "_______________BODY____________" << std::endl << std::endl;
+	ParseBody(line, byteRead);
+	std::exit (1);
+	// return (*this);
 }

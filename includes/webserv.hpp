@@ -13,16 +13,15 @@
 # include <stdexcept>
 # include <netinet/in.h>
 # include <arpa/inet.h>
+# include <exception>
+# include <fstream>
+
 # include "config.hpp"
 # include "socket.hpp"
 # include "web-client.hpp"
+# include "request.hpp"
 
-// class Tcpserver {
-// 	public:
-// 		// Tcpserver ();
-// 		// ~Tcpserver ();
-// };
-
+class ParseRequest;
 
 class Server {
 	private:
@@ -39,6 +38,8 @@ class Server {
 		struct sockaddr_in _ClientAddress;
         socklen_t _ClientAddressSize;
         std::vector<struct pollfd> _pollfds;
+		std::map<int, ParseRequest> _requests;
+
 
 		//-----------------------------//
 		// Server(Config *config);
