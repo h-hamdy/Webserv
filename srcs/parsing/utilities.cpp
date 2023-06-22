@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/10 14:26:21 by omanar            #+#    #+#             */
-/*   Updated: 2023/06/16 15:40:32 by omanar           ###   ########.fr       */
+/*   Updated: 2023/06/22 14:23:19 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,23 @@ void	parseValue(std::istringstream &iss, std::string &variable) {
 	token.erase(std::remove(token.begin(), token.end(), ';'), token.end());
 	variable = token;
 }
+
+void	parseSingle(std::string const &line, std::string &variable) {
+	std::string token;
+	size_t pos = line.find(';');
+	if (pos == std::string::npos)
+		throw std::runtime_error("Error: Invalid value missing ';'");
+	std::string value = line.substr(0, pos);
+	std::istringstream iss(value);
+	iss >> token;
+	iss >> variable;
+	if (variable.empty())
+		throw std::runtime_error("Error: Invalid value");
+}
+
+// void	parseMultiple(std::string const &line, std::string &variable) {
+
+// }
 
 Location	ParseLocation(std::ifstream &configFile, std::istringstream &is) {
 	std::string line;
@@ -110,13 +127,12 @@ Config*	ParseServer(std::ifstream &configFile) {
 		if (directive.empty() || directive[0] == '#')
 			continue;
 		if (directive == "server_name")
-			parseValue(iss, config->_server_name);
+			parseSingle(line, config->_server_name);
 		else if (directive == "host")
-			parseValue(iss, config->_host);
+			parseSingle(line, config->_host);
 		else if (directive == "port") {
 			std::string port;
-			iss >> port;
-			port.erase(std::remove(port.begin(), port.end(), ';'), port.end());
+			parseSingle(line, port);
 			if (isNumber(port))
 				config->_port = atoi(port.c_str());
 			else
@@ -125,7 +141,7 @@ Config*	ParseServer(std::ifstream &configFile) {
 		else if (directive == "max_body_size") {
 			std::string size;
 			iss >> size;
-			size.erase(std::remove(size.begin(), size.end(), ';'), size.end());
+			parseSingle(line, size);
 			if (isNumber(size))
 				config->_max_body_size = atoi(size.c_str());
 			else
