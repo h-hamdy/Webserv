@@ -17,7 +17,9 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <poll.h>
-#include "../includes/webserv.hpp"
+#include "webserv.hpp"
+#include "server.hpp"
+#include "request.hpp"
 
 
 #define MAXLINE 1024

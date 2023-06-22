@@ -127,6 +127,8 @@ void    Socket::acceptConnection(){
                 else if ( _servers[i]->_bytesRead > 0){
                     std::cout << "Socket read" << std::endl;
                     request.ParseHttpRequest(buffer);
+                    
+
                     std::string hello = "HTTP/1.1 200 OK\nContent-Type: text/html\n";
                     std::ifstream file("assests/index.html");
                     std::string str;
