@@ -1,14 +1,14 @@
-#include"socket.hpp"
-#include "request/request.hpp"
+# include "../includes/socket.hpp"
+# include "../includes/webserv.hpp"
 
-Socket::Socket(char *file){
+Socket::Socket(char *file) {
     std::cout<<"creating Socket"<<std::endl;
     std::cout<<"file: "<<file<<std::endl;
     std::vector<Server *> servers = getServers(file);
     std::cout<<"servers size: "<<servers.size()<<std::endl;
     this->_servers = servers;
     this->timeout.tv_sec = 0;
-    this->timeout.tv_usec = 0;   
+    this->timeout.tv_usec = 0;
 }
 
 Socket::~Socket(){
@@ -115,7 +115,7 @@ void    Socket::acceptConnection(){
         }
         for(unsigned long j = 0 ; j <  _servers[i]->_pollfds.size(); j++){
             if (FD_ISSET( _servers[i]->_pollfds[j].fd,& _servers[i]->_read_set)) {
-                char buffer[1024] = {0};
+                char buffer[10000] = {0};
                  _servers[i]->_bytesRead = recv( _servers[i]->_pollfds[j].fd,buffer,sizeof(buffer) - 1,0);
                 if ( _servers[i]->_bytesRead == -1) {
                     if(errno != EWOULDBLOCK && errno != EAGAIN){
@@ -124,21 +124,23 @@ void    Socket::acceptConnection(){
                         exit(1);
                     }
                 }
-                else if ( _servers[i]->_bytesRead > 0){
+                else if ( _servers[i]->_bytesRead > 0) {
                     std::cout << "Socket read" << std::endl;
-                    request.ParseHttpRequest(buffer);
-                    
-
-                    std::string hello = "HTTP/1.1 200 OK\nContent-Type: text/html\n";
-                    std::ifstream file("assests/index.html");
-                    std::string str;
-                    std::string html;
-                    while (std::getline(file,str)) {
-                        html += str;
-                    }
-                    hello += "Content-Length: " + std::to_string(html.length()) + "\n\n" + html;
+                    // request.ParseHttpRequest(buffer, _servers[i]->_bytesRead);
+                    // _servers[i]->_requests.insert(std::make_pair(_servers[i]->_pollfds[j].fd,request.ParseHttpRequest(buffer)));
+                    // request.ParseHttpRequest(buffer);
+                    std::cout<< "buffer---->"<<buffer<<std::endl;
+                    // std::cout<<"------------>\n"<<_servers[i]->_requests[_servers[i]->_pollfds[j].fd].file<<std::endl;
+                    // std::string hello = "HTTP/1.1 200 OK\nContent-Type: text/html\n";
+                    // std::ifstream file("assests/index.html");
+                    // std::string str;
+                    // std::string html;
+                    // while (std::getline(file,str)) {
+                    //     html += str;
+                    // }
+                    // hello += "Content-Length: " + std::to_string(html.length()) + "\n\n" + html;
                     // std::cout << buffer << std::endl;
-                    send( _servers[i]->_pollfds[j].fd , hello.c_str() , hello.length() , 0 );
+                    // send( _servers[i]->_pollfds[j].fd , hello.c_str() , hello.length() , 0 );
                      std::cout << "Socket closed" << std::endl;
                     close( _servers[i]->_pollfds[j].fd);
                     FD_CLR( _servers[i]->_pollfds[j].fd,& _servers[i]->_read_set);

@@ -18,8 +18,6 @@
 #include <arpa/inet.h>
 #include <poll.h>
 #include "webserv.hpp"
-#include "server.hpp"
-#include "request.hpp"
 
 
 #define MAXLINE 1024
@@ -34,5 +32,5 @@ class Socket{
         void    setupServer();
         void    acceptConnection();
 };
-
+// void    Get_response(ParseRequest &request);
 #endif
