@@ -175,6 +175,6 @@ void ParseRequest::ParseHttpRequest( std::string request, ssize_t byteRead) {
 	}
 	line = request.substr(headers);
 	ParseBody(line, byteRead);
-	std::exit (1);
+	// std::exit (1);
 	// return (*this);
 }

@@ -124,12 +124,13 @@ void    Socket::acceptConnection(){
                         exit(1);
                     }
                 }
-                else if ( _servers[i]->_bytesRead > 0) {
+                if ( _servers[i]->_requests[ _servers[i]->_pollfds[j].fd]._EOF != 1) {
                     std::cout << "Socket read" << std::endl;
                     // request.ParseHttpRequest(buffer, _servers[i]->_bytesRead);
+                    std::cout<< "buffer---->"<<buffer<<std::endl;
+                    _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].ParseHttpRequest(buffer, _servers[i]->_bytesRead);
                     // _servers[i]->_requests.insert(std::make_pair(_servers[i]->_pollfds[j].fd,request.ParseHttpRequest(buffer)));
                     // request.ParseHttpRequest(buffer);
-                    std::cout<< "buffer---->"<<buffer<<std::endl;
                     // std::cout<<"------------>\n"<<_servers[i]->_requests[_servers[i]->_pollfds[j].fd].file<<std::endl;
                     // std::string hello = "HTTP/1.1 200 OK\nContent-Type: text/html\n";
                     // std::ifstream file("assests/index.html");
@@ -141,6 +142,16 @@ void    Socket::acceptConnection(){
                     // hello += "Content-Length: " + std::to_string(html.length()) + "\n\n" + html;
                     // std::cout << buffer << std::endl;
                     // send( _servers[i]->_pollfds[j].fd , hello.c_str() , hello.length() , 0 );
+                    //  std::cout << "Socket closed" << std::endl;
+                    // close( _servers[i]->_pollfds[j].fd);
+                    // FD_CLR( _servers[i]->_pollfds[j].fd,& _servers[i]->_read_set);
+                    //  _servers[i]->_pollfds.erase( _servers[i]->_pollfds.begin() + j);
+                    //  _servers[i]->_nclients--;
+                    //  _servers[i]->_maxFd --;
+                    // if( _servers[i]->_maxFd <=  _servers[i]->_ServerSocket + 1)
+                    //      _servers[i]->_maxFd =  _servers[i]->_ServerSocket + 1;
+                }
+                else{
                      std::cout << "Socket closed" << std::endl;
                     close( _servers[i]->_pollfds[j].fd);
                     FD_CLR( _servers[i]->_pollfds[j].fd,& _servers[i]->_read_set);

@@ -12,10 +12,10 @@ class ParseRequest {
 	private:
 		RequestLine requestLine;
 		std::map<std::string, std::string> header;
-		int _EOF;
 		int	_bread;
 		std::fstream file;
 	public:
+		int _EOF;
 		ParseRequest () {
 			_EOF = 3;
 		}
