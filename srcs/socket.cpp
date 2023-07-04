@@ -156,6 +156,20 @@ void    Socket::acceptConnection(){
                     //  _servers[i]->_maxFd --;
                     // if( _servers[i]->_maxFd <=  _servers[i]->_ServerSocket + 1)
                     //      _servers[i]->_maxFd =  _servers[i]->_ServerSocket + 1;
+
+
+                    // Read request from the client
+                    // Parse the request and extract relevant information
+
+                    // Process the request
+                    // Perform necessary business logic or data processing
+
+                    // Construct the response
+                    // Set appropriate status code, headers, and response body
+
+                    // Send the response to the client
+                    // Format the response message and send it over the client socket
+
                 }
                 else{
                      std::cout << "Socket closed" << std::endl;
