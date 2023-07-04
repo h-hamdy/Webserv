@@ -111,31 +111,37 @@ void    Socket::acceptConnection(){
                 FD_SET( _servers[i]->_pollfds.back().fd,& _servers[i]->_read_set);
                  _servers[i]->_nclients++;
                  _servers[i]->_maxFd = clientSocket + 1;
+                _servers[i]->_requests[clientSocket];
+                // _servers[i]->_requests.insert(std::make_pair(clientSocket));
             }
         }
-        for(unsigned long j = 0 ; j <  _servers[i]->_pollfds.size(); j++){
+        for(unsigned long j = 0 ; j <  _servers[i]->_pollfds.size(); j++) {
             if (FD_ISSET( _servers[i]->_pollfds[j].fd,& _servers[i]->_read_set)) {
-                char buffer[10000] = {0};
+                char buffer[500] = {0};
                  _servers[i]->_bytesRead = recv( _servers[i]->_pollfds[j].fd,buffer,sizeof(buffer) - 1,0);
                 if ( _servers[i]->_bytesRead == -1) {
-                    if(errno != EWOULDBLOCK && errno != EAGAIN){
+                    if(errno != EWOULDBLOCK && errno != EAGAIN) {
                         std::cout << "Error reading socket" << std::endl;
                         close( _servers[i]->_ServerSocket);
                         exit(1);
                     }
                 }
-                if ( _servers[i]->_requests[ _servers[i]->_pollfds[j].fd]._EOF != 1) {
-                    std::cout << "Socket read" << std::endl;
+                if ( _servers[i]->_requests[ _servers[i]->_pollfds[j].fd]._EOF != 0) {
+                    // std::cout << "Socket read" << std::endl;
                     // request.ParseHttpRequest(buffer, _servers[i]->_bytesRead);
-                    std::cout<< "buffer---->"<<buffer<<std::endl;
-                    _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].ParseHttpRequest(buffer, _servers[i]->_bytesRead);
+                    // if (buffer[0] != '\0') {
+                    if (_servers[i]->_bytesRead > 1) {
+                        std::string bb(buffer, _servers[i]->_bytesRead);
+                        _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].ParseHttpRequest(bb, _servers[i]->_bytesRead);
+                    }
+                    // }
                     // _servers[i]->_requests.insert(std::make_pair(_servers[i]->_pollfds[j].fd,request.ParseHttpRequest(buffer)));
                     // request.ParseHttpRequest(buffer);
                     // std::cout<<"------------>\n"<<_servers[i]->_requests[_servers[i]->_pollfds[j].fd].file<<std::endl;
                     // std::string hello = "HTTP/1.1 200 OK\nContent-Type: text/html\n";
                     // std::ifstream file("assests/index.html");
                     // std::string str;
-                    // std::string html;
+                    // std::string htm
                     // while (std::getline(file,str)) {
                     //     html += str;
                     // }

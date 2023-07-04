@@ -10,14 +10,17 @@ struct RequestLine {
 
 class ParseRequest {
 	private:
+	public:
 		RequestLine requestLine;
 		std::map<std::string, std::string> header;
-		int	_bread;
 		std::fstream file;
-	public:
+		int size;
+		int _bread;
 		int _EOF;
 		ParseRequest () {
 			_EOF = 3;
+			size = 1;
+			_bread = 0;
 		}
 		// ~ParseRequest ();
 
@@ -28,6 +31,6 @@ class ParseRequest {
 		void ParseBody (const std::string& body, ssize_t byteRead);
 
 		void	requestStatusCode ();
-		void	ParseChunked (std::string _body, ssize_t byteRead, std::fstream &file);
+		void	ParseChunked (std::string _body, ssize_t byteRead);
 
 };

@@ -61,28 +61,31 @@ std::string get_ContentType (std::string value)
 	throw 400;
 }
 
-void	ParseRequest::ParseChunked (std::string _body, ssize_t byteRead, std::fstream &file)
+void	ParseRequest::ParseChunked (std::string _body, ssize_t byteRead)
 {
-	int size = 1;
 	std::string hex;
 	std::string body;
 	if (_bread > 0) {
 		body.append(_body, 0, _bread);
 		file << body;
+		file.flush();
 		_body = _body.substr(0, _bread);
 		body.clear();
-		byteRead -= _bread;
-		_bread = 0;
+		_bread -= byteRead;
+		return ;
 	}
-	for (; byteRead > 0; ) {
+	if (_bread == 0) {
 		hex = get_hex(_body);
 		size = convert_hex(hex);
+	}
+	for (; byteRead > 0; ) {
 		_body = _body.substr((hex.length() + 2));
 		byteRead -= (hex.length() + 2);
 		if (size >= byteRead) {
 			_bread = size - byteRead;
-			body.append(_body, 0, byteRead);
+			body = _body.substr(0, byteRead);
 			file << body;
+			file.flush();
 			_body = _body.substr(byteRead);
 			byteRead = 0;
 		}
@@ -96,40 +99,31 @@ void	ParseRequest::ParseChunked (std::string _body, ssize_t byteRead, std::fstre
 	}
 	if (size == 0)
 		_EOF = 0;
-	else
-		_EOF = 1;
 }
 
 void ParseRequest::ParseBody (const std::string& _body, ssize_t byteRead) {
-	if (_body.empty()) {
-		std::cout << "No body found in the request." << std::endl;
-		return ;
-	}
-	std::map<std::string, std::string>::iterator it = header.find("Content-Length");
-	if (it != header.end()) {
+	if (_EOF == 3) {
 		std::string filename;
 		std::map<std::string, std::string>::iterator it = header.find("Content-Type");
 		if (it != header.end())
 			filename = get_ContentType(it->second);
 		else
 			filename = "file.txt";
-		std::fstream file(filename, std::ios::out);
+		this->file.open(filename, std::ios::binary | std::ios::app | std::ios::ate);
+		_EOF = 1;
+	}
+	std::map<std::string, std::string>::iterator it = header.find("Content-Length");
+	if (it != header.end()) {
 		file << _body;
+		std::streampos fileSize = file.tellg();
+		_EOF = 1;
+		if (std::stoi(it->second) == fileSize) {
+			_EOF = 0;
+		}
 		return ;
 	}
-	it = header.find("Transfer-Encoding");
-	if (it != header.end()) {
-		if (_EOF == 3) {
-			std::string filename;
-			std::map<std::string, std::string>::iterator it = header.find("Content-Type");
-			if (it != header.end())
-				filename = get_ContentType(it->second);
-			else
-				filename = "file.txt";
-			std::fstream file(filename, std::ios::out);
-		}
-		ParseChunked(_body, byteRead, file);
-	}
+	else
+		ParseChunked(_body, byteRead);
 }
 
 bool check_url(const std::string& url) {
@@ -158,6 +152,8 @@ void	ParseRequest::requestStatusCode () {
 void ParseRequest::ParseHttpRequest( std::string request, ssize_t byteRead) {
 	std::string line;
 	size_t headers = 0;
+	if(byteRead == -1)
+		return ;
 	size_t startline = request.find("\r\n");
 	if (startline != std::string::npos && requestLine.method.empty()) {
 		line = request.substr(0, startline);
@@ -171,10 +167,18 @@ void ParseRequest::ParseHttpRequest( std::string request, ssize_t byteRead) {
 			headers += 4;
 			byteRead -= headers;
 		}
-		requestStatusCode();
+		try {
+			requestStatusCode();
+		}
+		catch (int status) {
+			std::cout << status << std::endl;
+		}
+
 	}
-	line = request.substr(headers);
-	ParseBody(line, byteRead);
-	// std::exit (1);
-	// return (*this);
+	if (requestLine.method == "POST") {
+		line = request.substr(headers);
+		ParseBody(line, byteRead);
+	}
+	else
+		_EOF = 0;
 }
