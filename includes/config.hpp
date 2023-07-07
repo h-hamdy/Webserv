@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/07 19:19:19 by omanar            #+#    #+#             */
-/*   Updated: 2023/07/07 15:55:23 by omanar           ###   ########.fr       */
+/*   Updated: 2023/07/07 19:03:13 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,10 +27,9 @@ class Location {
 		std::string		_root;
 		std::string		_redirect;
 		std::string		_upload_path;
-		std::string		_cgi_pass;
-		std::string		_cgi_extension;
 		bool			_directory_listing;
-		std::vector<std::string>	_methods;
+		bool			_methods[3];
+		std::vector<std::string>		_cgi_extensions;
 
 		Location();
 };
@@ -46,7 +45,7 @@ class Config {
 	
 		Config();
 		~Config();
-		getLocation(std::string url);
+		std::vector<Location>::iterator getLocation(std::string url);
 };
 
 #endif
