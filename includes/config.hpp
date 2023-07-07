@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/07 19:19:19 by omanar            #+#    #+#             */
-/*   Updated: 2023/06/16 15:08:58 by omanar           ###   ########.fr       */
+/*   Updated: 2023/07/07 15:55:23 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@ class Config {
 	
 		Config();
 		~Config();
+		getLocation(std::string url);
 };
 
 #endif
