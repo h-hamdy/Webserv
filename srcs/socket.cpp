@@ -192,7 +192,7 @@ void    Socket::acceptConnection(){
                     // Handle errors and exceptions
 
 
-                     std::cout << "Socket closed" << std::endl;
+                    std::cout << "Socket closed" << std::endl;
                     close( _servers[i]->_pollfds[j].fd);
                     FD_CLR( _servers[i]->_pollfds[j].fd,& _servers[i]->_read_set);
                      _servers[i]->_pollfds.erase( _servers[i]->_pollfds.begin() + j);
