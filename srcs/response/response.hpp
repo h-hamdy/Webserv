@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/04 17:35:49 by omanar            #+#    #+#             */
-/*   Updated: 2023/07/04 17:48:47 by omanar           ###   ########.fr       */
+/*   Updated: 2023/07/09 18:05:01 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 # include <map>
 # include <vector>
 # include <unistd.h>
-# include "../config/config.hpp"
+# include "config.hpp"
 
 class Response
 {
@@ -57,6 +57,8 @@ class Response
 		void setHeaders(std::string key, std::string value);
 		void setBody(std::string body);
 		void setResponse(std::string protocol, std::string status_code, std::string status_message, std::string body);
+		void DELETE(std::string path, Config *config);
+		bool isDirectory(std::string path);
 };
 
 #endif

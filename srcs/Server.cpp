@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/10 14:23:17 by omanar            #+#    #+#             */
-/*   Updated: 2023/06/16 15:12:26 by omanar           ###   ########.fr       */
+/*   Updated: 2023/07/07 19:03:58 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,12 +56,15 @@ void	Server::printConfigs() {
 			std::cout << "      root: " << it2->_root << std::endl;
 			std::cout << "      redirect: " << it2->_redirect << std::endl;
 			std::cout << "      upload_path: " << it2->_upload_path << std::endl;
-			std::cout << "      cgi_pass: " << it2->_cgi_pass << std::endl;
-			std::cout << "      cgi_extension: " << it2->_cgi_extension << std::endl;
+			std::cout << "      cgi_extension: ";
+			for (std::vector<std::string>::iterator it3 = it2->_cgi_extensions.begin(); it3 != it2->_cgi_extensions.end(); ++it3) {
+				std::cout << *it3 << " ";
+			}
+			std::cout << std::endl;
 			std::cout << "      directory_listing: " << it2->_directory_listing << std::endl;
 			std::cout << "      methods: ";
-			for (std::vector<std::string>::iterator it3 = it2->_methods.begin(); it3 != it2->_methods.end(); ++it3) {
-				std::cout << *it3 << " ";
+			for (int i = 0; i < 3; i++) {
+				std::cout << it2->_methods[i] << " ";
 			}
 			std::cout << "\n   }" << std::endl;
 		}

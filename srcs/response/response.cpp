@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/04 17:35:51 by omanar            #+#    #+#             */
-/*   Updated: 2023/07/04 17:52:49 by omanar           ###   ########.fr       */
+/*   Updated: 2023/07/10 23:45:45 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,4 +88,23 @@ void Response::setResponse(std::string protocol, std::string status_code, std::s
 	_response += "Allow: " + getAllow() + "\r\n";
 	_response += "\r\n";
 	_response += body;
+}
+
+bool Response::isDirectory(std::string path) {
+	struct stat path_stat;
+	stat(path.c_str(), &path_stat);
+	return (S_ISDIR(path_stat.st_mode));
+}
+
+void Response::DELETE(std::string path) {
+	if (access(path.c_str(), F_OK) != 0)
+		setResponse("HTTP/1.1", "404", "Not Found", "DELETE");
+	else if (access(path.c_str(), W_OK) != 0)
+		setResponse("HTTP/1.1", "403", "Forbidden", "DELETE");
+	else if (isDirectory(path))
+		setResponse("HTTP/1.1", "403", "Forbidden", "DELETE");
+	else if (remove(path.c_str()) != 0)
+		setResponse("HTTP/1.1", "500", "Internal Server Error", "DELETE");
+	else
+		setResponse("HTTP/1.1", "200", "OK", "<html><body><h1>File deleted.</h1></body></html>");
 }
