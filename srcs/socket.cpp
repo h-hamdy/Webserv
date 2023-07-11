@@ -40,14 +40,14 @@ void    Socket::setupServer(){
         close(ServerSocket);
         exit(1);
     }
-    if(fcntl(ServerSocket,F_SETFL,O_NONBLOCK) == -1){  //fcntl(fd, F_SETFL, O_NONBLOCK);
+    if(fcntl(ServerSocket,F_SETFL,O_NONBLOCK) == -1){
         std::cout << "Error setting socket flags" << std::endl;
         close(ServerSocket);
         exit(1);
     }
     std::cout << "Socket flags set" << std::endl;
     int opt = 1;
-    if (setsockopt(ServerSocket,SOL_SOCKET,SO_REUSEADDR ,&opt,sizeof(opt))) {  //segpipe
+    if (setsockopt(ServerSocket,SOL_SOCKET,SO_REUSEADDR ,&opt,sizeof(opt))) {
         std::cout << "Error setting socket options" << std::endl;
         close(ServerSocket);
         exit(1);
@@ -77,10 +77,9 @@ void    Socket::setupServer(){
 }
 
 void    Socket::acceptConnection(){
-    ParseRequest   request;//houssam add this to the class //request.parseRequest();
+    ParseRequest   request;
     size_t i = 0;
     while (true){
-        // FD_SET(_ServerSocket,&_write_set);
         if(i == _servers.size())
             i = 0;
         FD_SET( _servers[i]->_ServerSocket,& _servers[i]->_read_set);
@@ -101,7 +100,7 @@ void    Socket::acceptConnection(){
                 }
             }
             else{
-                if(fcntl(clientSocket,F_SETFL,O_NONBLOCK) == -1){  //fcntl(fd, F_SETFL, O_NONBLOCK);
+                if(fcntl(clientSocket,F_SETFL,O_NONBLOCK) == -1){
                     std::cout << "Error setting socket flags" << std::endl;
                     this->~Socket();
                     exit(1);
@@ -112,12 +111,11 @@ void    Socket::acceptConnection(){
                  _servers[i]->_nclients++;
                  _servers[i]->_maxFd = clientSocket + 1;
                 _servers[i]->_requests[clientSocket];
-                // _servers[i]->_requests.insert(std::make_pair(clientSocket));
             }
         }
         for(unsigned long j = 0 ; j <  _servers[i]->_pollfds.size(); j++) {
             if (FD_ISSET( _servers[i]->_pollfds[j].fd,& _servers[i]->_read_set)) {
-                char buffer[500] = {0};
+                char buffer[1000] = {0};
                  _servers[i]->_bytesRead = recv( _servers[i]->_pollfds[j].fd,buffer,sizeof(buffer) - 1,0);
                 if ( _servers[i]->_bytesRead == -1) {
                     if(errno != EWOULDBLOCK && errno != EAGAIN) {
@@ -127,68 +125,10 @@ void    Socket::acceptConnection(){
                     }
                 }
                 if ( _servers[i]->_requests[ _servers[i]->_pollfds[j].fd]._EOF != 0) {
-                    // std::cout << "Socket read" << std::endl;
-                    // request.ParseHttpRequest(buffer, _servers[i]->_bytesRead);
-                    // if (buffer[0] != '\0') {
                     if (_servers[i]->_bytesRead > 1) {
                         std::string bb(buffer, _servers[i]->_bytesRead);
                         _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].ParseHttpRequest(bb, _servers[i]->_bytesRead);
                     }
-                    // }
-                    // _servers[i]->_requests.insert(std::make_pair(_servers[i]->_pollfds[j].fd,request.ParseHttpRequest(buffer)));
-                    // request.ParseHttpRequest(buffer);
-                    // std::cout<<"------------>\n"<<_servers[i]->_requests[_servers[i]->_pollfds[j].fd].file<<std::endl;
-                    // std::string hello = "HTTP/1.1 200 OK\nContent-Type: text/html\n";
-                    // std::ifstream file("assests/index.html");
-                    // std::string str;
-                    // std::string htm
-                    // while (std::getline(file,str)) {
-                    //     html += str;
-                    // }
-                    // hello += "Content-Length: " + std::to_string(html.length()) + "\n\n" + html;
-                    // std::cout << buffer << std::endl;
-                    // send( _servers[i]->_pollfds[j].fd , hello.c_str() , hello.length() , 0 );
-                    //  std::cout << "Socket closed" << std::endl;
-                    // close( _servers[i]->_pollfds[j].fd);
-                    // FD_CLR( _servers[i]->_pollfds[j].fd,& _servers[i]->_read_set);
-                    //  _servers[i]->_pollfds.erase( _servers[i]->_pollfds.begin() + j);
-                    //  _servers[i]->_nclients--;
-                    //  _servers[i]->_maxFd --;
-                    // if( _servers[i]->_maxFd <=  _servers[i]->_ServerSocket + 1)
-                    //      _servers[i]->_maxFd =  _servers[i]->_ServerSocket + 1;
-
-
-                    // Read request from the client
-                    // Parse the request and extract relevant information
-
-                    // Process the request
-                    // Perform necessary business logic or data processing
-                    // Check if the request requires CGI execution
-                    bool isCGI = /* Logic to determine if CGI execution is needed */
-
-                    if (isCGI) {
-                        // Execute CGI script
-                        // Pass request information to the CGI script (e.g., environment variables, request data)
-                        // Capture the output generated by the CGI script
-                        // Set appropriate status code, headers, and response body based on the CGI script output
-                    } else {
-                        // Process the request
-                        // Perform necessary business logic or data processing
-
-                        // Construct the response
-                        // Set appropriate status code, headers, and response body
-                    }
-
-                    // Construct the response
-                    // Set appropriate status code, headers, and response body
-
-                    // Send the response to the client
-                    // Format the response message and send it over the client socket
-
-                    // Close the client socket
-
-                    // Handle errors and exceptions
-
                 }
                 else{
                      std::cout << "Socket closed" << std::endl;

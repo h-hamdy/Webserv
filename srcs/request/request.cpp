@@ -64,41 +64,24 @@ std::string get_ContentType (std::string value)
 void	ParseRequest::ParseChunked (std::string _body, ssize_t byteRead)
 {
 	std::string hex;
-	std::string body;
-	if (_bread > 0) {
-		body.append(_body, 0, _bread);
-		file << body;
-		file.flush();
-		_body = _body.substr(0, _bread);
-		body.clear();
-		_bread -= byteRead;
-		return ;
-	}
-	if (_bread == 0) {
-		hex = get_hex(_body);
+
+	body += _body;
+	if (find_size) {
+		if (body[0] == '\r' && body[1] == '\n') {
+			body = body.substr(2);
+			byteRead -= 2;
+		}
+		hex = get_hex(body);
 		size = convert_hex(hex);
+		body = body.substr((hex.length() + 2));
+		find_size = false;
 	}
-	for (; byteRead > 0; ) {
-		_body = _body.substr((hex.length() + 2));
-		byteRead -= (hex.length() + 2);
-		if (size >= byteRead) {
-			_bread = size - byteRead;
-			body = _body.substr(0, byteRead);
-			file << body;
-			file.flush();
-			_body = _body.substr(byteRead);
-			byteRead = 0;
-		}
-		else {
-			body.append(_body, 0, size);
-			file << body;
-			_body = _body.substr(size + 2);
-			byteRead -= size;
-		}
-		body.clear();
+	if (body.size() >= size) {
+		file << body.substr(0, size);
+		file.flush();
+		body = body.substr(size);
+		find_size = true;
 	}
-	if (size == 0)
-		_EOF = 0;
 }
 
 void ParseRequest::ParseBody (const std::string& _body, ssize_t byteRead) {
@@ -136,6 +119,18 @@ bool check_url(const std::string& url) {
 
 void	ParseRequest::requestStatusCode () {
 	std::map<std::string, std::string>::iterator it = header.find("Transfer-Encoding");
+	std::map<std::string, std::string>::iterator it1 = header.find("Content-Length");
+	if (it != header.end() && it1 != header.end())
+		throw 400;
+	if (requestLine.method != "GET" && requestLine.method != "POST" && requestLine.method != "DELETE") {
+		if (requestLine.method != "PUT" && requestLine.method != "PATCH" && requestLine.method != "HEAD" && requestLine.method != "OPTIONS")
+			throw 400;
+		else
+			throw 501;
+	}
+	it1 = header.find("Content-Type");
+	if (it1 == header.end())
+		throw 400;
 	if (it != header.end() && it->second != "chunked")
 		throw 501;
 	if (it == header.end()) {
