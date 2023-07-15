@@ -174,6 +174,7 @@ void ParseRequest::ParseHttpRequest( std::string request, ssize_t byteRead) {
 			headers += 4;
 			byteRead -= headers;
 		}
+		// std::cout << "fuck 1337 = " <<  requestLine.url << std::endl;
 		try {
 			requestStatusCode();
 		}

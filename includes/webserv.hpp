@@ -40,6 +40,8 @@ class Server {
         std::vector<struct pollfd> _pollfds;
 		std::map<int, ParseRequest> _requests;
 
+		
+
 
 		//-----------------------------//
 		// Server(Config *config);
@@ -47,7 +49,7 @@ class Server {
 		~Server();
 		void	addConfig(Config *config);
 		void	printConfigs();
-		void	matching (const std::string &host, const std::string &port);
+		void	matching (const std::string &host, const std::string &port, std::string url);
 };
 
 Config*	getNextConfig(std::ifstream &configFile);
