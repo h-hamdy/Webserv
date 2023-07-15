@@ -45,7 +45,7 @@ class Config {
 	
 		Config();
 		~Config();
-		std::vector<Location>::iterator getLocation(std::string url);
+		std::vector<Location>::iterator getLocation(std::string const &url);
 		bool getAllowed(std::vector<Location>::iterator location);
 		bool postAllowed(std::vector<Location>::iterator location);
 		bool deleteAllowed(std::vector<Location>::iterator location);

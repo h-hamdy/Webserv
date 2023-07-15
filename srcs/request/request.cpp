@@ -61,25 +61,37 @@ std::string get_ContentType (std::string value)
 	throw 400;
 }
 
+int	ParseRequest::get_size (std::string &body, ssize_t &byteRead)
+{
+	std::string hex;
+	if (body[0] == '\r' && body[1] == '\n') {
+		body = body.substr(2);
+		byteRead -= 2;
+	}
+	hex = get_hex(body);
+	size = convert_hex(hex);
+	if (size == 0) {
+		_EOF = 0;
+		return 1;
+	}
+	body = body.substr((hex.length() + 2));
+	find_size = false;
+	return (0);
+}
+
 void	ParseRequest::ParseChunked (std::string _body, ssize_t byteRead)
 {
 	std::string hex;
-
 	body += _body;
-	if (find_size) {
-		if (body[0] == '\r' && body[1] == '\n') {
-			body = body.substr(2);
-			byteRead -= 2;
-		}
-		hex = get_hex(body);
-		size = convert_hex(hex);
-		body = body.substr((hex.length() + 2));
-		find_size = false;
-	}
+	if (find_size)
+		if (get_size(body, byteRead))
+			return ;
 	if (body.size() >= size) {
 		file << body.substr(0, size);
 		file.flush();
 		body = body.substr(size);
+		if (body[2] == '0')
+			_EOF = 0;
 		find_size = true;
 	}
 }
@@ -120,7 +132,7 @@ bool check_url(const std::string& url) {
 void	ParseRequest::requestStatusCode () {
 	std::map<std::string, std::string>::iterator it = header.find("Transfer-Encoding");
 	std::map<std::string, std::string>::iterator it1 = header.find("Content-Length");
-	if (it != header.end() && it1 != header.end())
+	if (it != header.end() && it1 != header.end()) 
 		throw 400;
 	if (requestLine.method != "GET" && requestLine.method != "POST" && requestLine.method != "DELETE") {
 		if (requestLine.method != "PUT" && requestLine.method != "PATCH" && requestLine.method != "HEAD" && requestLine.method != "OPTIONS")
@@ -167,6 +179,7 @@ void ParseRequest::ParseHttpRequest( std::string request, ssize_t byteRead) {
 		}
 		catch (int status) {
 			std::cout << status << std::endl;
+			return ;
 		}
 
 	}

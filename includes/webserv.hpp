@@ -47,6 +47,7 @@ class Server {
 		~Server();
 		void	addConfig(Config *config);
 		void	printConfigs();
+		void	matching (const std::string &host, const std::string &port);
 };
 
 Config*	getNextConfig(std::ifstream &configFile);

@@ -129,11 +129,7 @@ void    Socket::acceptConnection(){
                         std::string bb(buffer, _servers[i]->_bytesRead);
                         _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].ParseHttpRequest(bb, _servers[i]->_bytesRead);
                     }
-<<<<<<< HEAD
-                }
-                else{
-                     std::cout << "Socket closed" << std::endl;
-=======
+                    // std::cout << _servers[i]->_requests[ _servers[i]->_pollfds[j].fd]._EOF << std::endl;
                     // }
                     // _servers[i]->_requests.insert(std::make_pair(_servers[i]->_pollfds[j].fd,request.ParseHttpRequest(buffer)));
                     // request.ParseHttpRequest(buffer);
@@ -159,7 +155,18 @@ void    Socket::acceptConnection(){
 
                 }
                 else{
-
+                    std::map<std::string, std::string>::iterator it = _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].header.find("Host");
+                    try {
+                        if (it != _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].header.end()) {
+                            size_t pos = it->second.find(":");
+                            _servers[i]->matching(it->second.substr(0, pos), it->second.substr(pos + 1));
+                        }
+                    }
+                    catch (int status) {
+                        // bad request
+                        std::cout << status << std::endl;
+                        return ;
+                    }
                     // Read request from the client
                     // Parse the request and extract relevant information
 
@@ -193,7 +200,6 @@ void    Socket::acceptConnection(){
 
 
                     std::cout << "Socket closed" << std::endl;
->>>>>>> fd658c6253b4c04f567990ee22aef8cbd777956e
                     close( _servers[i]->_pollfds[j].fd);
                     FD_CLR( _servers[i]->_pollfds[j].fd,& _servers[i]->_read_set);
                      _servers[i]->_pollfds.erase( _servers[i]->_pollfds.begin() + j);

@@ -35,5 +35,6 @@ class ParseRequest {
 
 		void	requestStatusCode ();
 		void	ParseChunked (std::string _body, ssize_t byteRead);
+		int		get_size (std::string &body, ssize_t &byteRead);
 
 };
