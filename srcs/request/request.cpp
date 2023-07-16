@@ -36,30 +36,30 @@ int	convert_hex (std::string hex)
 	return (std::stoi(hex, nullptr, 16));
 }
 
-std::string generateRandomString(int length) {
-    const std::string characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    const int numCharacters = characters.length();
+// std::string generateRandomString(int length) {
+//     const std::string characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+//     const int numCharacters = characters.length();
 
-    std::string randomString;
-    for (int i = 0; i < length; ++i) {
-        int randomIndex = rand() % numCharacters;
-        randomString += characters[randomIndex];
-    }
-    return randomString;
-}
+//     std::string randomString;
+//     for (int i = 0; i < length; ++i) {
+//         int randomIndex = rand() % numCharacters;
+//         randomString += characters[randomIndex];
+//     }
+//     return randomString;
+// }
 
-std::string get_ContentType (std::string value) 
-{
-	size_t pos = value.find_last_of("/");
-	std::string type;
-	std::string rand;
-	if (pos != std::string::npos) {
-		type = value.substr(pos + 1);
-		rand = generateRandomString(10);
-		return (rand + "." + type);
-	}
-	throw 400;
-}
+// std::string get_ContentType (std::string value) 
+// {
+// 	size_t pos = value.find_last_of("/");
+// 	std::string type;
+// 	std::string rand;
+// 	if (pos != std::string::npos) {
+// 		type = value.substr(pos + 1);
+// 		rand = generateRandomString(10);
+// 		return (rand + "." + type);
+// 	}
+// 	throw 400;
+// }
 
 int	ParseRequest::get_size (std::string &body, ssize_t &byteRead)
 {
@@ -97,16 +97,6 @@ void	ParseRequest::ParseChunked (std::string _body, ssize_t byteRead)
 }
 
 void ParseRequest::ParseBody (const std::string& _body, ssize_t byteRead) {
-	if (_EOF == 3) {
-		std::string filename;
-		std::map<std::string, std::string>::iterator it = header.find("Content-Type");
-		if (it != header.end())
-			filename = get_ContentType(it->second);
-		else
-			filename = "file.txt";
-		this->file.open(filename, std::ios::binary | std::ios::app | std::ios::ate);
-		_EOF = 1;
-	}
 	std::map<std::string, std::string>::iterator it = header.find("Content-Length");
 	if (it != header.end()) {
 		file << _body;
@@ -156,13 +146,13 @@ void	ParseRequest::requestStatusCode () {
 		throw 400;
 }
 
-void ParseRequest::ParseHttpRequest( std::string request, ssize_t byteRead) {
+std::string ParseRequest::ParseHttpRequest( std::string request, ssize_t &byteRead) {
 	std::string line;
 	size_t headers = 0;
 	if(byteRead == -1)
-		return ;
+		return "";
 	size_t startline = request.find("\r\n");
-	if (startline != std::string::npos && requestLine.method.empty()) {
+	if (startline != std::string::npos) {
 		line = request.substr(0, startline);
 		ParseStartLine(line);
 		request = request.substr(startline + 2);
@@ -174,20 +164,10 @@ void ParseRequest::ParseHttpRequest( std::string request, ssize_t byteRead) {
 			headers += 4;
 			byteRead -= headers;
 		}
-		// std::cout << "fuck 1337 = " <<  requestLine.url << std::endl;
-		try {
-			requestStatusCode();
-		}
-		catch (int status) {
-			std::cout << status << std::endl;
-			return ;
-		}
-
 	}
-	if (requestLine.method == "POST") {
-		line = request.substr(headers);
-		ParseBody(line, byteRead);
-	}
-	else
+	if (requestLine.method != "POST") {
 		_EOF = 0;
+		return ("");
+	}
+	return (request.substr(headers));
 }

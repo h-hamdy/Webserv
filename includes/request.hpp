@@ -27,7 +27,7 @@ class ParseRequest {
 		}
 		// ~ParseRequest ();
 
-		void ParseHttpRequest(std::string request, ssize_t bytesRead);
+		std::string ParseHttpRequest(std::string request, ssize_t &bytesRead);
 
 		void ParseStartLine (const std::string& StartLine);
 		void ParseMethod (std::string& method);

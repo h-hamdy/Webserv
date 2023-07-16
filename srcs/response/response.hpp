@@ -59,6 +59,7 @@ class Response
 		void setResponse(std::string protocol, std::string status_code, std::string status_message, std::string body);
 		void DELETE(std::string path, Config *config);
 		bool isDirectory(std::string path);
+		
 };
 
 #endif

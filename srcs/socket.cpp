@@ -76,6 +76,31 @@ void    Socket::setupServer(){
     acceptConnection();
 }
 
+std::string generateRandomString(int length) {
+    const std::string characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    const int numCharacters = characters.length();
+
+    std::string randomString;
+    for (int i = 0; i < length; ++i) {
+        int randomIndex = rand() % numCharacters;
+        randomString += characters[randomIndex];
+    }
+    return randomString;
+}
+
+std::string get_ContentType (std::string value) 
+{
+	size_t pos = value.find_last_of("/");
+	std::string type;
+	std::string rand;
+	if (pos != std::string::npos) {
+		type = value.substr(pos + 1);
+		rand = generateRandomString(10);
+		return (rand + "." + type);
+	}
+	throw 400;
+}
+
 void    Socket::acceptConnection(){
     ParseRequest   request;
     size_t i = 0;
@@ -125,11 +150,44 @@ void    Socket::acceptConnection(){
                     }
                 }
                 if ( _servers[i]->_requests[ _servers[i]->_pollfds[j].fd]._EOF != 0) {
+                    std::string rest;
                     if (_servers[i]->_bytesRead > 1) {
                         std::string bb(buffer, _servers[i]->_bytesRead);
-                        _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].ParseHttpRequest(bb, _servers[i]->_bytesRead);
+                        if (_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.method.empty()) {
+                            rest = _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].ParseHttpRequest(bb, _servers[i]->_bytesRead);
+                            try {
+                                _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestStatusCode();
+                                std::map<std::string, std::string>::iterator it = _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].header.find("Host");
+                                if (it != _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].header.end()) {
+                                    size_t pos = it->second.find(":");
+                                    _servers[i]->matching(it->second.substr(0, pos), it->second.substr(pos + 1), _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.url);
+                                }
+                                std::vector<Location>::iterator _location = _servers[i]->configs[0]->getLocation(_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.url);
+                                if (_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.method == "POST" && _servers[i]->configs[0]->postAllowed(_location) == false)
+                                    throw 405;
+                            }
+                            catch (int status) {
+                                std::cout << status << std::endl;
+                                return ;
+                            }
+                            if (_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.method == "POST") {
+                                std::string filename;
+                                std::map<std::string, std::string>::iterator it = _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].header.find("Content-Type");
+                                filename = get_ContentType(it->second);
+                                std::vector<Location>::iterator location = _servers[i]->configs[0]->getLocation(_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.url);
+                                std::string filePath = location->_upload_path + "/" + filename;
+                                _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].file.open(filePath, std::ios::binary | std::ios::app | std::ios::ate);
+                                _servers[i]->_requests[ _servers[i]->_pollfds[j].fd]._EOF = 1;
+                            }
+                        }
+                        if (_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.method == "POST") {
+                            if (!rest.empty()) {
+                                _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].ParseBody(rest, _servers[i]->_bytesRead);
+                            }
+                            else
+                                _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].ParseBody(bb, _servers[i]->_bytesRead);
+                        }
                     }
-                    // std::cout << _servers[i]->_requests[ _servers[i]->_pollfds[j].fd]._EOF << std::endl;
                     // }
                     // _servers[i]->_requests.insert(std::make_pair(_servers[i]->_pollfds[j].fd,request.ParseHttpRequest(buffer)));
                     // request.ParseHttpRequest(buffer);
@@ -155,18 +213,16 @@ void    Socket::acceptConnection(){
 
                 }
                 else{
-                    std::map<std::string, std::string>::iterator it = _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].header.find("Host");
-                    try {
-                        if (it != _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].header.end()) {
-                            size_t pos = it->second.find(":");
-                            _servers[i]->matching(it->second.substr(0, pos), it->second.substr(pos + 1), _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.url);
-                        }
-                    }
-                    catch (int status) {
-                        // bad request
-                        std::cout << status << std::endl;
-                        return ;
-                    }
+                    // std::map<std::string, std::string>::iterator it = _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].header.find("Host");
+                    // try {
+                    //     if (it != _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].header.end()) {
+                    //         size_t pos = it->second.find(":");
+                    //         _servers[i]->matching(it->second.substr(0, pos), it->second.substr(pos + 1), _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.url);
+                    //     }
+                    // }
+                    // catch (int status) {
+                    //     std::cout << status << std::endl;
+                    // }
                     // Read request from the client
                     // Parse the request and extract relevant information
 
