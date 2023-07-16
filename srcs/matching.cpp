@@ -26,7 +26,7 @@ void check_upload_path(std::string pathToCheck) {
     }
 }
 
-void	Server::matching (const std::string &host, const std::string &port, std::string url) {
+bool	Server::matching (const std::string &host, const std::string &port, std::string url) {
     std::vector<Config *>::iterator it = configs.begin();
     if (host == (*it)->_host || host == (*it)->_server_name) {
         int Post = std::atoi(port.c_str());
@@ -36,10 +36,14 @@ void	Server::matching (const std::string &host, const std::string &port, std::st
             if (location == (*it)->_locations->end())
                 throw 404;
             std::cout << "upload path : " << location->_upload_path << std::endl;
-            check_upload_path(location->_upload_path);
-            return ;
+            if (location->_upload_path.empty())
+                return false;
+            else
+                check_upload_path(location->_upload_path);
+            return true;
         }
     }
     else
         throw 400;
+    return true;
 }
