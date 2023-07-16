@@ -157,14 +157,14 @@ void    Socket::acceptConnection(){
                             rest = _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].ParseHttpRequest(bb, _servers[i]->_bytesRead);
                             try {
                                 _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestStatusCode();
+                                std::vector<Location>::iterator _location = _servers[i]->configs[0]->getLocation(_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.url);
+                                if (_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.method == "POST" && _servers[i]->configs[0]->postAllowed(_location) == false)
+                                    throw 405;
                                 std::map<std::string, std::string>::iterator it = _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].header.find("Host");
                                 if (it != _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].header.end()) {
                                     size_t pos = it->second.find(":");
                                     _servers[i]->matching(it->second.substr(0, pos), it->second.substr(pos + 1), _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.url);
                                 }
-                                std::vector<Location>::iterator _location = _servers[i]->configs[0]->getLocation(_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.url);
-                                if (_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.method == "POST" && _servers[i]->configs[0]->postAllowed(_location) == false)
-                                    throw 405;
                             }
                             catch (int status) {
                                 std::cout << status << std::endl;

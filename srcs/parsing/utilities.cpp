@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/10 14:26:21 by omanar            #+#    #+#             */
-/*   Updated: 2023/07/07 19:08:13 by omanar           ###   ########.fr       */
+/*   Updated: 2023/07/17 00:30:13 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -267,8 +267,8 @@ void	missing(Config *config) {
 			throw std::runtime_error("Error: Missing root directive");
 		if (it->_redirect.empty())
 			throw std::runtime_error("Error: Missing redirect directive");
-		if (it->_upload_path.empty())
-			throw std::runtime_error("Error: Missing upload_path directive");
+		// if (it->_upload_path.empty())
+		// 	throw std::runtime_error("Error: Missing upload_path directive");
 	}
 }
 
