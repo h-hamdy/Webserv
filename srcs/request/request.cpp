@@ -90,8 +90,10 @@ void	ParseRequest::ParseChunked (std::string _body, ssize_t byteRead)
 		file << body.substr(0, size);
 		file.flush();
 		body = body.substr(size);
-		if (body[2] == '0')
+		if (body[2] == '0') {
 			_EOF = 0;
+			throw 201;
+		}
 		find_size = true;
 	}
 }
@@ -104,6 +106,7 @@ void ParseRequest::ParseBody (const std::string& _body, ssize_t byteRead) {
 		_EOF = 1;
 		if (std::stoi(it->second) == fileSize) {
 			_EOF = 0;
+			throw 201;
 		}
 		return ;
 	}

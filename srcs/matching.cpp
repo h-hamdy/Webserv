@@ -21,8 +21,10 @@ void check_upload_path(std::string pathToCheck) {
         std::cout << "Path does not exist!" << std::endl;
         if (createDirectory(pathToCheck))
             std::cout << "Directory created successfully!" << std::endl;
-        else
+        else {
             std::cout << "Failed to create directory!" << std::endl;
+            throw 404;
+        }
     }
 }
 
@@ -35,11 +37,11 @@ bool	Server::matching (const std::string &host, const std::string &port, std::st
             std::vector<Location>::iterator location = (*it)->getLocation(url);
             if (location == (*it)->_locations->end())
                 throw 404;
-            std::cout << "upload path : " << location->_upload_path << std::endl;
             if (location->_upload_path.empty())
                 return false;
             else
                 check_upload_path(location->_upload_path);
+            std::cout << "upload path : " << location->_upload_path << std::endl;
             return true;
         }
     }
