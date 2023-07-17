@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/10 14:26:21 by omanar            #+#    #+#             */
-/*   Updated: 2023/07/17 00:30:13 by omanar           ###   ########.fr       */
+/*   Updated: 2023/07/17 03:58:49 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,12 @@ Location	ParseLocation(std::ifstream &configFile, std::istringstream &is) {
 	Location location;
 
 	is >> location._url;
+	if (location._url.empty() || location._url[0] == '{')
+		throw std::runtime_error("Error: missing url");
+	is >> line;
+	if (line != "{" || ((is >> line) && line[0] != '#'))
+		throw std::runtime_error("Error: location syntax error: '" + line + "'");
+	line.clear();
 	while (getline(configFile, line)) {
 		std::istringstream iss(line);
 		std::string directive;
@@ -88,6 +94,8 @@ Location	ParseLocation(std::ifstream &configFile, std::istringstream &is) {
 			parseMethods(line, location._methods);
 		else if (directive == "redirect")
 			parseSingle(line, location._redirect);
+		else if (directive == "index")
+			parseSingle(line, location._index);
 		else if (directive == "root")
 			parseSingle(line, location._root);
 		else if (directive == "upload_path")
@@ -223,10 +231,15 @@ Config*	ParseServer(std::ifstream &configFile) {
 			else
 				throw std::runtime_error("Error: Invalid client_max_body_size value");
 		}
-		else if (directive == "error_pages")
+		else if (directive == "error_pages") {
+			iss >> directive;
+			if (directive != "{" || ((iss >> directive) && directive[0] != '#'))
+				throw std::runtime_error("Error: error_pages syntax error: '" + directive + "'");
 			ParseErrorPage(configFile, config);
-		else if (directive == "location")
+		}
+		else if (directive == "location") {
 			config->_locations->push_back(ParseLocation(configFile, iss));
+		}
 		else
 			throw std::runtime_error("Error: Unknown directive: " + directive);
 	}
@@ -255,21 +268,26 @@ Config*	getNextConfig(std::ifstream &configFile) {
 }
 
 void	missing(Config *config) {
+	bool missing = true;
 	if (config->_server_name.empty())
 		throw std::runtime_error("Error: Missing server_name directive");
 	if (config->_host.empty())
 		throw std::runtime_error("Error: Missing host directive");
+	if (config->_port == -1)
+		throw std::runtime_error("Error: Missing host directive");
+	if (config->_max_body_size == -1)
+		throw std::runtime_error("Error: Missing max_body_size directive");
 	std::vector<Location>::iterator it = config->_locations->begin();
 	for (; it != config->_locations->end(); it++) {
-		if (it->_url.empty())
-			throw std::runtime_error("Error: Missing location url directive");
+		if (it->_url == "/")
+			missing = false;
 		if (it->_root.empty())
 			throw std::runtime_error("Error: Missing root directive");
-		if (it->_redirect.empty())
-			throw std::runtime_error("Error: Missing redirect directive");
-		// if (it->_upload_path.empty())
-		// 	throw std::runtime_error("Error: Missing upload_path directive");
+		if (it->_index.empty())
+			throw std::runtime_error("Error: Missing index directive");
 	}
+	if (missing)
+		throw std::runtime_error("Error: Missing default location");
 }
 
 Server*	findPort(std::vector<Server *> &servers, std::string host, int port) {

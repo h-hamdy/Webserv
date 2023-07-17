@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/07 19:19:19 by omanar            #+#    #+#             */
-/*   Updated: 2023/07/09 16:51:08 by omanar           ###   ########.fr       */
+/*   Updated: 2023/07/17 03:52:37 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ class Location {
 	public:
 		std::string		_url;
 		std::string		_root;
+		std::string		_index;
 		std::string		_redirect;
 		std::string		_upload_path;
 		bool			_directory_listing;
