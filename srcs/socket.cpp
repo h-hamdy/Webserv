@@ -177,6 +177,7 @@ void    Socket::acceptConnection(){
                                         filePath = location->_upload_path + "/" + filename;
                                     }
                                     else {
+                                        // handleCgi();
                                         std::string pathToCgi = "/Users/hhamdy/Desktop/Webserv/cgi/";
                                         filePath = pathToCgi + filename;
                                     }

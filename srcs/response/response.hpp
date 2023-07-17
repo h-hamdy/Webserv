@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/04 17:35:49 by omanar            #+#    #+#             */
-/*   Updated: 2023/07/09 18:05:01 by omanar           ###   ########.fr       */
+/*   Updated: 2023/07/17 06:28:24 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 class Response
 {
 	private:
+		char		**_env;
 		std::string _response;
 		std::map<std::string, std::string> _headers;
 		std::string _body;
@@ -59,6 +60,7 @@ class Response
 		void setResponse(std::string protocol, std::string status_code, std::string status_message, std::string body);
 		void DELETE(std::string path, Config *config);
 		bool isDirectory(std::string path);
+		void setEnv(std::vector<std::string> env);
 		
 };
 
