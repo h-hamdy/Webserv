@@ -107,24 +107,51 @@ void HandleFile(const std::string& path, std::vector<Location>::iterator &locati
     if (location->_cgi_extensions.size() == 0)
         throw 403;
     size_t lastDotPos = path.rfind('.');
-    if (lastDotPos != std::string::npos)
+    if (lastDotPos != std::string::npos) {
+        std::vector<std::string>::iterator it;
         extention = path.substr(lastDotPos);
-    
+        for (it = location->_cgi_extensions.begin(); it != location->_cgi_extensions.end(); it++) {
+            if (extention == *it)
+                std::cout << "Pass " << path << " To cgi" << std::endl;
+        }
+        if (it == location->_cgi_extensions.end())
+            throw 404;
+    }
     else
         throw 404;
 
 }
 
+void HandleDir(const std::string& path, std::vector<Location>::iterator &location) {
+    std::string extention;
+    if (path.length() - 1 != '/') {
+        path + "/"; // add / to the path
+        throw 301;
+    }
+    else {
+        // append the file choosed in the auto indexing to the path and search and check his extention if it's valid
+        // if (!location->_directory_listing)
+        //     throw 403;
+        // extention = path.substr(lastDotPos);
+        // for (it = location->_cgi_extensions.begin(); it != location->_cgi_extensions.end(); it++) {
+        //     if (extention == *it)
+        //         std::cout << "Pass " << path << " To cgi" << std::endl;
+        // }
+
+    }
+}
+
 void HandlePathType(const std::string& path, std::vector<Location>::iterator &location)
 {
     struct stat fileStat;
-    (void)location;
+    if (path.empty())
+        throw 404;
     if (stat(path.c_str(), &fileStat) == 0)
     {
         if (S_ISREG(fileStat.st_mode))
             HandleFile(path, location);
         else if (S_ISDIR(fileStat.st_mode))
-            throw 1000;
+            HandleDir(path, location);
         else
             throw 404;
     }

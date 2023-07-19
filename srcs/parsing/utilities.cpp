@@ -69,7 +69,7 @@ void	parseExtensions(std::string &line, std::vector<std::string> &extensions) {
 	if (extensions.size() > 2)
 		throw std::runtime_error("Error: too many extensions");
 	for (std::vector<std::string>::iterator it = extensions.begin(); it != extensions.end(); it++) {
-		if (*it == ".php" || *it == ".py")
+		if (*it != ".php" && *it != ".py")
 			throw std::runtime_error("Error: invalid extension: " + *it);
 	}
 }
