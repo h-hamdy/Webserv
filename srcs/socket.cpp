@@ -123,6 +123,7 @@ void HandleFile(const std::string& path, std::vector<Location>::iterator &locati
 }
 
 void HandleDir(const std::string& path, std::vector<Location>::iterator &location) {
+    (void)location;
     std::string extention;
     if (path.length() - 1 != '/') {
         path + "/"; // add / to the path
@@ -222,17 +223,12 @@ void    Socket::acceptConnection(){
                                     }
                                     _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestStatusCode();
                                     std::vector<Location>::iterator _location = _servers[i]->configs[0]->getLocation(_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.url);
-                                    if (_location == _servers[i]->configs[0]->_locations->end()) {
-                                        _location = _servers[i]->configs[0]->getLocation("/");
-                                    }
-                                    else {
-                                        if (_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.method == "POST" && _servers[i]->configs[0]->postAllowed(_location) == false)
-                                            throw 405;
-                                        std::map<std::string, std::string>::iterator it = _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].header.find("Host");
-                                        if (it != _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].header.end()) {
-                                            size_t pos = it->second.find(":");
-                                            location = _servers[i]->matching(it->second.substr(0, pos), it->second.substr(pos + 1), _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.url);
-                                        }
+                                    if (_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.method == "POST" && _servers[i]->configs[0]->postAllowed(_location) == false)
+                                        throw 405;
+                                    std::map<std::string, std::string>::iterator it = _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].header.find("Host");
+                                    if (it != _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].header.end()) {
+                                        size_t pos = it->second.find(":");
+                                        location = _servers[i]->matching(it->second.substr(0, pos), it->second.substr(pos + 1), _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.url);
                                     }
                                 }
                                 if (_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.method == "POST" && _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].create_file == true) {
@@ -248,9 +244,6 @@ void    Socket::acceptConnection(){
                                         std::cout << "Location does not support upload" << std::endl;
                                         std::string resource = _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.url.substr(location->_url.length());
                                         HandlePathType(location->_root + resource, location);
-                                        throw 404;
-                                        // std::string pathToCgi = "/Users/hhamdy/Desktop/Webserv/cgi/";
-                                        // filePath = pathToCgi + filename;
                                     }
                                     _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].file.open(filePath, std::ios::binary | std::ios::app | std::ios::ate);
                                     _servers[i]->_requests[ _servers[i]->_pollfds[j].fd]._EOF = 1;
@@ -267,8 +260,10 @@ void    Socket::acceptConnection(){
                                 std::cout << status << std::endl;
                                 if (status == 201)
                                     std::cout << "Upload Created successfully!" << std::endl;
-                                else
+                                else {
+                                    std::cout << "*" << std::endl;
                                     return ;
+                                }
                             }
                     }
                     // }
