@@ -1,6 +1,5 @@
 {
     "files.associations": {
-        "vector": "cpp",
         "__bit_reference": "cpp",
         "__bits": "cpp",
         "__config": "cpp",
@@ -63,21 +62,12 @@
         "typeinfo": "cpp",
         "unordered_map": "cpp",
         "variant": "cpp",
+        "vector": "cpp",
         "__nullptr": "cpp",
         "__string": "cpp",
         "chrono": "cpp",
         "compare": "cpp",
         "concepts": "cpp",
-<<<<<<< HEAD
         "algorithm": "cpp"
-    },
-    "C_Cpp.errorSquiggles": "disabled"
-=======
-        "algorithm": "cpp",
-        "__functional_base": "cpp",
-        "functional": "cpp",
-        "iterator": "cpp",
-        "utility": "cpp"
     }
->>>>>>> 5f79ec602dc38e979a09a5224ec9c36a0c39e940
 }

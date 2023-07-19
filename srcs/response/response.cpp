@@ -1,16 +1,4 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   response.cpp                                       :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: omanar <omanar@student.42.fr>              +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/07/04 17:35:51 by omanar            #+#    #+#             */
-/*   Updated: 2023/07/04 17:52:49 by omanar           ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-#include "response.hpp"
+#include "../../includes/response.hpp"
 
 Response::Response() {
 	_response = "";
@@ -21,6 +9,8 @@ Response::Response() {
 	_content_length = "";
 	_date = "";
 	_allow = "";
+	close_connection = false;
+	sending_data = false;
 }
 
 Response::~Response() {}
@@ -60,6 +50,10 @@ std::string Response::getDate() { return (_date); }
 
 std::string Response::getAllow() { return (_allow); }
 
+std::string Response::getReasonPhrase() { return (_ReasonPhrase) ;}
+
+void Response::setReasonPhrase(std::string ReasonPhrase) { _ReasonPhrase = ReasonPhrase; }
+
 void Response::setResponse(std::string response) { _response = response; }
 
 void Response::setProtocol(std::string protocol) { _protocol = protocol; }
@@ -88,4 +82,73 @@ void Response::setResponse(std::string protocol, std::string status_code, std::s
 	_response += "Allow: " + getAllow() + "\r\n";
 	_response += "\r\n";
 	_response += body;
+}
+
+void	Response::GET(Server &serv,int j){
+	std::string body;
+	std::string response;
+	response = "";
+	response += response_not_send;
+	response_not_send = "";
+	std::string path =  serv.configs[0]->_locations->begin()->_root + serv._requests[serv._pollfds[j].fd].requestLine.url;
+	std::ifstream file(path.c_str(), std::ios::binary);
+	if(!file.is_open())
+	{
+		std::string response = "HTTP/1.1 404 Not Found\r\n\r\n";
+    	send(serv._pollfds[j].fd, response.c_str(), response.length(), 0);
+		close_connection = true;
+		return ;
+	}
+	if(!sending_data){
+		std::cout<<"sending header"<<std::endl;
+		std::ostringstream response_stream;
+		response_stream << "HTTP/1.1 200 OK\r\n";
+		response_stream << "HTTP/1.1 "+ serv._responses[serv._pollfds[j].fd].getStatusCode() +" "+serv._responses[serv._pollfds[j].fd].getReasonPhrase()+"\r\n";
+		// response_stream << "Content-Type: image/png\r\n";
+		std::string extension = path.substr(path.find_last_of(".") + 1);
+		response_stream << "Content-Type: "  + serv._responses[serv._pollfds[j].fd].getContentType() + "\r\n";
+		response_stream << "Connection: keep-alive\r\n";
+		response_stream << "Transfer-Encoding: chunked\r\n";
+		response_stream << "\r\n";
+		response = response_stream.str();
+
+		// send(serv._pollfds[j].fd, response_header.c_str(), response_header.length(), 0);
+		sending_data = true;
+		// return ;
+	}
+	else if (sending_data && response == ""){
+		std::cout<<"sending data"<<std::endl;
+		// char chunk_buffer[4096];
+		char chunk_buffer[65536];	
+		file.seekg(pospause);
+		file.read(chunk_buffer, sizeof(chunk_buffer));
+		pospause = file.tellg();
+		int chunk_size = file.gcount();
+		if (chunk_size > 0) {
+			std::ostringstream chunk_stream;
+			chunk_stream << std::hex << chunk_size << "\r\n";
+			std::string chunk_header = chunk_stream.str();
+			response = chunk_header + std::string(chunk_buffer, chunk_size) + "\r\n";
+			// send(serv._pollfds[j].fd, chunk_header.c_str(), chunk_header.length(), 0);
+			// send(serv._pollfds[j].fd, chunk_buffer, chunk_size, 0);
+			// send(serv._pollfds[j].fd, "\r\n", 2, 0);
+			file.close();
+		}
+		else{
+			std::cout<<"sending end"<<std::endl;
+			response = "0\r\n\r\n";
+			sending_data = false;
+			close_connection = true;
+		}
+	}
+	int ret = send(serv._pollfds[j].fd, response.c_str(), response.length(), 0);
+	if (ret < 1){
+		std::cout << "error send" << std::endl;
+		response_not_send = response;
+	}
+	else if(ret < (int)response.length()){
+		std::cout << "the complete response was not sent" << std::endl;
+		response_not_send = response.substr(ret);
+		// close_connection = false;
+	}
 }

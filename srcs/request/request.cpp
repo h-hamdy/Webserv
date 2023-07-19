@@ -149,7 +149,7 @@ void	ParseRequest::requestStatusCode () {
 		throw 400;
 }
 
-void ParseRequest::ParseHttpRequest( std::string request, ssize_t byteRead) {
+void ParseRequest::ParseHttpRequest( std::string request, ssize_t byteRead,Server &server, int j) {
 	std::string line;
 	size_t headers = 0;
 	if(byteRead == -1)
@@ -179,6 +179,11 @@ void ParseRequest::ParseHttpRequest( std::string request, ssize_t byteRead) {
 		line = request.substr(headers);
 		ParseBody(line, byteRead);
 	}
-	else
+	else{
 		_EOF = 0;
+		// server._pollfds[j].events = POLLOUT;
+		// server._pollfds[j].revents = 0;
+		// FD_CLR(server._pollfds[j].fd, &server._read_set);
+		FD_SET(server._pollfds[j].fd, &server._write_set);
+	}
 }

@@ -20,7 +20,9 @@
 # include "socket.hpp"
 # include "web-client.hpp"
 # include "request.hpp"
+# include "response.hpp"
 
+class Response;
 class ParseRequest;
 
 class Server {
@@ -39,6 +41,7 @@ class Server {
         socklen_t _ClientAddressSize;
         std::vector<struct pollfd> _pollfds;
 		std::map<int, ParseRequest> _requests;
+		std::map<int, Response> _responses;
 
 
 		//-----------------------------//

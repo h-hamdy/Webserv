@@ -1,11 +1,12 @@
 # makefile that compile all cpp files in the current directory
 # and creates a binary file named "main"
 
-CC = clang++ -g -fsanitize=address
+CC = clang++ -g -fsanitize=address 
 FLAGS = -Wall -Wextra -Werror -Iincludes -std=c++98
 
-SRCS =	main.cpp srcs/socket.cpp srcs/request/request.cpp \
+SRCS =	main.cpp srcs/socket.cpp srcs/socket_utils.cpp srcs/request/request.cpp \
 		srcs/Server.cpp srcs/parsing/config.cpp srcs/parsing/utilities.cpp\
+		srcs/response/response.cpp\
 		# srcs/res/res-GET.cpp 
 # CONFIG = 
 

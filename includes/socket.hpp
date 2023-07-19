@@ -26,11 +26,18 @@ class Socket{
     private:
         std::vector<Server *> _servers;
         timeval timeout;
+        std::map<std::string, std::string> _types;
     public:
         Socket(char *file);
         ~Socket();
         void    setupServer();
         void    acceptConnection();
+        void    check_methods_allowed(Server &server,int j);
+        void    check_methods(Server &server,int j);
+        void    status_response(Server &server,int j);
+        void    content_type();
+        void    content_type(Server &server,int j);
+        void    prepare_response(Server &server,int j);
 };
 // void    Get_response(ParseRequest &request);
 #endif

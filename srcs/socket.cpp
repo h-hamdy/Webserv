@@ -25,6 +25,7 @@ Socket::~Socket(){
 
 void    Socket::setupServer(){
     std::cout<<"Setuping Servers"<<std::endl;
+    content_type();
     for(size_t i = 0 ; i < _servers.size(); i++){
     int ServerSocket = socket(AF_INET,SOCK_STREAM,0);
     this->_servers[i]->_ServerSocket = ServerSocket;
@@ -71,6 +72,7 @@ void    Socket::setupServer(){
     }
     std::cout << "Socket listening" << std::endl;
      _servers[i]->_maxFd = ServerSocket + 1;
+    FD_SET( _servers[i]->_ServerSocket,& _servers[i]->_read_set);
     std::cout << "Servers setup complete" << std::endl;
     }
     acceptConnection();
@@ -83,12 +85,13 @@ void    Socket::acceptConnection(){
         // FD_SET(_ServerSocket,&_write_set);
         if(i == _servers.size())
             i = 0;
-        FD_SET( _servers[i]->_ServerSocket,& _servers[i]->_read_set);
         fd_set copy_read_set = _servers[i]->_read_set;
-        if(select( _servers[i]->_maxFd,&copy_read_set,0,0,&timeout) == -1){
+        fd_set copy_write_set = _servers[i]->_write_set;
+        if(select( _servers[i]->_maxFd,&copy_read_set,&copy_write_set,0,&timeout) == -1){
             std::cout << "Error selecting socket" << std::endl;
-            this->~Socket();
-            exit(1);
+            continue;
+            // this->~Socket();
+            // exit(1);
         }
         if (FD_ISSET( _servers[i]->_ServerSocket,& _servers[i]->_read_set)) {
             memset(&_servers[i]->_ClientAddress,0,sizeof(_servers[i]->_ClientAddress));
@@ -103,8 +106,9 @@ void    Socket::acceptConnection(){
             else{
                 if(fcntl(clientSocket,F_SETFL,O_NONBLOCK) == -1){  //fcntl(fd, F_SETFL, O_NONBLOCK);
                     std::cout << "Error setting socket flags" << std::endl;
-                    this->~Socket();
-                    exit(1);
+                    continue;
+                    // this->~Socket();
+                    // exit(1);
                 }
                 std::cout << "Socket accepted" << std::endl;
                  _servers[i]->_pollfds.push_back((struct pollfd){clientSocket,POLLIN,0});
@@ -112,54 +116,36 @@ void    Socket::acceptConnection(){
                  _servers[i]->_nclients++;
                  _servers[i]->_maxFd = clientSocket + 1;
                 _servers[i]->_requests[clientSocket];
-                // _servers[i]->_requests.insert(std::make_pair(clientSocket));
+                _servers[i]->_responses[clientSocket];
             }
         }
         for(unsigned long j = 0 ; j <  _servers[i]->_pollfds.size(); j++) {
             if (FD_ISSET( _servers[i]->_pollfds[j].fd,& _servers[i]->_read_set)) {
-                char buffer[500] = {0};
-                 _servers[i]->_bytesRead = recv( _servers[i]->_pollfds[j].fd,buffer,sizeof(buffer) - 1,0);
-                if ( _servers[i]->_bytesRead == -1) {
+                char buffer[2048] = {0};
+                 _servers[i]->_bytesRead = recv( _servers[i]->_pollfds[j].fd,buffer,sizeof(buffer),0);
+                if ( _servers[i]->_bytesRead < 1) {
                     if(errno != EWOULDBLOCK && errno != EAGAIN) {
                         std::cout << "Error reading socket" << std::endl;
-                        close( _servers[i]->_ServerSocket);
-                        exit(1);
+                        close( _servers[i]->_pollfds[j].fd);
+                        FD_CLR( _servers[i]->_pollfds[j].fd,& _servers[i]->_read_set);
+                        FD_CLR( _servers[i]->_pollfds[j].fd,& _servers[i]->_write_set);
+                        _servers[i]->_requests.erase( _servers[i]->_pollfds[j].fd);
+                        _servers[i]->_responses.erase( _servers[i]->_pollfds[j].fd);
+                        _servers[i]->_pollfds.erase( _servers[i]->_pollfds.begin() + j);
+                        _servers[i]->_nclients--;
+                        continue;
+                        
                     }
                 }
                 if ( _servers[i]->_requests[ _servers[i]->_pollfds[j].fd]._EOF != 0) {
-                    // std::cout << "Socket read" << std::endl;
                     // request.ParseHttpRequest(buffer, _servers[i]->_bytesRead);
                     // if (buffer[0] != '\0') {
                     if (_servers[i]->_bytesRead > 1) {
                         std::string bb(buffer, _servers[i]->_bytesRead);
-                        _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].ParseHttpRequest(bb, _servers[i]->_bytesRead);
+                        _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].ParseHttpRequest(bb, _servers[i]->_bytesRead,*_servers[i],j);
                     }
-                    // }
-                    // _servers[i]->_requests.insert(std::make_pair(_servers[i]->_pollfds[j].fd,request.ParseHttpRequest(buffer)));
-                    // request.ParseHttpRequest(buffer);
-                    // std::cout<<"------------>\n"<<_servers[i]->_requests[_servers[i]->_pollfds[j].fd].file<<std::endl;
-                    // std::string hello = "HTTP/1.1 200 OK\nContent-Type: text/html\n";
-                    // std::ifstream file("assests/index.html");
-                    // std::string str;
-                    // std::string htm
-                    // while (std::getline(file,str)) {
-                    //     html += str;
-                    // }
-                    // hello += "Content-Length: " + std::to_string(html.length()) + "\n\n" + html;
-                    // std::cout << buffer << std::endl;
-                    // send( _servers[i]->_pollfds[j].fd , hello.c_str() , hello.length() , 0 );
-                    //  std::cout << "Socket closed" << std::endl;
-                    // close( _servers[i]->_pollfds[j].fd);
-                    // FD_CLR( _servers[i]->_pollfds[j].fd,& _servers[i]->_read_set);
-                    //  _servers[i]->_pollfds.erase( _servers[i]->_pollfds.begin() + j);
-                    //  _servers[i]->_nclients--;
-                    //  _servers[i]->_maxFd --;
-                    // if( _servers[i]->_maxFd <=  _servers[i]->_ServerSocket + 1)
-                    //      _servers[i]->_maxFd =  _servers[i]->_ServerSocket + 1;
-
                 }
                 else{
-
                     // Read request from the client
                     // Parse the request and extract relevant information
 
@@ -190,16 +176,29 @@ void    Socket::acceptConnection(){
                     // Close the client socket
 
                     // Handle errors and exceptions
-
-
-                     std::cout << "Socket closed" << std::endl;
-                    close( _servers[i]->_pollfds[j].fd);
-                    FD_CLR( _servers[i]->_pollfds[j].fd,& _servers[i]->_read_set);
-                     _servers[i]->_pollfds.erase( _servers[i]->_pollfds.begin() + j);
-                     _servers[i]->_nclients--;
-                     _servers[i]->_maxFd --;
-                    if( _servers[i]->_maxFd <=  _servers[i]->_ServerSocket + 1)
-                         _servers[i]->_maxFd =  _servers[i]->_ServerSocket + 1;
+                    // FD_CLR( _servers[i]->_pollfds[j].fd,& _servers[i]->_read_set);
+                    // FD_SET( _servers[i]->_pollfds[j].fd,& _servers[i]->_write_set);
+                    if(FD_ISSET( _servers[i]->_pollfds[j].fd,& _servers[i]->_write_set)){
+                       //I'm planning to move these lines into a separate function.
+                        // check_methods(*_servers[i],j);
+                        // content_type(*_servers[i],j);
+                        // status_response(*_servers[i],j);
+                        //Implement a method specifically designed to generate a response.
+                        prepare_response(*_servers[i],j);
+                        // _servers[i]->_responses[ _servers[i]->_pollfds[j].fd].GET(*_servers[i],j);
+                        //print url 
+                        // std::cout<<"url: "<<_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.url<<std::endl;
+                    }
+                    if(_servers[i]->_responses[ _servers[i]->_pollfds[j].fd].close_connection == true){
+                        std::cout << "Socket closed" << std::endl;
+                        close( _servers[i]->_pollfds[j].fd);
+                        FD_CLR( _servers[i]->_pollfds[j].fd,& _servers[i]->_read_set);
+                        FD_CLR( _servers[i]->_pollfds[j].fd,& _servers[i]->_write_set);
+                        _servers[i]->_requests.erase( _servers[i]->_pollfds[j].fd);
+                        _servers[i]->_responses.erase( _servers[i]->_pollfds[j].fd);
+                        _servers[i]->_pollfds.erase( _servers[i]->_pollfds.begin() + j);
+                        _servers[i]->_nclients--;
+                    }
                 }
             }
         }

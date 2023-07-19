@@ -2,6 +2,8 @@
 
 # include "webserv.hpp"
 
+class Server;
+
 struct RequestLine {
 	std::string method;
 	std::string url;

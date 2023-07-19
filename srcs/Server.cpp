@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: omanar <omanar@student.42.fr>              +#+  +:+       +#+        */
+/*   By: mac <mac@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/10 14:23:17 by omanar            #+#    #+#             */
-/*   Updated: 2023/07/07 19:03:58 by omanar           ###   ########.fr       */
+/*   Updated: 2023/07/19 21:02:22 by mac              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ Server::Server() {
     FD_ZERO(&_write_set);
     _ClientAddressSize = sizeof(_ClientAddress);
     memset(&_ServerAddress,0,sizeof(_ServerAddress));
-    memset(&_ClientAddress,0,sizeof(_ClientAddress));
+    memset(&_ClientAddress,0,sizeof(_ClientAddress));	
 }
 
 Server::~Server() {
