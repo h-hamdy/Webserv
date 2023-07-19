@@ -271,14 +271,15 @@ void    Socket::acceptConnection(){
                                     std::map<std::string, std::string>::iterator it = _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].header.find("Content-Type");
                                     filename = get_ContentType(it->second);
                                     std::string filePath;
+                                    std::vector<Location>::iterator location;
                                     if (!location->_upload_path.empty()) {
-                                        std::vector<Location>::iterator location = _servers[i]->configs[0]->getLocation(_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.url);
+                                        location = _servers[i]->configs[0]->getLocation(_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.url);
                                         filePath = location->_root + location->_upload_path + filename;
                                     }
                                     else {
                                         std::cout << "Location does not support upload" << std::endl;
                                         std::string resource = _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.url.substr(location->_url.length());
-                                        HandlePathType(location->_root + resource, location);
+                                        HandlePathType(location->_root + resource, location, _servers[i]->_requests[ _servers[i]->_pollfds[j].fd]);
                                     }
                                     _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].file.open(filePath, std::ios::binary | std::ios::app | std::ios::ate);
                                     _servers[i]->_requests[ _servers[i]->_pollfds[j].fd]._EOF = 1;
