@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/10 14:26:21 by omanar            #+#    #+#             */
-/*   Updated: 2023/07/17 03:58:49 by omanar           ###   ########.fr       */
+/*   Updated: 2023/07/19 07:34:00 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,12 @@ void	parseExtensions(std::string &line, std::vector<std::string> &extensions) {
 		if (token[0] != '.')
 			throw std::runtime_error("Error: extension must start with '.'");
 		extensions.push_back(token);
+	}
+	if (extensions.size() > 2)
+		throw std::runtime_error("Error: too many extensions");
+	for (std::vector<std::string>::iterator it = extensions.begin(); it != extensions.end(); it++) {
+		if (*it == ".php" || *it == ".py")
+			throw std::runtime_error("Error: invalid extension: " + *it);
 	}
 }
 
