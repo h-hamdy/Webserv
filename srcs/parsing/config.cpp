@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/07 19:19:39 by omanar            #+#    #+#             */
-/*   Updated: 2023/07/15 23:14:44 by omanar           ###   ########.fr       */
+/*   Updated: 2023/07/17 06:29:42 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 Location::Location() {
 	this->_url = "";
 	this->_root = "";
+	this->_index = "";
 	this->_redirect = "";
 	this->_upload_path = "";
 	this->_directory_listing = false;
@@ -24,8 +25,8 @@ Location::Location() {
 }
 
 Config::Config() {
-	this->_port = 0;
-	this->_max_body_size = 0;
+	this->_port = -1;
+	this->_max_body_size = -1;
 	this->_server_name = "";
 	this->_host = "";
 	this->_locations = new std::vector<Location>;

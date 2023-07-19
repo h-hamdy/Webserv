@@ -52,5 +52,6 @@ class Server {
 
 Config*	getNextConfig(std::ifstream &configFile);
 std::vector<Server *>	getServers(char *file);
+void CgiProcess();
 
 # endif

@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/04 17:35:51 by omanar            #+#    #+#             */
-/*   Updated: 2023/07/10 23:45:45 by omanar           ###   ########.fr       */
+/*   Updated: 2023/07/17 06:31:00 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,9 @@ Response::Response() {
 	_allow = "";
 }
 
-Response::~Response() {}
+Response::~Response() {
+	delete [] _env;
+}
 
 Response::Response(Response const &src) {
 	*this = src;
@@ -107,4 +109,11 @@ void Response::DELETE(std::string path) {
 		setResponse("HTTP/1.1", "500", "Internal Server Error", "DELETE");
 	else
 		setResponse("HTTP/1.1", "200", "OK", "<html><body><h1>File deleted.</h1></body></html>");
+}
+
+void Response::setEnv(std::vector<std::string> env) {
+	this->_env = new char*[env.size() + 1];
+	for (size_t i = 0; i < env.size(); i++)
+		this->_env[i] = strdup(env[i].c_str());
+	this->_env[env.size()] = NULL;
 }
