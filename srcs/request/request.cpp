@@ -101,7 +101,8 @@ bool check_url(const std::string& url) {
 void	ParseRequest::requestStatusCode () {
 	std::map<std::string, std::string>::iterator it = header.find("Transfer-Encoding");
 	std::map<std::string, std::string>::iterator it1 = header.find("Content-Length");
-	if (it != header.end() && it1 != header.end()) 
+	std::map<std::string, std::string>::iterator it2 = header.find("User-Agent");
+	if (it != header.end() && it1 != header.end() && it2 != header.end())
 		throw 400;
 	if (requestLine.method != "GET" && requestLine.method != "POST" && requestLine.method != "DELETE") {
 		if (requestLine.method != "PUT" && requestLine.method != "PATCH" && requestLine.method != "HEAD" && requestLine.method != "OPTIONS")

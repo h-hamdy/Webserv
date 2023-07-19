@@ -101,7 +101,7 @@ std::string get_ContentType (std::string value)
 	throw 400;
 }
 
-void HandleFile(const std::string& path, std::vector<Location>::iterator &location) {
+void HandleFile(const std::string& path, std::vector<Location>::iterator &location , ParseRequest &request) {
     std::string extention;
 
     if (location->_cgi_extensions.size() == 0)
@@ -111,8 +111,11 @@ void HandleFile(const std::string& path, std::vector<Location>::iterator &locati
         std::vector<std::string>::iterator it;
         extention = path.substr(lastDotPos);
         for (it = location->_cgi_extensions.begin(); it != location->_cgi_extensions.end(); it++) {
-            if (extention == *it)
-                std::cout << "Pass " << path << " To cgi" << std::endl;
+            if (extention == *it) {
+                std::cout << "Da5lo a7biba" << std::endl;
+                CgiProcess(location, path, request, extention);
+                std::cout << "rah da5l" << std::endl;
+            }
         }
         if (it == location->_cgi_extensions.end())
             throw 404;
@@ -123,7 +126,9 @@ void HandleFile(const std::string& path, std::vector<Location>::iterator &locati
 }
 
 void HandleDir(const std::string& path, std::vector<Location>::iterator &location) {
+    (void)location;
     std::string extention;
+    std::cout << path << std::endl;
     if (path.length() - 1 != '/') {
         path + "/"; // add / to the path
         throw 301;
@@ -141,15 +146,34 @@ void HandleDir(const std::string& path, std::vector<Location>::iterator &locatio
     }
 }
 
-void HandlePathType(const std::string& path, std::vector<Location>::iterator &location)
+bool isDirectory(std::string path) {
+	struct stat path_stat;
+	stat(path.c_str(), &path_stat);
+	return (S_ISDIR(path_stat.st_mode));
+}
+
+void DELETE(std::string path) {
+	if (access(path.c_str(), F_OK) != 0)
+		throw 404;
+	else if (access(path.c_str(), W_OK) != 0)
+		throw 403;
+	else if (isDirectory(path))
+		throw 403;
+	else if (remove(path.c_str()) != 0)
+		throw 500;
+	else
+		throw 200;
+    
+    std::cout << "File Deleted Seccessfully" << std::endl;
+}
+
+void HandlePathType(const std::string& path, std::vector<Location>::iterator &location, ParseRequest &request)
 {
     struct stat fileStat;
-    if (path.empty())
-        throw 404;
     if (stat(path.c_str(), &fileStat) == 0)
     {
         if (S_ISREG(fileStat.st_mode))
-            HandleFile(path, location);
+            HandleFile(path, location, request);
         else if (S_ISDIR(fileStat.st_mode))
             HandleDir(path, location);
         else
@@ -214,7 +238,9 @@ void    Socket::acceptConnection(){
                             std::vector<Location>::iterator location;
                             std::string bb(buffer, _servers[i]->_bytesRead);
                             if (_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.method.empty()) {
-                                rest = _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].ParseHttpRequest(bb, _servers[i]->_bytesRead);
+                                    rest = _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].ParseHttpRequest(bb, _servers[i]->_bytesRead);
+                                    _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.host = _servers[i]->configs[0]->_host;
+                                    _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.port = std::to_string(_servers[i]->configs[0]->_port);
                                     size_t pos = _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.url.find("?");
                                     if (pos != std::string::npos) {
                                         _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].queryString = _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.url.substr(pos + 1);
@@ -247,8 +273,9 @@ void    Socket::acceptConnection(){
                                     else {
                                         std::cout << "Location does not support upload" << std::endl;
                                         std::string resource = _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.url.substr(location->_url.length());
-                                        HandlePathType(location->_root + resource, location);
-                                        throw 404;
+                                        if (resource.empty())
+                                            throw 404;
+                                        HandlePathType(location->_root + resource, location, _servers[i]->_requests[ _servers[i]->_pollfds[j].fd]);
                                         // std::string pathToCgi = "/Users/hhamdy/Desktop/Webserv/cgi/";
                                         // filePath = pathToCgi + filename;
                                     }
@@ -261,6 +288,12 @@ void    Socket::acceptConnection(){
                                         _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].ParseBody(rest, _servers[i]->_bytesRead);
                                     else
                                         _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].ParseBody(bb, _servers[i]->_bytesRead);
+                                }
+                                else if (_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.method == "DELETE") {
+                                    if (_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.method == "DELETE" && _servers[i]->configs[0]->deleteAllowed(location) == false)
+                                        throw 405;
+                                    std::string resourc = _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.url.substr(location->_url.length());
+                                    DELETE(location->_root + resourc);
                                 }
                             }
                             catch (int status) {

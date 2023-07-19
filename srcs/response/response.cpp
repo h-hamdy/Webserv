@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/04 17:35:51 by omanar            #+#    #+#             */
-/*   Updated: 2023/07/17 06:31:00 by omanar           ###   ########.fr       */
+/*   Updated: 2023/07/19 11:13:16 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,6 +92,10 @@ void Response::setResponse(std::string protocol, std::string status_code, std::s
 	_response += body;
 }
 
+// void Response::setResponse(std::string const &Response) {
+	
+// }
+
 bool Response::isDirectory(std::string path) {
 	struct stat path_stat;
 	stat(path.c_str(), &path_stat);
@@ -112,8 +116,11 @@ void Response::DELETE(std::string path) {
 }
 
 void Response::setEnv(std::vector<std::string> env) {
+	std::cout << "env size: " << env.size() << std::endl;
 	this->_env = new char*[env.size() + 1];
 	for (size_t i = 0; i < env.size(); i++)
 		this->_env[i] = strdup(env[i].c_str());
 	this->_env[env.size()] = NULL;
 }
+
+char **Response::getEnv() { return (_env); }

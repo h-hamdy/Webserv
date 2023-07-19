@@ -15,6 +15,7 @@
 # include <arpa/inet.h>
 # include <exception>
 # include <fstream>
+#include <sys/stat.h>
 
 # include "config.hpp"
 # include "socket.hpp"
@@ -52,6 +53,6 @@ class Server {
 
 Config*	getNextConfig(std::ifstream &configFile);
 std::vector<Server *>	getServers(char *file);
-void CgiProcess();
+void CgiProcess(std::vector<Location>::iterator &location, std::string const &path, ParseRequest &request, std::string extension);
 
 # endif
