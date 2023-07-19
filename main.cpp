@@ -3,6 +3,7 @@
 int	main(int ac, char **av)
 {
 	try {
+		signal(SIGPIPE, SIG_IGN);
 		if (ac != 2)
 			throw std::runtime_error("Usage: ./webserv [configuration file]");
 		// std::vector<Server *> servers = getServers(av[1]);

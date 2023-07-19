@@ -65,7 +65,20 @@
         "type_traits": "cpp",
         "typeinfo": "cpp",
         "unordered_map": "cpp",
+<<<<<<< HEAD
+        "variant": "cpp",
+        "vector": "cpp",
+        "__nullptr": "cpp",
+        "__string": "cpp",
+        "chrono": "cpp",
+        "compare": "cpp",
+        "concepts": "cpp",
+        "algorithm": "cpp"
+    }
+}
+=======
         "utility": "cpp",
         "vector": "cpp"
     }
 }
+>>>>>>> a337f2e0ab8bd98ce34db4e9b0a3a0e1f7233d99

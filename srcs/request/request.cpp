@@ -33,20 +33,21 @@ std::string get_hex (const std::string& _body)
 
 int	convert_hex (std::string hex)
 {
-	return (std::stoi(hex, nullptr, 16));
+	return (std::stoi(hex, NULL, 16));
 }
 
-int	ParseRequest::get_size (std::string &body, ssize_t &byteRead)
+int	ParseRequest::get_size (std::string &body, Server &server, int j)
 {
 	std::string hex;
 	if (body[0] == '\r' && body[1] == '\n') {
 		body = body.substr(2);
-		byteRead -= 2;
+		server._bytesRead -= 2;
 	}
 	hex = get_hex(body);
 	size = convert_hex(hex);
 	if (size == 0) {
 		_EOF = 0;
+		FD_SET(server._pollfds[j].fd, &server._write_set);
 		return 1;
 	}
 	body = body.substr((hex.length() + 2));
@@ -54,13 +55,13 @@ int	ParseRequest::get_size (std::string &body, ssize_t &byteRead)
 	return (0);
 }
 
-void	ParseRequest::ParseChunked (std::string _body, ssize_t byteRead)
+void	ParseRequest::ParseChunked (std::string _body, Server &server, int j)
 {
 	std::string hex;
 
 	body += _body;
 	if (find_size)
-		if (get_size(body, byteRead))
+		if (get_size(body, server, j))
 			return ;
 	if (body.size() >= size) {
 		file << body.substr(0, size);
@@ -68,13 +69,14 @@ void	ParseRequest::ParseChunked (std::string _body, ssize_t byteRead)
 		body = body.substr(size);
 		if (body[2] == '0') {
 			_EOF = 0;
+			FD_SET(server._pollfds[j].fd, &server._write_set);
 			throw 201;
 		}
 		find_size = true;
 	}
 }
 
-void ParseRequest::ParseBody (const std::string& _body, ssize_t byteRead) {
+void ParseRequest::ParseBody (const std::string& _body, Server &server, int j) {
 	std::map<std::string, std::string>::iterator it = header.find("Content-Length");
 	if (it != header.end()) {
 		file << _body;
@@ -82,12 +84,13 @@ void ParseRequest::ParseBody (const std::string& _body, ssize_t byteRead) {
 		_EOF = 1;
 		if (std::stoi(it->second) == fileSize) {
 			_EOF = 0;
+			FD_SET(server._pollfds[j].fd, &server._write_set);
 			throw 201;
 		}
 		return ;
 	}
 	else
-		ParseChunked(_body, byteRead);
+		ParseChunked(_body, server, j);
 }
 
 bool check_url(const std::string& url) {
@@ -126,7 +129,7 @@ void	ParseRequest::requestStatusCode () {
 		throw 400;
 }
 
-std::string ParseRequest::ParseHttpRequest( std::string request, ssize_t &byteRead) {
+std::string ParseRequest::ParseHttpRequest( std::string request, ssize_t byteRead,Server &server, int j) {
 	std::string line;
 	size_t headers = 0;
 	if(byteRead == -1)
@@ -147,6 +150,7 @@ std::string ParseRequest::ParseHttpRequest( std::string request, ssize_t &byteRe
 	}
 	if (requestLine.method != "POST") {
 		_EOF = 0;
+		FD_SET(server._pollfds[j].fd, &server._write_set);
 		return ("");
 	}
 	return (request.substr(headers));

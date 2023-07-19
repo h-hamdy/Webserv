@@ -2,6 +2,8 @@
 
 # include "webserv.hpp"
 
+class Server;
+
 struct RequestLine {
 	std::string method;
 	std::string host;
@@ -33,15 +35,15 @@ class ParseRequest {
 		}
 		// ~ParseRequest ();
 
-		std::string ParseHttpRequest(std::string request, ssize_t &bytesRead);
+		std::string ParseHttpRequest(std::string request, ssize_t bytesRead, Server &server, int j);
 
 		void ParseStartLine (const std::string& StartLine);
 		void ParseMethod (std::string& method);
-		void ParseBody (const std::string& _body, ssize_t byteRead);
+		void ParseBody (const std::string& _body, Server &server, int j);
 
 		void	requestStatusCode ();
-		void	ParseChunked (std::string _body, ssize_t byteRead);
+		void	ParseChunked (std::string _body, Server &server, int j);
 		std::map<std::string, std::string> parseQueryString(const std::string& queryString);
-		int		get_size (std::string &body, ssize_t &byteRead);
+		int		get_size (std::string &body, Server &server, int j);
 
 };
