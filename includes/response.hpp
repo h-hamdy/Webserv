@@ -6,7 +6,7 @@
 /*   By: mac <mac@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/04 17:35:49 by omanar            #+#    #+#             */
-/*   Updated: 2023/07/11 16:27:51 by mac              ###   ########.fr       */
+/*   Updated: 2023/07/19 22:03:58 by mac              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ class Server;
 class Response
 {
 	private:
+		char		**_env;
 		std::string _response;
 		std::map<std::string, std::string> _headers;
 		std::streampos pospause;
@@ -68,6 +69,10 @@ class Response
 		void setBody(std::string body);
 		void setResponse(std::string protocol, std::string status_code, std::string status_message, std::string body);
 		void GET(Server &server, int j);
+		// void DELETE(std::string path, Config *config);
+		void DELETE(std::string path);
+		bool isDirectory(std::string path);
+		void setEnv(std::vector<std::string> env);
 };
 
 #endif

@@ -5,6 +5,7 @@ CC = clang++ -g -fsanitize=address
 FLAGS = -Wall -Wextra -Werror -Iincludes -std=c++98
 
 SRCS =	main.cpp srcs/socket.cpp srcs/socket_utils.cpp srcs/request/request.cpp \
+		srcs/matching.cpp srcs/cgi.cpp \
 		srcs/Server.cpp srcs/parsing/config.cpp srcs/parsing/utilities.cpp\
 		srcs/response/response.cpp\
 		# srcs/res/res-GET.cpp 
@@ -20,6 +21,6 @@ clean:
 	@rm -rf webserv.o
 	@echo "cleaned 🗑"
 fclean : clean
-		@rm -rf ./webserv webserv.dSYM 
+		@rm -rf ./webserv webserv.dSYM
 		@echo "fcleaned 🗑"
 re : fclean all

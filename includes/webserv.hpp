@@ -43,16 +43,18 @@ class Server {
 		std::map<int, ParseRequest> _requests;
 		std::map<int, Response> _responses;
 
-
+		
 		//-----------------------------//
 		// Server(Config *config);
 		Server();
 		~Server();
 		void	addConfig(Config *config);
 		void	printConfigs();
+		std::vector<Location>::iterator	matching (const std::string &host, const std::string &port, std::string url);
 };
 
 Config*	getNextConfig(std::ifstream &configFile);
 std::vector<Server *>	getServers(char *file);
+void CgiProcess();
 
 # endif

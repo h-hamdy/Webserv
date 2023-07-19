@@ -6,7 +6,7 @@
 /*   By: mac <mac@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/10 14:23:17 by omanar            #+#    #+#             */
-/*   Updated: 2023/07/19 21:02:22 by mac              ###   ########.fr       */
+/*   Updated: 2023/07/19 21:26:06 by mac              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,7 @@ void	Server::printConfigs() {
 			std::cout << "   Location {" << std::endl;
 			std::cout << "      url: " << it2->_url << std::endl;
 			std::cout << "      root: " << it2->_root << std::endl;
+			std::cout << "      index: " << it2->_index << std::endl;
 			std::cout << "      redirect: " << it2->_redirect << std::endl;
 			std::cout << "      upload_path: " << it2->_upload_path << std::endl;
 			std::cout << "      cgi_extension: ";

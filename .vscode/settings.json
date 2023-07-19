@@ -1,25 +1,27 @@
 {
     "files.associations": {
         "__bit_reference": "cpp",
-        "__bits": "cpp",
         "__config": "cpp",
         "__debug": "cpp",
         "__errc": "cpp",
+        "__functional_base": "cpp",
         "__hash_table": "cpp",
         "__locale": "cpp",
         "__mutex_base": "cpp",
         "__node_handle": "cpp",
+        "__nullptr": "cpp",
         "__split_buffer": "cpp",
+        "__string": "cpp",
         "__threading_support": "cpp",
         "__tree": "cpp",
         "__tuple": "cpp",
-        "__verbose_abort": "cpp",
+        "algorithm": "cpp",
         "array": "cpp",
         "atomic": "cpp",
         "bit": "cpp",
         "bitset": "cpp",
         "cctype": "cpp",
-        "clocale": "cpp",
+        "chrono": "cpp",
         "cmath": "cpp",
         "complex": "cpp",
         "cstdarg": "cpp",
@@ -34,12 +36,14 @@
         "deque": "cpp",
         "exception": "cpp",
         "fstream": "cpp",
+        "functional": "cpp",
         "initializer_list": "cpp",
         "iomanip": "cpp",
         "ios": "cpp",
         "iosfwd": "cpp",
         "iostream": "cpp",
         "istream": "cpp",
+        "iterator": "cpp",
         "limits": "cpp",
         "list": "cpp",
         "locale": "cpp",
@@ -61,6 +65,7 @@
         "type_traits": "cpp",
         "typeinfo": "cpp",
         "unordered_map": "cpp",
+<<<<<<< HEAD
         "variant": "cpp",
         "vector": "cpp",
         "__nullptr": "cpp",
@@ -71,3 +76,9 @@
         "algorithm": "cpp"
     }
 }
+=======
+        "utility": "cpp",
+        "vector": "cpp"
+    }
+}
+>>>>>>> a337f2e0ab8bd98ce34db4e9b0a3a0e1f7233d99

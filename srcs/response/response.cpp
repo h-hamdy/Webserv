@@ -13,7 +13,9 @@ Response::Response() {
 	sending_data = false;
 }
 
-Response::~Response() {}
+Response::~Response() {
+	delete [] _env;
+}
 
 Response::Response(Response const &src) {
 	*this = src;
@@ -102,10 +104,9 @@ void	Response::GET(Server &serv,int j){
 	if(!sending_data){
 		std::cout<<"sending header"<<std::endl;
 		std::ostringstream response_stream;
+		std::string extension = path.substr(path.find_last_of(".") + 1);
 		response_stream << "HTTP/1.1 200 OK\r\n";
 		response_stream << "HTTP/1.1 "+ serv._responses[serv._pollfds[j].fd].getStatusCode() +" "+serv._responses[serv._pollfds[j].fd].getReasonPhrase()+"\r\n";
-		// response_stream << "Content-Type: image/png\r\n";
-		std::string extension = path.substr(path.find_last_of(".") + 1);
 		response_stream << "Content-Type: "  + serv._responses[serv._pollfds[j].fd].getContentType() + "\r\n";
 		response_stream << "Connection: keep-alive\r\n";
 		response_stream << "Transfer-Encoding: chunked\r\n";
@@ -151,4 +152,29 @@ void	Response::GET(Server &serv,int j){
 		response_not_send = response.substr(ret);
 		// close_connection = false;
 	}
+}
+bool Response::isDirectory(std::string path) {
+	struct stat path_stat;
+	stat(path.c_str(), &path_stat);
+	return (S_ISDIR(path_stat.st_mode));
+}
+
+void Response::DELETE(std::string path) {
+	if (access(path.c_str(), F_OK) != 0)
+		setResponse("HTTP/1.1", "404", "Not Found", "DELETE");
+	else if (access(path.c_str(), W_OK) != 0)
+		setResponse("HTTP/1.1", "403", "Forbidden", "DELETE");
+	else if (isDirectory(path))
+		setResponse("HTTP/1.1", "403", "Forbidden", "DELETE");
+	else if (remove(path.c_str()) != 0)
+		setResponse("HTTP/1.1", "500", "Internal Server Error", "DELETE");
+	else
+		setResponse("HTTP/1.1", "200", "OK", "<html><body><h1>File deleted.</h1></body></html>");
+}
+
+void Response::setEnv(std::vector<std::string> env) {
+	this->_env = new char*[env.size() + 1];
+	for (size_t i = 0; i < env.size(); i++)
+		this->_env[i] = strdup(env[i].c_str());
+	this->_env[env.size()] = NULL;
 }
