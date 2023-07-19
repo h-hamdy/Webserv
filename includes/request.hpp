@@ -14,16 +14,20 @@ class ParseRequest {
 		RequestLine requestLine;
 		std::map<std::string, std::string> header;
 		std::fstream file;
+		std::string queryString;
+
+
 		size_t size;
 		bool find_size;
 		std::string body;
-		int _bread;
 		int _EOF;
+		bool create_file;
+
 		ParseRequest () {
 			_EOF = 3;
 			size = 1;
-			_bread = 0;
 			find_size = true;
+			create_file = true;
 		}
 		// ~ParseRequest ();
 
@@ -35,6 +39,7 @@ class ParseRequest {
 
 		void	requestStatusCode ();
 		void	ParseChunked (std::string _body, ssize_t byteRead);
+		std::map<std::string, std::string> parseQueryString(const std::string& queryString);
 		int		get_size (std::string &body, ssize_t &byteRead);
 
 };

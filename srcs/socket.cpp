@@ -101,6 +101,37 @@ std::string get_ContentType (std::string value)
 	throw 400;
 }
 
+void HandleFile(const std::string& path, std::vector<Location>::iterator &location) {
+    std::string extention;
+
+    if (location->_cgi_extensions.size() == 0)
+        throw 403;
+    size_t lastDotPos = path.rfind('.');
+    if (lastDotPos != std::string::npos)
+        extention = path.substr(lastDotPos);
+    
+    else
+        throw 404;
+
+}
+
+void HandlePathType(const std::string& path, std::vector<Location>::iterator &location)
+{
+    struct stat fileStat;
+    (void)location;
+    if (stat(path.c_str(), &fileStat) == 0)
+    {
+        if (S_ISREG(fileStat.st_mode))
+            HandleFile(path, location);
+        else if (S_ISDIR(fileStat.st_mode))
+            throw 1000;
+        else
+            throw 404;
+    }
+    else
+        throw 404;
+}
+
 void    Socket::acceptConnection(){
     ParseRequest   request;
     size_t i = 0;
@@ -153,35 +184,50 @@ void    Socket::acceptConnection(){
                     std::string rest;
                     if (_servers[i]->_bytesRead > 1) {
                         try {
-                            bool flag;
+                            std::vector<Location>::iterator location;
                             std::string bb(buffer, _servers[i]->_bytesRead);
                             if (_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.method.empty()) {
                                 rest = _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].ParseHttpRequest(bb, _servers[i]->_bytesRead);
+                                    size_t pos = _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.url.find("?");
+                                    if (pos != std::string::npos) {
+                                        _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].queryString = _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.url.substr(pos + 1);
+                                        _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.url = _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.url.substr(0, pos);
+                                    }
                                     _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestStatusCode();
                                     std::vector<Location>::iterator _location = _servers[i]->configs[0]->getLocation(_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.url);
-                                    if (_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.method == "POST" && _servers[i]->configs[0]->postAllowed(_location) == false)
-                                        throw 405;
-                                    std::map<std::string, std::string>::iterator it = _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].header.find("Host");
-                                    if (it != _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].header.end()) {
-                                        size_t pos = it->second.find(":");
-                                        flag = _servers[i]->matching(it->second.substr(0, pos), it->second.substr(pos + 1), _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.url);
+                                    if (_location == _servers[i]->configs[0]->_locations->end()) {
+                                        _location = _servers[i]->configs[0]->getLocation("/");
+                                    }
+                                    else {
+                                        if (_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.method == "POST" && _servers[i]->configs[0]->postAllowed(_location) == false)
+                                            throw 405;
+                                        std::map<std::string, std::string>::iterator it = _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].header.find("Host");
+                                        if (it != _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].header.end()) {
+                                            size_t pos = it->second.find(":");
+                                            location = _servers[i]->matching(it->second.substr(0, pos), it->second.substr(pos + 1), _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.url);
+                                        }
                                     }
                                 }
-                                if (_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.method == "POST") {
+                                if (_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.method == "POST" && _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].create_file == true) {
                                     std::string filename;
                                     std::map<std::string, std::string>::iterator it = _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].header.find("Content-Type");
                                     filename = get_ContentType(it->second);
                                     std::string filePath;
-                                    if (flag == true) {
+                                    if (!location->_upload_path.empty()) {
                                         std::vector<Location>::iterator location = _servers[i]->configs[0]->getLocation(_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.url);
-                                        filePath = location->_upload_path + "/" + filename;
+                                        filePath = location->_root + location->_upload_path + filename;
                                     }
                                     else {
-                                        std::string pathToCgi = "/Users/hhamdy/Desktop/Webserv/cgi/";
-                                        filePath = pathToCgi + filename;
+                                        std::cout << "Location does not support upload" << std::endl;
+                                        std::string resource = _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.url.substr(location->_url.length());
+                                        HandlePathType(location->_root + resource, location);
+                                        throw 404;
+                                        // std::string pathToCgi = "/Users/hhamdy/Desktop/Webserv/cgi/";
+                                        // filePath = pathToCgi + filename;
                                     }
                                     _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].file.open(filePath, std::ios::binary | std::ios::app | std::ios::ate);
                                     _servers[i]->_requests[ _servers[i]->_pollfds[j].fd]._EOF = 1;
+                                    _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].create_file = false;
                                 }
                                 if (_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.method == "POST") {
                                     if (!rest.empty())

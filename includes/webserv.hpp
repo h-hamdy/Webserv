@@ -41,15 +41,13 @@ class Server {
 		std::map<int, ParseRequest> _requests;
 
 		
-
-
 		//-----------------------------//
 		// Server(Config *config);
 		Server();
 		~Server();
 		void	addConfig(Config *config);
 		void	printConfigs();
-		bool	matching (const std::string &host, const std::string &port, std::string url);
+		std::vector<Location>::iterator	matching (const std::string &host, const std::string &port, std::string url);
 };
 
 Config*	getNextConfig(std::ifstream &configFile);

@@ -36,31 +36,6 @@ int	convert_hex (std::string hex)
 	return (std::stoi(hex, nullptr, 16));
 }
 
-// std::string generateRandomString(int length) {
-//     const std::string characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-//     const int numCharacters = characters.length();
-
-//     std::string randomString;
-//     for (int i = 0; i < length; ++i) {
-//         int randomIndex = rand() % numCharacters;
-//         randomString += characters[randomIndex];
-//     }
-//     return randomString;
-// }
-
-// std::string get_ContentType (std::string value) 
-// {
-// 	size_t pos = value.find_last_of("/");
-// 	std::string type;
-// 	std::string rand;
-// 	if (pos != std::string::npos) {
-// 		type = value.substr(pos + 1);
-// 		rand = generateRandomString(10);
-// 		return (rand + "." + type);
-// 	}
-// 	throw 400;
-// }
-
 int	ParseRequest::get_size (std::string &body, ssize_t &byteRead)
 {
 	std::string hex;
@@ -82,6 +57,7 @@ int	ParseRequest::get_size (std::string &body, ssize_t &byteRead)
 void	ParseRequest::ParseChunked (std::string _body, ssize_t byteRead)
 {
 	std::string hex;
+
 	body += _body;
 	if (find_size)
 		if (get_size(body, byteRead))
