@@ -43,6 +43,7 @@ class Server {
         std::vector<struct pollfd> _pollfds;
 		std::map<int, ParseRequest> _requests;
 		std::map<int, Response> _responses;
+		std::vector<Location>::iterator _location_match;
 
 		
 		//-----------------------------//

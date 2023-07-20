@@ -38,6 +38,8 @@ int	convert_hex (std::string hex)
 
 int	ParseRequest::get_size (std::string &body, Server &server, int j)
 {
+		(void)server;
+	(void)j;
 	std::string hex;
 	if (body[0] == '\r' && body[1] == '\n') {
 		body = body.substr(2);
@@ -47,7 +49,7 @@ int	ParseRequest::get_size (std::string &body, Server &server, int j)
 	size = convert_hex(hex);
 	if (size == 0) {
 		_EOF = 0;
-		FD_SET(server._pollfds[j].fd, &server._write_set);
+		// FD_SET(server._pollfds[j].fd, &server._write_set);
 		return 1;
 	}
 	body = body.substr((hex.length() + 2));
@@ -57,6 +59,8 @@ int	ParseRequest::get_size (std::string &body, Server &server, int j)
 
 void	ParseRequest::ParseChunked (std::string _body, Server &server, int j)
 {
+		(void)server;
+	(void)j;
 	std::string hex;
 
 	body += _body;
@@ -69,7 +73,7 @@ void	ParseRequest::ParseChunked (std::string _body, Server &server, int j)
 		body = body.substr(size);
 		if (body[2] == '0') {
 			_EOF = 0;
-			FD_SET(server._pollfds[j].fd, &server._write_set);
+			// FD_SET(server._pollfds[j].fd, &server._write_set);
 			throw 201;
 		}
 		find_size = true;
@@ -77,6 +81,8 @@ void	ParseRequest::ParseChunked (std::string _body, Server &server, int j)
 }
 
 void ParseRequest::ParseBody (const std::string& _body, Server &server, int j) {
+		(void)server;
+	(void)j;
 	std::map<std::string, std::string>::iterator it = header.find("Content-Length");
 	if (it != header.end()) {
 		file << _body;
@@ -84,7 +90,7 @@ void ParseRequest::ParseBody (const std::string& _body, Server &server, int j) {
 		_EOF = 1;
 		if (std::stoi(it->second) == fileSize) {
 			_EOF = 0;
-			FD_SET(server._pollfds[j].fd, &server._write_set);
+			// FD_SET(server._pollfds[j].fd, &server._write_set);
 			throw 201;
 		}
 		return ;
@@ -105,7 +111,8 @@ void	ParseRequest::requestStatusCode () {
 	std::map<std::string, std::string>::iterator it = header.find("Transfer-Encoding");
 	std::map<std::string, std::string>::iterator it1 = header.find("Content-Length");
 	std::map<std::string, std::string>::iterator it2 = header.find("User-Agent");
-	if (it != header.end() && it1 != header.end() && it2 != header.end())
+	std::map<std::string, std::string>::iterator it3 = header.find("Host");
+	if (it != header.end() && it1 != header.end() && it2 != header.end() && it3 != header.end())
 		throw 400;
 	if (requestLine.method != "GET" && requestLine.method != "POST" && requestLine.method != "DELETE") {
 		if (requestLine.method != "PUT" && requestLine.method != "PATCH" && requestLine.method != "HEAD" && requestLine.method != "OPTIONS")
@@ -114,7 +121,7 @@ void	ParseRequest::requestStatusCode () {
 			throw 501;
 	}
 	it1 = header.find("Content-Type");
-	if (it1 == header.end())
+	if (it1 == header.end() && requestLine.method == "POST")
 		throw 400;
 	if (it != header.end() && it->second != "chunked")
 		throw 501;
@@ -130,6 +137,8 @@ void	ParseRequest::requestStatusCode () {
 }
 
 std::string ParseRequest::ParseHttpRequest( std::string request, ssize_t byteRead,Server &server, int j) {
+	(void)server;
+	(void)j;
 	std::string line;
 	size_t headers = 0;
 	if(byteRead == -1)
@@ -150,7 +159,7 @@ std::string ParseRequest::ParseHttpRequest( std::string request, ssize_t byteRea
 	}
 	if (requestLine.method != "POST") {
 		_EOF = 0;
-		FD_SET(server._pollfds[j].fd, &server._write_set);
+		// FD_SET(server._pollfds[j].fd, &server._write_set);
 		return ("");
 	}
 	return (request.substr(headers));

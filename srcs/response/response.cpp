@@ -14,7 +14,7 @@ Response::Response() {
 }
 
 Response::~Response() {
-	delete [] _env;
+	// delete [] _env;
 }
 
 Response::Response(Response const &src) {
@@ -93,6 +93,7 @@ void	Response::GET(Server &serv,int j){
 	response += response_not_send;
 	response_not_send = "";
 	std::string path =  serv.configs[0]->_locations->begin()->_root + serv._requests[serv._pollfds[j].fd].requestLine.url;
+	// std::string path = serv._location_match->_root + serv._requests[serv._pollfds[j].fd].requestLine.url;
 	std::ifstream file(path.c_str(), std::ios::binary);
 	if(!file.is_open())
 	{
@@ -180,4 +181,6 @@ void Response::setEnv(std::vector<std::string> env) {
 	this->_env[env.size()] = NULL;
 }
 
-char **Response::getEnv() { return (_env); }
+char** Response::Response::getEnv() {
+	 return (_env);
+}

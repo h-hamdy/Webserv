@@ -36,7 +36,7 @@ void    Socket::check_methods(Server &server,int j){
 void    Socket::status_response(Server  &server,int j){
     std::string status = server._responses[server._pollfds[j].fd].getStatusCode();
     if(status == "200"){
-        server._responses[server._pollfds[j].fd].setReasonPhrase("OK");
+        server._responses[server._pollfds[j].fd].setReasonPhrase("OK");  
     }
     else if(status == "201"){
         server._responses[server._pollfds[j].fd].setReasonPhrase("Created");
@@ -90,10 +90,10 @@ void    Socket::status_response(Server  &server,int j){
 
 void    Socket::content_type(){
 
-    std::ifstream input_file("/Users/mac/Desktop/Webserv/conf/mime.types");
+    std::ifstream input_file("/Users/omeslall/Desktop/Webserv/conf/mime.types");
     if(!input_file){
         std::cout<<"Error opening file mime.types"<<std::endl;
-        throw std::exception();
+        // throw std::exception();
     }
     std::stringstream f;
     f << input_file.rdbuf();
@@ -140,6 +140,6 @@ void    Socket::content_type(Server &server,int j){
 void    Socket::prepare_response(Server &server,int j){
     check_methods_allowed(server,j);
     content_type(server,j);
-    status_response(server,j);
+    // status_response(server,j);
     check_methods(server,j);
 }
