@@ -276,6 +276,9 @@ void    Socket::acceptConnection(){
                                         filename = get_ContentType(it->second);
                                         std::string filePath;
                                         std::vector<Location>::iterator location = _servers[i]->_location_match;
+
+                                        // must protect if location is null <<===========================================================================
+                                        
                                         if (!location->_upload_path.empty()) {
                                             // location = _servers[i]->configs[0]->getLocation(_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.url);
                                             filePath = location->_root + location->_upload_path + filename;
@@ -297,7 +300,7 @@ void    Socket::acceptConnection(){
                                             _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].ParseBody(bb, *_servers[i], j);
                                     }
                                     else if (_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.method == "DELETE") {
-                                        if (_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.method == "DELETE" && _servers[i]->configs[0]->deleteAllowed(location) == false)
+                                        if (_servers[i]->configs[0]->deleteAllowed(location) == false)
                                             throw 405;
                                         std::string resourc = _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.url.substr(location->_url.length());
                                         DELETE(location->_root + resourc);
