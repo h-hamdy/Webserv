@@ -155,6 +155,7 @@ bool isDirectory(std::string path) {
 }
 
 void DELETE(std::string path) {
+    std::cout << "path = " << path << std::endl;
 	if (access(path.c_str(), F_OK) != 0)
 		throw 404;
 	else if (access(path.c_str(), W_OK) != 0)
@@ -279,7 +280,9 @@ void    Socket::acceptConnection(){
                     }
                 }
                 if ( _servers[i]->_requests[ _servers[i]->_pollfds[j].fd]._EOF != 0) {
+                    std::string def_root = "./root/";
                     std::string rest;
+                    std::string path;
                     if (_servers[i]->_bytesRead > 1) {
                         try {
                             std::string bb(buffer, _servers[i]->_bytesRead);
@@ -293,13 +296,12 @@ void    Socket::acceptConnection(){
                                 _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestStatusCode();
                                 std::map<std::string, std::string>::iterator it = _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].header.find("Host");
                                 pos = it->second.find(":");
-                                std::string path;
                                 _servers[i]->_location_match = _servers[i]->matching(it->second.substr(0, pos), it->second.substr(pos + 1), _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.url);
                                 if (_servers[i]->_location_match != _servers[i]->configs[0]->_locations->end())
-                                    path =  _servers[i]->configs[0]->_locations->begin()->_root + _servers[i]->_requests[_servers[i]->_pollfds[j].fd].requestLine.url;
+                                    path =  def_root + _servers[i]->configs[0]->_locations->begin()->_root + _servers[i]->_requests[_servers[i]->_pollfds[j].fd].requestLine.url;
                                 else
-                                    path = _servers[i]->_location_match->_root + _servers[i]->_requests[_servers[i]->_pollfds[j].fd].requestLine.url;
-                                std::cout << path << std::endl;
+                                    path = def_root + _servers[i]->_location_match->_root + _servers[i]->_requests[_servers[i]->_pollfds[j].fd].requestLine.url;
+                                // std::cout << path << std::endl;
                                 if (_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.method == "POST" && _servers[i]->configs[0]->postAllowed(_servers[i]->_location_match) == false)
                                     throw 405;
                             }
@@ -308,8 +310,8 @@ void    Socket::acceptConnection(){
                             else if (_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.method == "DELETE") {
                                 if (_servers[i]->configs[0]->deleteAllowed(_servers[i]->_location_match) == false)
                                     throw 405;
-                                std::string resourc = _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.url.substr(_servers[i]->_location_match->_url.length());
-                                DELETE(_servers[i]->_location_match->_root + resourc);
+                                // std::string resourc = _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.url.substr(_servers[i]->_location_match->_url.length());
+                                DELETE(path);
                             }
                         }
                         catch (int status) {
