@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/10 14:26:21 by omanar            #+#    #+#             */
-/*   Updated: 2023/07/19 07:34:00 by omanar           ###   ########.fr       */
+/*   Updated: 2023/07/20 19:41:11 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,8 @@ void	parseSingle(std::string const &line, std::string &variable) {
 	std::string value = line.substr(0, pos);
 	std::istringstream iss(value);
 	iss >> token;
+	if (!variable.empty())
+		throw std::runtime_error("Error: duplicate directive: " + token);
 	iss >> variable;
 	if (variable.empty())
 		throw std::runtime_error("Error: missing value");
@@ -34,6 +36,8 @@ void	parseSingle(std::string const &line, std::string &variable) {
 }
 
 void	parseMethods(std::string &line, bool *methods) {
+	if (methods[0] || methods[1] || methods[2])
+		throw std::runtime_error("Error: duplicate directive: methods");
 	size_t pos = line.find(';');
 	if (pos == std::string::npos)
 		throw std::runtime_error("Error: missing ';'");
@@ -54,6 +58,8 @@ void	parseMethods(std::string &line, bool *methods) {
 }
 
 void	parseExtensions(std::string &line, std::vector<std::string> &extensions) {
+	if (extensions.size() > 0)
+		throw std::runtime_error("Error: duplicate directive: cgi_extensions");
 	size_t pos = line.find(';');
 	if (pos == std::string::npos)
 		throw std::runtime_error("Error: missing ';'");
@@ -275,8 +281,6 @@ Config*	getNextConfig(std::ifstream &configFile) {
 
 void	missing(Config *config) {
 	bool missing = true;
-	if (config->_server_name.empty())
-		throw std::runtime_error("Error: Missing server_name directive");
 	if (config->_host.empty())
 		throw std::runtime_error("Error: Missing host directive");
 	if (config->_port == -1)
@@ -296,7 +300,7 @@ void	missing(Config *config) {
 		throw std::runtime_error("Error: Missing default location");
 }
 
-Server*	findPort(std::vector<Server *> &servers, std::string host, int port) {
+Server*	findServer(std::vector<Server *> &servers, std::string host, int port) {
 	for (std::vector<Server*>::iterator it = servers.begin(); it != servers.end(); ++it) {
 		if ((*it)->configs[0]->_host == host && (*it)->configs[0]->_port == port)
 			return *it;
@@ -314,7 +318,7 @@ std::vector<Server *>	getServers(char *file) {
 	Config *config = getNextConfig(configFile);
 	while (config) {
 		missing(config);
-		Server *found = findPort(servers, config->_host, config->_port);
+		Server *found = findServer(servers, config->_host, config->_port);
 		if (found != nullptr)
 			found->configs.push_back(config);
 		else {

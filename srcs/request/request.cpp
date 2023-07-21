@@ -115,6 +115,7 @@ void	ParseRequest::requestStatusCode () {
 	if (it != header.end() && it1 != header.end() && it2 != header.end() && it3 != header.end())
 		throw 400;
 	if (requestLine.method != "GET" && requestLine.method != "POST" && requestLine.method != "DELETE") {
+		std::cout << "method = "<< requestLine.method << std::endl;
 		if (requestLine.method != "PUT" && requestLine.method != "PATCH" && requestLine.method != "HEAD" && requestLine.method != "OPTIONS")
 			throw 400;
 		else
