@@ -38,7 +38,7 @@ std::vector<Location>::iterator	Server::matching (const std::string &host, const
             std::cout << "Server matched" << std::endl;
             location = (*it)->getLocation(url);
             if (location == (*it)->_locations->end())
-                throw 404;
+                throw 806;
             if (location->_upload_path.empty())
                 return location;
             else {

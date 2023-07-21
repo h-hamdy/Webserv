@@ -90,7 +90,7 @@ void    Socket::status_response(Server  &server,int j){
 
 void    Socket::content_type(){
 
-    std::ifstream input_file("/Users/omeslall/Desktop/Webserv/conf/mime.types");
+    std::ifstream input_file("/Users/hhamdy/Desktop/Webserv/conf/mime.types");
     if(!input_file){
         std::cout<<"Error opening file mime.types"<<std::endl;
         // throw std::exception();
