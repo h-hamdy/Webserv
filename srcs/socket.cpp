@@ -104,6 +104,7 @@ std::string get_ContentType (std::string value)
 }
 
 void HandleFile(const std::string& path, std::vector<Location>::iterator &location , ParseRequest &request, Server &server, int j) {
+    (void)request;
     std::string extention;
 
     if (location->_cgi_extensions.size() == 0)
