@@ -1,10 +1,8 @@
 # include "webserv.hpp"
 # include "response.hpp"
+# 
 
-void CgiPost(char *args[3], Response *response, std::vector<Location>::iterator &location) {
-	// std::string file = location->_root + "/output.html";
-	// int fd = open(file.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0644);
-	(void)location;
+void CgiPost(char *args[3], Response &response) {
 	int fd[2];
 	if (pipe(fd))
 		throw std::runtime_error("pipe error");
@@ -13,7 +11,7 @@ void CgiPost(char *args[3], Response *response, std::vector<Location>::iterator 
 	pid_t pid = fork();
 	if (pid == 0) {
 		dup2(fd[1], 1);
-		if (execve(args[0], args, response->getEnv()) == -1) {
+		if (execve(args[0], args, response.getEnv()) == -1) {
 			std::cerr << "execve error" << std::endl;
 			exit(1);
 		}
@@ -32,31 +30,41 @@ void CgiPost(char *args[3], Response *response, std::vector<Location>::iterator 
 		buf[byteRead] = '\0';
 		body += buf;
 	}
-	response->setResponse("HTTP/1.1", "200", "OK", body);
+	response.setResponse("HTTP/1.1", "200", "OK", body);
 }
 
-// void CgiGet(char *args[3]) {
-// 	// int fd = open("Cookie.txt", O_WRONLY | O_CREAT | O_TRUNC, 0644);
-// 	// if (fd == -1)
-// 	// 	throw std::runtime_error("open error");
-	
-// 	// int status;
-// 	// pid_t pid = fork();
-// 	// if (pid == 0) {
-// 	// 	dup2(fd, 1);
-// 	// 	if (execve(args[0], args, NULL) == -1)
-// 	// 		throw std::runtime_error("execve error");
-// 	// }
-// 	// else if (pid > 0) {
-// 	// 	waitpid(pid, &status, 0);
-// 	// 	close(fd);
-// 	// }
-// 	// else
-// 	// 	throw std::runtime_error("fork error");
-	
-// }
+void CgiGet(char *args[3], Response &response) {
+	int fd[2];
+	if (pipe(fd))
+		throw std::runtime_error("pipe error");
 
-void setEnv(Response *response, std::string const &path, ParseRequest &request) {
+	int status;
+	pid_t pid = fork();
+	if (pid == 0) {
+		dup2(fd[1], 1);
+		if (execve(args[0], args, NULL) == -1) {
+			std::cerr << "execve error" << std::endl;
+			exit(1);
+		}
+	}
+	else if (pid > 0) {
+		waitpid(pid, &status, WNOHANG);
+		close(fd[1]);
+	}
+	else
+		throw std::runtime_error("fork error");
+	
+	char buf[1024];
+	std::string body;
+	int byteRead;
+	while ((byteRead = read(fd[0], buf, 1024)) > 0) {
+		buf[byteRead] = '\0';
+		body += buf;
+	}
+	response.setResponse("HTTP/1.1", "200", "OK", body);
+}
+
+void setEnv(Response &response, std::string const &path, ParseRequest &request) {
 	std::vector<std::string> env;
 
 	env.push_back("SCRIPT_NAME=" + request.requestLine.url);
@@ -74,14 +82,14 @@ void setEnv(Response *response, std::string const &path, ParseRequest &request) 
 		env.push_back("CONTENT_LENGTH=" + request.header["Content-Length"]);
 	}
 
-	response->setEnv(env);
+	response.setEnv(env);
 }
 
-void CgiProcess(std::vector<Location>::iterator &location, std::string const &path, ParseRequest &request, std::string extension) {
+void CgiProcess(Server &server, int j, std::string const &path, std::string const &extension) {
 	char *args[3];
-	Response *response = new Response();
-
-	setEnv(response, path, request);
+	ParseRequest &req = server._requests[server._pollfds[j].fd];
+	Response &res = server._responses[server._pollfds[j].fd];
+	setEnv(res, path, req);
 
 	std::cout << "path in cgi " << path << std::endl;
 	if (extension == ".py") {
@@ -96,10 +104,8 @@ void CgiProcess(std::vector<Location>::iterator &location, std::string const &pa
 	}
 	std::cout << "teest teeest ========" << std::endl;
 
-	if (request.requestLine.method == "POST")
-		CgiPost(args, response, location);
-	// else if (method == "GET")
-	// 	CgiGet(args, response);
-
-	delete response;
+	if (req.requestLine.method == "POST")
+		CgiPost(args, res);
+	else if (req.requestLine.method == "GET")
+		CgiGet(args, res);
 }

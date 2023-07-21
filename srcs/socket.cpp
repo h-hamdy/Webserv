@@ -103,7 +103,7 @@ std::string get_ContentType (std::string value)
 	throw 400;
 }
 
-void HandleFile(const std::string& path, std::vector<Location>::iterator &location , ParseRequest &request) {
+void HandleFile(const std::string& path, std::vector<Location>::iterator &location, Server &server, int j) {
     std::string extention;
 
     if (location->_cgi_extensions.size() == 0)
@@ -115,7 +115,7 @@ void HandleFile(const std::string& path, std::vector<Location>::iterator &locati
         for (it = location->_cgi_extensions.begin(); it != location->_cgi_extensions.end(); it++) {
             if (extention == *it) {
                 std::cout << "Da5lo a7biba" << std::endl;
-                CgiProcess(location, path, request, extention);
+                CgiProcess(server, j, path, extention);
                 std::cout << "rah da5l" << std::endl;
             }
         }
@@ -169,13 +169,13 @@ void DELETE(std::string path) {
     std::cout << "File Deleted Seccessfully" << std::endl;
 }
 
-void HandlePathType(const std::string& path, std::vector<Location>::iterator &location, ParseRequest &request)
+void HandlePathType(const std::string& path, std::vector<Location>::iterator &location, Server &server, int j)
 {
     struct stat fileStat;
     if (stat(path.c_str(), &fileStat) == 0)
     {
         if (S_ISREG(fileStat.st_mode))
-            HandleFile(path, location, request);
+            HandleFile(path, location, server, j);
         else if (S_ISDIR(fileStat.st_mode))
             HandleDir(path, location);
         else
@@ -206,7 +206,7 @@ void    POST (Server &_servers, int j, std::string rest, std::string bb)
             std::cout << "Location does not support upload" << std::endl;
             std::string resource = _servers._requests[ _servers._pollfds[j].fd].requestLine.url.substr(location->_url.length());
             std::cout << location->_root + resource << std::endl;
-            HandlePathType(location->_root + resource, location, _servers._requests[ _servers._pollfds[j].fd]);
+            HandlePathType(location->_root + resource, location, _servers, j);
         }
         _servers._requests[ _servers._pollfds[j].fd].file.open(filePath, std::ios::binary | std::ios::app | std::ios::ate);
         _servers._requests[ _servers._pollfds[j].fd]._EOF = 1;
@@ -282,7 +282,6 @@ void    Socket::acceptConnection(){
                     std::string rest;
                     if (_servers[i]->_bytesRead > 1) {
                         try {
-                            std::vector<Location>::iterator location;
                             std::string bb(buffer, _servers[i]->_bytesRead);
                             if (_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.method.empty()) {
                                 rest = _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].ParseHttpRequest(bb, _servers[i]->_bytesRead,*_servers[i], j);
@@ -301,17 +300,16 @@ void    Socket::acceptConnection(){
                                 else
                                     path = _servers[i]->_location_match->_root + _servers[i]->_requests[_servers[i]->_pollfds[j].fd].requestLine.url;
                                 std::cout << path << std::endl;
-                                // _servers[i]->_location_match = _servers[i]->configs[0]->_locations->begin();
                                 if (_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.method == "POST" && _servers[i]->configs[0]->postAllowed(_servers[i]->_location_match) == false)
                                     throw 405;
                             }
                             if (_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.method == "POST")
                                 POST (*(_servers[i]), j, rest, bb);
                             else if (_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.method == "DELETE") {
-                                if (_servers[i]->configs[0]->deleteAllowed(location) == false)
+                                if (_servers[i]->configs[0]->deleteAllowed(_servers[i]->_location_match) == false)
                                     throw 405;
-                                std::string resourc = _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.url.substr(location->_url.length());
-                                DELETE(location->_root + resourc);
+                                std::string resourc = _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.url.substr(_servers[i]->_location_match->_url.length());
+                                DELETE(_servers[i]->_location_match->_root + resourc);
                             }
                         }
                         catch (int status) {
@@ -322,7 +320,6 @@ void    Socket::acceptConnection(){
                             }
                             else {
                                 std::cout << "Throw error page" << std::endl;
-                                return ;
                             }
                         }
                     }

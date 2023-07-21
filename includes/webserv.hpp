@@ -57,6 +57,6 @@ class Server {
 
 Config*	getNextConfig(std::ifstream &configFile);
 std::vector<Server *>	getServers(char *file);
-void CgiProcess(std::vector<Location>::iterator &location, std::string const &path, ParseRequest &request, std::string extension);
+void CgiProcess(Server &server, int j, std::string const &path, std::string const &extension);
 
 # endif

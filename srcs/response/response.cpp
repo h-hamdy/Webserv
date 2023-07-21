@@ -13,9 +13,7 @@ Response::Response() {
 	sending_data = false;
 }
 
-Response::~Response() {
-	// delete [] _env;
-}
+Response::~Response() {}
 
 Response::Response(Response const &src) {
 	*this = src;

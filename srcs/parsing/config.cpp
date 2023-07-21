@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   config.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: omeslall <omeslall@student.42.fr>          +#+  +:+       +#+        */
+/*   By: omanar <omanar@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/07 19:19:39 by omanar            #+#    #+#             */
-/*   Updated: 2023/07/20 01:27:34 by omeslall         ###   ########.fr       */
+/*   Updated: 2023/07/21 23:07:06 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,8 +45,9 @@ std::vector<Location>::iterator Config::getLocation(std::string const &url) {
 				return it;
 		size_t pos = tmp.find_last_of('/');
 		if (pos == std::string::npos)
-			return this->_locations->end();
-		tmp = tmp.substr(0, pos);
+			tmp = "/";
+		else
+			tmp = tmp.substr(0, pos);
 	}
 	return this->_locations->end();
 }
