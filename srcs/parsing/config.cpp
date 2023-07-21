@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/07 19:19:39 by omanar            #+#    #+#             */
-/*   Updated: 2023/07/20 17:39:37 by omanar           ###   ########.fr       */
+/*   Updated: 2023/07/21 23:07:06 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,11 +44,11 @@ std::vector<Location>::iterator Config::getLocation(std::string const &url) {
 			if (it->_url == tmp)
 				return it;
 		size_t pos = tmp.find_last_of('/');
-		tmp = tmp.substr(0, pos);
+		if (pos == std::string::npos)
+			tmp = "/";
+		else
+			tmp = tmp.substr(0, pos);
 	}
-	for (std::vector<Location>::iterator it = this->_locations->begin(); it != this->_locations->end(); it++)
-		if (it->_url == "/")
-			return it;
 	return this->_locations->end();
 }
 
