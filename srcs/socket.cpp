@@ -103,8 +103,7 @@ std::string get_ContentType (std::string value)
 	throw 400;
 }
 
-void HandleFile(const std::string& path, std::vector<Location>::iterator &location , ParseRequest &request, Server &server, int j) {
-    (void)request;
+void HandleFile(const std::string& path, std::vector<Location>::iterator &location, Server &server, int j) {
     std::string extention;
 
     if (location->_cgi_extensions.size() == 0)
@@ -170,13 +169,13 @@ void DELETE(std::string path) {
     std::cout << "File Deleted Seccessfully" << std::endl;
 }
 
-void HandlePathType(const std::string& path, std::vector<Location>::iterator &location, ParseRequest &request, Server &server, int j)
+void HandlePathType(const std::string& path, std::vector<Location>::iterator &location, Server &server, int j)
 {
     struct stat fileStat;
     if (stat(path.c_str(), &fileStat) == 0)
     {
         if (S_ISREG(fileStat.st_mode))
-            HandleFile(path, location, request, server, j);
+            HandleFile(path, location, server, j);
         else if (S_ISDIR(fileStat.st_mode))
             HandleDir(path, location);
         else
@@ -282,7 +281,7 @@ void    Socket::acceptConnection(){
                                         else {
                                             std::cout << "Location does not support upload" << std::endl;
                                             std::string resource = _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.url.substr(_servers[i]->_location_match->_url.length());
-                                            HandlePathType(_servers[i]->_location_match->_root + resource, _servers[i]->_location_match, _servers[i]->_requests[ _servers[i]->_pollfds[j].fd], *_servers[i], j);
+                                            HandlePathType(_servers[i]->_location_match->_root + resource, _servers[i]->_location_match, *_servers[i], j);
                                         }
                                         _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].file.open(filePath, std::ios::binary | std::ios::app | std::ios::ate);
                                         _servers[i]->_requests[ _servers[i]->_pollfds[j].fd]._EOF = 1;

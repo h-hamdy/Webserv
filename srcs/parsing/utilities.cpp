@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/10 14:26:21 by omanar            #+#    #+#             */
-/*   Updated: 2023/07/20 19:41:11 by omanar           ###   ########.fr       */
+/*   Updated: 2023/07/21 23:24:56 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,6 @@ void	parseSingle(std::string const &line, std::string &variable) {
 	std::string value = line.substr(0, pos);
 	std::istringstream iss(value);
 	iss >> token;
-	if (!variable.empty())
-		throw std::runtime_error("Error: duplicate directive: " + token);
 	iss >> variable;
 	if (variable.empty())
 		throw std::runtime_error("Error: missing value");
@@ -58,8 +56,6 @@ void	parseMethods(std::string &line, bool *methods) {
 }
 
 void	parseExtensions(std::string &line, std::vector<std::string> &extensions) {
-	if (extensions.size() > 0)
-		throw std::runtime_error("Error: duplicate directive: cgi_extensions");
 	size_t pos = line.find(';');
 	if (pos == std::string::npos)
 		throw std::runtime_error("Error: missing ';'");
