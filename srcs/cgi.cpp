@@ -30,7 +30,7 @@ void CgiPost(char *args[3], Response &response) {
 		buf[byteRead] = '\0';
 		body += buf;
 	}
-	response.setResponse("HTTP/1.1", "200", "OK", body);
+	// response->setResponse("HTTP/1.1", "200", "OK", body);
 }
 
 void CgiGet(char *args[3], Response &response) {

@@ -14,7 +14,7 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <sys/select.h>
-#include <sys/socket.h>
+#include <iostream>
 #include <arpa/inet.h>
 #include <poll.h>
 #include <sys/stat.h>
@@ -40,5 +40,6 @@ class Socket{
         void    content_type(Server &server,int j);
         void    prepare_response(Server &server,int j);
 };
-// void    Get_response(ParseRequest &request);
+
+void    send_chuncked_response(Server &server,int j);
 #endif

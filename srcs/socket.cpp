@@ -284,9 +284,10 @@ void    Socket::acceptConnection(){
                     std::string rest;
                     std::string path;
                     if (_servers[i]->_bytesRead > 1) {
-                        try {
+                        // try {
+                            // std::vector<Location>::iterator location;
                             std::string bb(buffer, _servers[i]->_bytesRead);
-                            if (_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.method.empty()) {
+                            if (_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.method.empty()) // {
                                 rest = _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].ParseHttpRequest(bb, _servers[i]->_bytesRead,*_servers[i], j);
                                 size_t pos = _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.url.find("?");
                                 if (pos != std::string::npos) {
@@ -361,15 +362,12 @@ void    Socket::acceptConnection(){
                     // FD_CLR( _servers[i]->_pollfds[j].fd,& _servers[i]->_read_set);
                     // FD_SET( _servers[i]->_pollfds[j].fd,& _servers[i]->_write_set);
                     if(FD_ISSET( _servers[i]->_pollfds[j].fd,& _servers[i]->_write_set)){
-                       //I'm planning to move these lines into a separate function.
-                        // check_methods(*_servers[i],j);
-                        // content_type(*_servers[i],j);
-                        // status_response(*_servers[i],j);
                         //Implement a method specifically designed to generate a response.
-                        prepare_response(*_servers[i],j);
-                        // _servers[i]->_responses[ _servers[i]->_pollfds[j].fd].GET(*_servers[i],j);
-                        //print url 
-                        // std::cout<<"url: "<<_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.url<<std::endl;
+                        if(_servers[i]->_responses[ _servers[i]->_pollfds[j].fd].response_not_send == ""){
+                            prepare_response(*_servers[i],j);
+                            _servers[i]->_responses[ _servers[i]->_pollfds[j].fd].set_Header_Response(*_servers[i],j);
+                        }
+                        send_chuncked_response(*_servers[i],j);
                     }
                     if(_servers[i]->_responses[ _servers[i]->_pollfds[j].fd].close_connection == true){
                         std::cout << "Socket closed" << std::endl;

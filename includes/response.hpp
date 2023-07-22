@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   response.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: omeslall <omeslall@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mac <mac@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/04 17:35:49 by omanar            #+#    #+#             */
-/*   Updated: 2023/07/20 02:17:30 by omeslall         ###   ########.fr       */
+/*   Updated: 2023/07/21 18:23:33 by mac              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ class Response
 		void setAllow(std::string allow);
 		void setHeaders(std::string key, std::string value);
 		void setBody(std::string body);
-		void setResponse(std::string protocol, std::string status_code, std::string status_message, std::string body);
+		void set_Header_Response(Server &serv, int j);
 		void GET(Server &server, int j);
 		// void DELETE(std::string path, Config *config);
 		void DELETE(std::string path);

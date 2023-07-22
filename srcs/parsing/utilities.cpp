@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utilities.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: omanar <omanar@student.42.fr>              +#+  +:+       +#+        */
+/*   By: mac <mac@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/10 14:26:21 by omanar            #+#    #+#             */
-/*   Updated: 2023/07/21 23:24:56 by omanar           ###   ########.fr       */
+/*   Updated: 2023/07/22 17:47:24 by mac              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -289,8 +289,8 @@ void	missing(Config *config) {
 			missing = false;
 		if (it->_root.empty())
 			throw std::runtime_error("Error: Missing root directive");
-		if (it->_index.empty())
-			throw std::runtime_error("Error: Missing index directive");
+		// if (it->_index.empty())
+		// 	throw std::runtime_error("Error: Missing index directive");
 	}
 	if (missing)
 		throw std::runtime_error("Error: Missing default location");
