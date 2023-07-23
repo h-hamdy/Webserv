@@ -29,7 +29,7 @@ void check_upload_path(std::string pathToCheck) {
     }
 }
 
-std::vector<Location>::iterator	Server::matching (const std::string &host, const std::string &port, std::string url) {
+std::vector<Location>::iterator	Server::matching (const std::string &host, const std::string &port, std::string &url, std::string &path, std::string &method) {
     std::vector<Config *>::iterator it = configs.begin();
     std::vector<Location>::iterator location;
     if (host == (*it)->_host || host == (*it)->_server_name) {
@@ -38,18 +38,22 @@ std::vector<Location>::iterator	Server::matching (const std::string &host, const
             std::cout << "Server matched" << std::endl;
             location = (*it)->getLocation(url);
             if (location == (*it)->_locations->end())
-                throw 806;
-            if (location->_upload_path.empty())
+                throw 404;
+            if (location->_upload_path.empty()) {
+                path = "./root" + location->_root;
                 return location;
+            }
             else {
                 if (location->_upload_path[0] != '/' || location->_upload_path[location->_upload_path.size() - 1] != '/') {
                     std::cout << "Failed to create directory!" << std::endl;
                     throw 404;
                 }
-                check_upload_path(location->_root + location->_upload_path);
+                if (method == "POST")
+                    path = "./root" + location->_root + location->_upload_path;
+                else
+                    path = "./root" + location->_root;
+                check_upload_path(path);
             }
-            std::cout << "upload path : " << location->_upload_path << std::endl;
-            return location;
         }
     }
     else

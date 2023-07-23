@@ -18,6 +18,7 @@
 #include <arpa/inet.h>
 #include <poll.h>
 #include <sys/stat.h>
+#include <dirent.h>
 #include "webserv.hpp"
 
 
