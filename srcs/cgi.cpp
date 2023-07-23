@@ -34,7 +34,6 @@ void CgiPost(char *args[3], Response &response) {
 }
 
 void CgiGet(char *args[3], Response &response) {
-	(void)response;
 	int fd[2];
 	if (pipe(fd))
 		throw std::runtime_error("pipe error");
@@ -62,7 +61,8 @@ void CgiGet(char *args[3], Response &response) {
 		buf[byteRead] = '\0';
 		body += buf;
 	}
-	// response.setResponse("HTTP/1.1", "200", "OK", body);
+	std::cout << "teest teeest ========" << body << std::endl;
+	response.setResponse(body);
 }
 
 void setEnv(Response &response, std::string const &path, ParseRequest &request) {
@@ -103,7 +103,6 @@ void CgiProcess(Server &server, int j, std::string const &path, std::string cons
 		args[1] = strdup(path.c_str());
 		args[2] = NULL;
 	}
-	std::cout << "teest teeest ========" << std::endl;
 
 	if (req.requestLine.method == "POST")
 		CgiPost(args, res);

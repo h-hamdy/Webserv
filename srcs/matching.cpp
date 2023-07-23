@@ -29,27 +29,34 @@ void check_upload_path(std::string pathToCheck) {
     }
 }
 
-std::vector<Location>::iterator	Server::matching (const std::string &host, const std::string &port, std::string url) {
+std::vector<Location>::iterator	Server::matching (const std::string &host, const std::string &port, ParseRequest &req) {
     std::vector<Config *>::iterator it = configs.begin();
     std::vector<Location>::iterator location;
     if (host == (*it)->_host || host == (*it)->_server_name) {
         int Post = std::atoi(port.c_str());
         if (Post == (*it)->_port) {
             std::cout << "Server matched" << std::endl;
-            location = (*it)->getLocation(url);
+            location = (*it)->getLocation(req.requestLine.url);
             if (location == (*it)->_locations->end())
-                throw 806;
-            if (location->_upload_path.empty())
+                throw 404;
+            if (location->_upload_path.empty()) {
+                std::string resource = req.requestLine.url.substr(location->_url.length());
+                req.path = "./root" + location->_root + resource;
                 return location;
+            }
             else {
                 if (location->_upload_path[0] != '/' || location->_upload_path[location->_upload_path.size() - 1] != '/') {
                     std::cout << "Failed to create directory!" << std::endl;
                     throw 404;
                 }
-                check_upload_path(location->_root + location->_upload_path);
+                if (req.requestLine.method == "POST")
+                    req.path = "./root" + location->_root + location->_upload_path;
+                else {
+                    std::string resource = req.requestLine.url.substr(location->_url.length());
+                    req.path = "./root" + location->_root + resource;
+                }
+                check_upload_path(req.path);
             }
-            std::cout << "upload path : " << location->_upload_path << std::endl;
-            return location;
         }
     }
     else

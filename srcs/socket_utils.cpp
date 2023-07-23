@@ -21,8 +21,8 @@ void    Socket::check_methods(Server &server,int j){
             server._responses[server._pollfds[j].fd].GET(server, j);
         // else if(method == "POST")
         //     server._responses[server._pollfds[j].fd].POST(server, j);
-        // else if(method == "DELETE")
-        //     server._responses[server._pollfds[j].fd].DELETE(server, j);
+        else if(method == "DELETE")
+            server._responses[server._pollfds[j].fd].DELETE(server, j);
 }
 
 void    Socket::status_response(Server  &server,int j){
@@ -108,13 +108,6 @@ void    Socket::content_type(){
         }
     }
     std::cout << "Mime types loaded" << std::endl;
-    // //creat a iterator to print the map
-    // std::map<std::string, std::string>::iterator it;
-    // it = _types.begin();
-    // while (it != _types.end()) {
-    //     std::cout << it->first << "   " << it->second << std::endl;
-    //     it++;
-    // }
 }
 
 void    Socket::content_type(Server &server,int j){
@@ -123,10 +116,10 @@ void    Socket::content_type(Server &server,int j){
     if(_types.find(extension) != _types.end()){
         server._responses[server._pollfds[j].fd].setContentType(_types[extension]);
     }
-    // else{
-    //     server._responses[server._pollfds[j].fd].setStatusCode("415");
-    //     server._responses[server._pollfds[j].fd].setContentType("text/html");
-    // }
+    else{
+        // server._responses[server._pollfds[j].fd].setStatusCode("415");
+        server._responses[server._pollfds[j].fd].setContentType("text/html");
+    }
 }
 
 void    Socket::prepare_response(Server &server,int j){

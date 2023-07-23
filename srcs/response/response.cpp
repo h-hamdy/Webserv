@@ -111,7 +111,7 @@ void Response::set_Header_Response(Server &serv, int j) {
 void	Response::GET(Server &serv,int j){
 	std::string body = "";
 	std::string response = "";
-	std::string path =  serv.configs[0]->_locations->begin()->_root + serv._requests[serv._pollfds[j].fd].requestLine.url;
+	std::string path =  serv._requests[serv._pollfds[j].fd].path;
 	std::cout<<"path: "<<path<<std::endl;
 	struct stat path_stat;
 	if(stat(path.c_str(), &path_stat) == 0){
@@ -128,7 +128,8 @@ void	Response::GET(Server &serv,int j){
 				while ((ent = readdir(dir)) != NULL) {
 					std::string filename = ent->d_name;
 					if (filename != "." && filename != "..") {
-						std::string filepath = serv._requests[serv._pollfds[j].fd].requestLine.url + "/" + filename;
+						std::string filepath = serv._requests[serv._pollfds[j].fd].requestLine.url +  (serv._requests[serv._pollfds[j].fd].requestLine.url[serv._requests[serv._pollfds[j].fd].requestLine.url.length() - 1] == '/' ?  "" : "/") + filename;
+						std::cout << "file_path :" << filepath << std::endl;
 						body += "<li><a href=\"" + filepath + "\">" + filename + "</a></li>\n";
 					}
 				}
@@ -156,6 +157,29 @@ void	Response::GET(Server &serv,int j){
 
 	}
 	std::ifstream file(path.c_str(), std::ios::binary);
+	std::vector<Location>::iterator location = serv._location_match;
+	if (location->_cgi_extensions.size() == 0)
+        setStatusCode("4031");
+    size_t lastDotPos = path.rfind('.');
+    if (lastDotPos != std::string::npos) {
+        std::vector<std::string>::iterator it;
+        std::string extention = path.substr(lastDotPos);
+        for (it = location->_cgi_extensions.begin(); it != location->_cgi_extensions.end(); it++) {
+            if (extention == *it) {
+                std::cout << "maaaaaaaaawoooooooooooo" << std::endl;
+                CgiProcess(serv, j, path, extention);
+                std::cout << "rah da5l" << std::endl;
+				file.seekg(0, std::ios::end);
+				pospause = file.tellg();
+				if(!sending_data)
+					return ;
+            }
+        }
+        if (it == location->_cgi_extensions.end())
+            setStatusCode("4032");
+    }
+    else
+        setStatusCode("4033");
 	if(!file.is_open()){
 		serv._responses[serv._pollfds[j].fd].setStatusCode("404");
 		close_connection = true;
@@ -163,7 +187,6 @@ void	Response::GET(Server &serv,int j){
 	}
 	else {
 		char chunk_buffer[4096];
-		// char chunk_buffer[65536];	
 		file.seekg(pospause);
 		file.read(chunk_buffer, sizeof(chunk_buffer));
 		pospause = file.tellg();
@@ -185,18 +208,18 @@ bool Response::isDirectory(std::string path) {
 	return (S_ISDIR(path_stat.st_mode));
 }
 
-void Response::DELETE(std::string path) {
+void Response::DELETE(Server &serv, int j) {
+	std::string path = serv._requests[serv._pollfds[j].fd].path + serv._requests[serv._pollfds[j].fd].requestLine.url;
 	if (access(path.c_str(), F_OK) != 0)
-		return ;
-	// 	setResponse("HTTP/1.1", "404", "Not Found", "DELETE");
-	// else if (access(path.c_str(), W_OK) != 0)
-	// 	setResponse("HTTP/1.1", "403", "Forbidden", "DELETE");
-	// else if (isDirectory(path))
-	// 	setResponse("HTTP/1.1", "403", "Forbidden", "DELETE");
-	// else if (remove(path.c_str()) != 0)
-	// 	setResponse("HTTP/1.1", "500", "Internal Server Error", "DELETE");
-	// else
-	// 	setResponse("HTTP/1.1", "200", "OK", "<html><body><h1>File deleted.</h1></body></html>");
+		setStatusCode("404");
+	else if (access(path.c_str(), W_OK) != 0)
+		setStatusCode("403");
+	else if (isDirectory(path))
+		setStatusCode("403");
+	else if (remove(path.c_str()) != 0)
+		setStatusCode("500");
+	else
+		setResponse("<html><body><h1>File deleted.</h1></body></html>");
 }
 
 void Response::setEnv(std::vector<std::string> env) {

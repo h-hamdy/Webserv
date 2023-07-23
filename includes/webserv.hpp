@@ -52,7 +52,7 @@ class Server {
 		~Server();
 		void	addConfig(Config *config);
 		void	printConfigs();
-		std::vector<Location>::iterator	matching (const std::string &host, const std::string &port, std::string url);
+		std::vector<Location>::iterator	matching (const std::string &host, const std::string &port, ParseRequest &req);
 };
 
 Config*	getNextConfig(std::ifstream &configFile);

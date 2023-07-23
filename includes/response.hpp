@@ -71,7 +71,7 @@ class Response
 		void set_Header_Response(Server &serv, int j);
 		void GET(Server &server, int j);
 		// void DELETE(std::string path, Config *config);
-		void DELETE(std::string path);
+		void DELETE(Server &server, int j);
 		bool isDirectory(std::string path);
 		void setEnv(std::vector<std::string> env);
 		char ** getEnv();

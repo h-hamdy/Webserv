@@ -26,6 +26,7 @@ class ParseRequest {
 		std::string body;
 		int _EOF;
 		bool create_file;
+		std::string path;
 
 		ParseRequest () {
 			_EOF = 3;
