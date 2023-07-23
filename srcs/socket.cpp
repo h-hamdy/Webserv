@@ -284,10 +284,10 @@ void    Socket::acceptConnection(){
                     std::string rest;
                     std::string path;
                     if (_servers[i]->_bytesRead > 1) {
-                        // try {
-                            // std::vector<Location>::iterator location;
+                        try {
+                            std::vector<Location>::iterator location;
                             std::string bb(buffer, _servers[i]->_bytesRead);
-                            if (_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.method.empty()) // {
+                            if (_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.method.empty())  {
                                 rest = _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].ParseHttpRequest(bb, _servers[i]->_bytesRead,*_servers[i], j);
                                 size_t pos = _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.url.find("?");
                                 if (pos != std::string::npos) {

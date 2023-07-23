@@ -112,6 +112,7 @@ void	Response::GET(Server &serv,int j){
 	std::string body = "";
 	std::string response = "";
 	std::string path =  serv.configs[0]->_locations->begin()->_root + serv._requests[serv._pollfds[j].fd].requestLine.url;
+	std::cout<<"path: "<<path<<std::endl;
 	struct stat path_stat;
 	if(stat(path.c_str(), &path_stat) == 0){
 		if((path_stat.st_mode & S_IFDIR) && serv.configs[0]->_locations->begin()->_index != ""){
