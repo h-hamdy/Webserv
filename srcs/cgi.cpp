@@ -2,14 +2,16 @@
 # include "response.hpp"
 # 
 
-void CgiPost(char *args[3], Response &response) {
+void CgiPost(char *args[3], Response &response, std::string const &filePath) {
 	int fd[2];
 	if (pipe(fd))
 		throw std::runtime_error("pipe error");
 
 	int status;
+	int file = open(filePath.c_str(), O_RDONLY | std::ios::binary);
 	pid_t pid = fork();
 	if (pid == 0) {
+		dup2(file, 0);
 		dup2(fd[1], 1);
 		if (execve(args[0], args, response.getEnv()) == -1) {
 			std::cerr << "execve error" << std::endl;
@@ -17,8 +19,9 @@ void CgiPost(char *args[3], Response &response) {
 		}
 	}
 	else if (pid > 0) {
-		waitpid(pid, &status, WNOHANG);
+		waitpid(pid, &status, 0);
 		close(fd[1]);
+		close(file);
 	}
 	else
 		throw std::runtime_error("fork error");
@@ -30,7 +33,7 @@ void CgiPost(char *args[3], Response &response) {
 		buf[byteRead] = '\0';
 		body += buf;
 	}
-	// response->setResponse("HTTP/1.1", "200", "OK", body);
+	response.setResponse(body);
 }
 
 void CgiGet(char *args[3], Response &response) {
@@ -48,7 +51,7 @@ void CgiGet(char *args[3], Response &response) {
 		}
 	}
 	else if (pid > 0) {
-		waitpid(pid, &status, WNOHANG);
+		waitpid(pid, &status, 0);
 		close(fd[1]);
 	}
 	else
@@ -77,6 +80,7 @@ void setEnv(Response &response, std::string const &path, ParseRequest &request) 
 	env.push_back("HTTP_USER_AGENT=" + request.header["User-Agent"]);
 	env.push_back("HTTP_COOKIE=");
 	// env.push_back("REDIRECT_STATUS=");
+	env.push_back("REQUEST_METHOD=" + request.requestLine.method);
 	env.push_back("REMOTE_ADDR=");
 	if (request.requestLine.method == "POST") {
 		env.push_back("CONTENT_TYPE=" + request.header["Content-Type"]);
@@ -86,7 +90,7 @@ void setEnv(Response &response, std::string const &path, ParseRequest &request) 
 	response.setEnv(env);
 }
 
-void CgiProcess(Server &server, int j, std::string const &path, std::string const &extension) {
+void CgiProcess(Server &server, int j, std::string const &path, std::string const &extension, std::string filePath) {
 	char *args[3];
 	ParseRequest &req = server._requests[server._pollfds[j].fd];
 	Response &res = server._responses[server._pollfds[j].fd];
@@ -105,7 +109,7 @@ void CgiProcess(Server &server, int j, std::string const &path, std::string cons
 	}
 
 	if (req.requestLine.method == "POST")
-		CgiPost(args, res);
+		CgiPost(args, res, filePath);
 	else if (req.requestLine.method == "GET")
 		CgiGet(args, res);
 }

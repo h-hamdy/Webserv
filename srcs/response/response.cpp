@@ -127,7 +127,7 @@ void	Response::GET(Server &serv,int j){
 				while ((ent = readdir(dir)) != NULL) {
 					std::string filename = ent->d_name;
 					if (filename != "." && filename != "..") {
-						std::string filepath = serv._requests[serv._pollfds[j].fd].requestLine.url +  (serv._requests[serv._pollfds[j].fd].requestLine.url[serv._requests[serv._pollfds[j].fd].requestLine.url.length() - 1] == '/' ?  "" : "/") + filename;
+						std::string filepath = serv._requests[serv._pollfds[j].fd].requestLine.url +  (serv._requests[serv._pollfds[j].fd].requestLine.url[serv._requests[serv._pollfds[j].fd].requestLine.url.length() - 1] == '/' ?  "" : "/");
 						std::cout << "file_path :" << filepath << std::endl;
 						body += "<li><a href=\"" + filepath + "\">" + filename + "</a></li>\n";
 					}
@@ -165,7 +165,7 @@ void	Response::GET(Server &serv,int j){
         std::vector<std::string>::iterator it;
         for (it = location->_cgi_extensions.begin(); it != location->_cgi_extensions.end(); it++) {
             if (extention == *it) {
-                CgiProcess(serv, j, path, extention);
+                CgiProcess(serv, j, path, extention, "");
 				file.seekg(0, std::ios::end);
 				pospause = file.tellg();
 				if(!sending_data)

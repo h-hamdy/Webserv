@@ -58,6 +58,6 @@ class Server {
 
 Config*	getNextConfig(std::ifstream &configFile);
 std::vector<Server *>	getServers(char *file);
-void CgiProcess(Server &server, int j, std::string const &path, std::string const &extension);
+void CgiProcess(Server &server, int j, std::string const &path, std::string const &extension, std::string filePath);
 
 # endif
