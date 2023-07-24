@@ -110,15 +110,17 @@ void    Socket::content_type(){
     std::cout << "Mime types loaded" << std::endl;
 }
 
-void    Socket::content_type(Server &server,int j){
+int   Socket::content_type(Server &server,int j){
     std::string path = server._requests[server._pollfds[j].fd].requestLine.url;
     std::string extension = path.substr(path.find_last_of(".") + 1);
     if(_types.find(extension) != _types.end()){
         server._responses[server._pollfds[j].fd].setContentType(_types[extension]);
+        return 1;
     }
     else{
         // server._responses[server._pollfds[j].fd].setStatusCode("415");
         server._responses[server._pollfds[j].fd].setContentType("text/html");
+        return 0;
     }
 }
 

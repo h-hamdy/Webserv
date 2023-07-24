@@ -38,7 +38,7 @@ class Socket{
         void    check_methods(Server &server,int j);
         void    status_response(Server &server,int j);
         void    content_type();
-        void    content_type(Server &server,int j);
+        int     content_type(Server &server,int j);
         void    prepare_response(Server &server,int j);
 };
 

@@ -4,7 +4,7 @@
 Response::Response() {
 	_response = "";
 	_protocol = "";
-	_status_code = "";
+	_status_code = "200";
 	_status_message = "";
 	_content_type = "";
 	_content_length = "";
@@ -161,32 +161,33 @@ void	Response::GET(Server &serv,int j){
 	if (location->_cgi_extensions.size() == 0)
         setStatusCode("4031");
     size_t lastDotPos = path.rfind('.');
-    if (lastDotPos != std::string::npos) {
+    std::string extention = path.substr(lastDotPos);
+    if (lastDotPos != std::string::npos && (extention == ".py"|| extention == ".php" )) {
         std::vector<std::string>::iterator it;
-        std::string extention = path.substr(lastDotPos);
         for (it = location->_cgi_extensions.begin(); it != location->_cgi_extensions.end(); it++) {
             if (extention == *it) {
-                std::cout << "maaaaaaaaawoooooooooooo" << std::endl;
                 CgiProcess(serv, j, path, extention);
-                std::cout << "rah da5l" << std::endl;
 				file.seekg(0, std::ios::end);
 				pospause = file.tellg();
 				if(!sending_data)
 					return ;
             }
         }
-        if (it == location->_cgi_extensions.end())
+        if (it == location->_cgi_extensions.end()){
             setStatusCode("4032");
+			setResponse("<html><body><h1>403 Forbidden</h1></body></html>");
+			close_connection = true;
+		}
     }
-    else
-        setStatusCode("4033");
-	if(!file.is_open()){
+	else if(!file.is_open()){
 		serv._responses[serv._pollfds[j].fd].setStatusCode("404");
+		response = "<html><body><h1>404 Not Found</h1></body></html>";
 		close_connection = true;
 		return ;
 	}
 	else {
 		char chunk_buffer[4096];
+		std::cout<<"sending file"<<std::endl;
 		file.seekg(pospause);
 		file.read(chunk_buffer, sizeof(chunk_buffer));
 		pospause = file.tellg();
