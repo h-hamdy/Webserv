@@ -52,7 +52,7 @@ void    Socket::setupServer(){
         std::cout << "Error setting socket options" << std::endl;
         close(ServerSocket);
         exit(1);
-    }
+    }   
     _servers[i]->_ServerAddress.sin_family = AF_INET;
     if(_servers[i]->configs.front()->_host == "0.0.0.0")
          _servers[i]->_ServerAddress.sin_addr.s_addr = INADDR_ANY;
@@ -178,28 +178,6 @@ void HandleDir(const std::string& path, std::vector<Location>::iterator &locatio
         else
             throw 403;
     }
-}
-
-bool isDirectory(std::string path) {
-	struct stat path_stat;
-	stat(path.c_str(), &path_stat);
-	return (S_ISDIR(path_stat.st_mode));
-}
-
-void DELETE(std::string path) {
-    std::cout << "path = " << path << std::endl;
-	if (access(path.c_str(), F_OK) != 0)
-		throw 404;
-	else if (access(path.c_str(), W_OK) != 0)
-		throw 403;
-	else if (isDirectory(path))
-		throw 403;
-	else if (remove(path.c_str()) != 0)
-		throw 500;
-	else
-		throw 200;
-    
-    std::cout << "File Deleted Seccessfully" << std::endl;
 }
 
 void HandlePathType(const std::string& path, std::vector<Location>::iterator &location, Server &server, int j)
@@ -332,11 +310,6 @@ void    Socket::acceptConnection(){
                             }
                             if (_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.method == "POST")
                                 POST (*(_servers[i]), j, rest, bb, _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].path);
-                            else if (_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.method == "DELETE") {
-                                if (_servers[i]->configs[0]->deleteAllowed(_servers[i]->_location_match) == false)
-                                    throw 405;
-                                DELETE(_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].path);
-                            }
                         }
                         catch (int status) {
                             std::cout << status << std::endl;

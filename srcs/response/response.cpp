@@ -112,7 +112,6 @@ void	Response::GET(Server &serv,int j){
 	std::string body = "";
 	std::string response = "";
 	std::string path =  serv._requests[serv._pollfds[j].fd].path;
-	std::cout<<"path: "<<path<<std::endl;
 	struct stat path_stat;
 	if(stat(path.c_str(), &path_stat) == 0){
 		if((path_stat.st_mode & S_IFDIR) && serv.configs[0]->_locations->begin()->_index != ""){
@@ -210,17 +209,36 @@ bool Response::isDirectory(std::string path) {
 }
 
 void Response::DELETE(Server &serv, int j) {
-	std::string path = serv._requests[serv._pollfds[j].fd].path + serv._requests[serv._pollfds[j].fd].requestLine.url;
-	if (access(path.c_str(), F_OK) != 0)
+	std::string path = serv._requests[serv._pollfds[j].fd].path;
+	std::cout << "path: ======= " << path << std::endl;
+	if(sending_data){
+		close_connection = true;
+		return ;
+	}
+	if (access(path.c_str(), F_OK) != 0) {
+		std::cout << "test1" << std::endl;
 		setStatusCode("404");
-	else if (access(path.c_str(), W_OK) != 0)
+	}
+	else if (access(path.c_str(), W_OK) != 0) {
+		std::cout << "test2 " << std::endl;
 		setStatusCode("403");
-	else if (isDirectory(path))
+
+	}
+	else if (isDirectory(path)) {
+
+		std::cout << "test3" << std::endl;
 		setStatusCode("403");
-	else if (remove(path.c_str()) != 0)
+	}
+	else if (remove(path.c_str()) != 0) {
+		std::cout << "test4" << std::endl;
 		setStatusCode("500");
-	else
+
+	}
+	else {
+		std::cout << "test5" << std::endl;
 		setResponse("<html><body><h1>File deleted.</h1></body></html>");
+	}
+	// std::cout << "File deleted successfully." << std::endl;
 }
 
 void Response::setEnv(std::vector<std::string> env) {

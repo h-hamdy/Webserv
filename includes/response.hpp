@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   response.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mac <mac@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: omanar <omanar@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/04 17:35:49 by omanar            #+#    #+#             */
-/*   Updated: 2023/07/23 19:19:27 by mac              ###   ########.fr       */
+/*   Updated: 2023/07/24 01:59:31 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,6 @@ class Response
 		void setBody(std::string body);
 		void set_Header_Response(Server &serv, int j);
 		void GET(Server &server, int j);
-		// void DELETE(std::string path, Config *config);
 		void DELETE(Server &server, int j);
 		bool isDirectory(std::string path);
 		void setEnv(std::vector<std::string> env);

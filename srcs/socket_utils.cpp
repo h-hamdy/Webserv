@@ -141,6 +141,7 @@ void    send_chuncked_response(Server &server,int j){
 	    response = server._responses[server._pollfds[j].fd].getResponse();
 	else
 		response = server._responses[server._pollfds[j].fd].response_not_send;
+    std::cout<<"response to send: "<<response<<std::endl;
     int ret = send(server._pollfds[j].fd, response.c_str(), response.length(), 0);
     if(ret < 1 )
         server._responses[server._pollfds[j].fd].response_not_send = response;
