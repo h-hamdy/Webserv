@@ -16,6 +16,7 @@
 # include <exception>
 # include <fstream>
 #include <sys/stat.h>
+#include <ctime>
 
 # include "config.hpp"
 # include "socket.hpp"

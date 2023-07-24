@@ -87,7 +87,9 @@ std::string generateRandomString(int length) {
         int randomIndex = rand() % numCharacters;
         randomString += characters[randomIndex];
     }
-    return randomString;
+    std::srand(static_cast<unsigned int>(std::time(0)));
+    int randomNumber = std::rand();
+    return randomString + std::to_string(randomNumber);
 }
 
 std::string get_ContentType (std::string value)
@@ -206,13 +208,13 @@ void    POST (Server &_servers, int j, std::string rest, std::string bb, std::st
         filename = get_ContentType(it->second);
         std::string filePath;
             
-        if (!_servers._location_match->_upload_path.empty())
-            filePath = path + filename;
-        else {
-            std::cout << "Location does not support upload" << std::endl;
-            std::string resource = _servers._requests[ _servers._pollfds[j].fd].requestLine.url.substr(_servers._location_match->_url.length());
-            HandlePathType(path + resource, _servers._location_match, _servers, j);
-        }
+        // if (!_servers._location_match->_upload_path.empty())
+        filePath = path + filename;
+        // else {
+        //     std::cout << "Location does not support upload" << std::endl;
+        //     std::string resource = _servers._requests[ _servers._pollfds[j].fd].requestLine.url.substr(_servers._location_match->_url.length());
+        //     HandlePathType(path + resource, _servers._location_match, _servers, j);
+        // }
         _servers._requests[ _servers._pollfds[j].fd].file.open(filePath, std::ios::binary | std::ios::app | std::ios::ate);
         _servers._requests[ _servers._pollfds[j].fd]._EOF = 1;
         _servers._requests[ _servers._pollfds[j].fd].create_file = false;
@@ -222,6 +224,11 @@ void    POST (Server &_servers, int j, std::string rest, std::string bb, std::st
             _servers._requests[ _servers._pollfds[j].fd].ParseBody(rest, _servers, j);
         else
             _servers._requests[ _servers._pollfds[j].fd].ParseBody(bb, _servers, j);
+    }
+    if (_servers._requests[ _servers._pollfds[j].fd]._EOF == 0) {
+        std::cout << "Location does not support upload" << std::endl;
+        std::string resource = _servers._requests[ _servers._pollfds[j].fd].requestLine.url.substr(_servers._location_match->_url.length());
+        HandlePathType(path + resource, _servers._location_match, _servers, j);
     }
 }
 

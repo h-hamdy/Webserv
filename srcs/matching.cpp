@@ -40,8 +40,8 @@ std::vector<Location>::iterator	Server::matching (const std::string &host, const
             if (location == (*it)->_locations->end())
                 throw 404;
             if (location->_upload_path.empty()) {
-                std::string resource = req.requestLine.url.substr(location->_url.length());
-                req.path = "./root" + location->_root + resource;
+                // std::string resource = req.requestLine.url.substr(location->_url.length());
+                req.path = "./root" + location->_root;
                 return location;
             }
             else {

@@ -50,6 +50,8 @@ int	ParseRequest::get_size (std::string &body, Server &server, int j)
 	if (size == 0) {
 		_EOF = 0;
 		// FD_SET(server._pollfds[j].fd, &server._write_set);
+		if (!server._location_match->_upload_path.empty())
+				throw 201;
 		return 1;
 	}
 	body = body.substr((hex.length() + 2));
@@ -74,7 +76,8 @@ void	ParseRequest::ParseChunked (std::string _body, Server &server, int j)
 		if (body[2] == '0') {
 			_EOF = 0;
 			// FD_SET(server._pollfds[j].fd, &server._write_set);
-			throw 201;
+			if (!server._location_match->_upload_path.empty())
+				throw 201;
 		}
 		find_size = true;
 	}
@@ -91,7 +94,8 @@ void ParseRequest::ParseBody (const std::string& _body, Server &server, int j) {
 		if (std::stoi(it->second) == fileSize) {
 			_EOF = 0;
 			// FD_SET(server._pollfds[j].fd, &server._write_set);
-			throw 201;
+			if (!server._location_match->_upload_path.empty())
+				throw 201;
 		}
 		return ;
 	}
