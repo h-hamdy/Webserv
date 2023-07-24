@@ -112,6 +112,7 @@ void	Response::GET(Server &serv,int j){
 	std::string body = "";
 	std::string response = "";
 	std::string path =  serv._requests[serv._pollfds[j].fd].path;
+	std::cout << "path: ======= " << path << std::endl;
 	struct stat path_stat;
 	if(stat(path.c_str(), &path_stat) == 0){
 		if((path_stat.st_mode & S_IFDIR) && serv.configs[0]->_locations->begin()->_index != ""){
@@ -129,7 +130,7 @@ void	Response::GET(Server &serv,int j){
 					if (filename != "." && filename != "..") {
 						std::string filepath = serv._requests[serv._pollfds[j].fd].requestLine.url +  (serv._requests[serv._pollfds[j].fd].requestLine.url[serv._requests[serv._pollfds[j].fd].requestLine.url.length() - 1] == '/' ?  "" : "/");
 						std::cout << "file_path :" << filepath << std::endl;
-						body += "<li><a href=\"" + filepath + "\">" + filename + "</a></li>\n";
+						body += "<li><a href=\"" + filepath + filename + "\">" + filename + "</a></li>\n";
 					}
 				}
 				body += "</ul>\n";
