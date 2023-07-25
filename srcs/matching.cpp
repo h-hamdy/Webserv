@@ -57,7 +57,8 @@ std::vector<Location>::iterator	Server::matching (const std::string &host, const
                     std::string resource = req.requestLine.url.substr(location->_url.length());
                     req.path = "./root" + location->_root + resource;
                 }
-                check_upload_path(req.path);
+                if (req.requestLine.method == "POST")
+                    check_upload_path(req.path);
             }
         }
     }
