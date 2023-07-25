@@ -29,7 +29,7 @@ void check_upload_path(std::string pathToCheck) {
     }
 }
 
-std::vector<Location>::iterator	Server::matching (const std::string &host, const std::string &port, ParseRequest &req) {
+std::vector<Location>::iterator	Server::matching (const std::string &host, const std::string &port, ParseRequest &req, Server &server, int j) {
     std::vector<Config *>::iterator it = configs.begin();
     std::vector<Location>::iterator location;
     if (host == (*it)->_host || host == (*it)->_server_name) {
@@ -39,6 +39,14 @@ std::vector<Location>::iterator	Server::matching (const std::string &host, const
             location = (*it)->getLocation(req.requestLine.url);
             if (location == (*it)->_locations->end())
                 throw 404;
+            if (!location->_redirect.empty()) {
+                std::cout << "seting responce for redirection" << std::endl;
+                server._responses[server._pollfds[j].fd].setResponse(location->_redirect);
+                if(server._responses[server._pollfds[j].fd].sending_data){
+                    server._responses[server._pollfds[j].fd].setResponse("");
+                    server._responses[server._pollfds[j].fd].close_connection = true;
+                }
+            }
             if (location->_upload_path.empty()) {
                 std::string resource = req.requestLine.url.substr(location->_url.length());
                 req.path = "./root" + location->_root;
