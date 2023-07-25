@@ -376,7 +376,7 @@ void    Socket::acceptConnection(){
                         }
                         send_chuncked_response(*_servers[i],j);
                     }
-                    if(_servers[i]->_responses[ _servers[i]->_pollfds[j].fd].close_connection == true){
+                    if(_servers[i]->_responses[ _servers[i]->_pollfds[j].fd].close_connection == true && _servers[i]->_responses[ _servers[i]->_pollfds[j].fd].response_not_send == ""){
                         std::cout << "Socket closed" << std::endl;
                         close( _servers[i]->_pollfds[j].fd);
                         FD_CLR( _servers[i]->_pollfds[j].fd,& _servers[i]->_read_set);

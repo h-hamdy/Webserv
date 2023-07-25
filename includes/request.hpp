@@ -28,12 +28,20 @@ class ParseRequest {
 		bool create_file;
 		std::string path;
 		std::string filePath;
+		int cgiFlag;
+		pid_t pid;
+		int status;
+		int fd;
 
 		ParseRequest () {
 			_EOF = 3;
 			size = 1;
 			find_size = true;
 			create_file = true;
+			cgiFlag = 0;
+			pid = 0;
+			status = 0;
+			fd = -1;
 		}
 		// ~ParseRequest ();
 

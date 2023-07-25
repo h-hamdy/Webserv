@@ -61,8 +61,6 @@ int	ParseRequest::get_size (std::string &body, Server &server, int j)
 
 void	ParseRequest::ParseChunked (std::string _body, Server &server, int j)
 {
-		(void)server;
-	(void)j;
 	std::string hex;
 
 	body += _body;
@@ -84,12 +82,12 @@ void	ParseRequest::ParseChunked (std::string _body, Server &server, int j)
 }
 
 void ParseRequest::ParseBody (const std::string& _body, Server &server, int j) {
-		(void)server;
-	(void)j;
+	std::streampos fileSize = file.tellg();
+	if (fileSize > server.configs[0]->_max_body_size)
+		throw 413;
 	std::map<std::string, std::string>::iterator it = header.find("Content-Length");
 	if (it != header.end()) {
 		file << _body;
-		std::streampos fileSize = file.tellg();
 		_EOF = 1;
 		if (std::stoi(it->second) == fileSize) {
 			_EOF = 0;

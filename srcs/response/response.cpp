@@ -162,30 +162,32 @@ void	Response::GET(Server &serv,int j){
         setStatusCode("4031");
     size_t lastDotPos = path.rfind('.');
     std::string extention = path.substr(lastDotPos);
-    if (lastDotPos != std::string::npos && (extention == ".py"|| extention == ".php" )) {
-        std::vector<std::string>::iterator it;
-        for (it = location->_cgi_extensions.begin(); it != location->_cgi_extensions.end(); it++) {
-            if (extention == *it) {
-                CgiProcess(serv, j, path, extention, "");
-				file.seekg(0, std::ios::end);
-				pospause = file.tellg();
-				if(!sending_data)
-					return ;
-            }
-        }
-        if (it == location->_cgi_extensions.end()){
-            setStatusCode("4032");
-			setResponse("<html><body><h1>403 Forbidden</h1></body></html>");
-			close_connection = true;
-		}
-    }
-	else if(!file.is_open()){
+	if(!file.is_open()){
 		serv._responses[serv._pollfds[j].fd].setStatusCode("404");
 		response = "<html><body><h1>404 Not Found</h1></body></html>";
 		close_connection = true;
 		return ;
 	}
-	else {
+    else if (lastDotPos != std::string::npos && (extention == ".py"|| extention == ".php" )) {
+        std::vector<std::string>::iterator it;
+        for (it = location->_cgi_extensions.begin(); it != location->_cgi_extensions.end(); it++) {
+            if (extention == *it) {
+                CgiProcess(serv, j, path, extention, "");
+				response = _response;
+				break ;
+				// file.seekg(0, std::ios::end);
+				// pospause = file.tellg();
+				// if(!sending_data)
+					// return ;
+            }
+        }
+        if (it == location->_cgi_extensions.end()){
+            setStatusCode("403");
+			response = "<html><body><h1>403 Forbidden</h1></body></html>";
+			close_connection = true;
+		}
+    }
+	else if (file.is_open() ){
 		char chunk_buffer[4096];
 		std::cout<<"sending file"<<std::endl;
 		file.seekg(pospause);
