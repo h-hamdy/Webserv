@@ -28,6 +28,7 @@ class ParseRequest {
 		bool create_file;
 		std::string path;
 		std::string filePath;
+		std::string tmpFile;
 		int cgiFlag;
 		pid_t pid;
 		int status;
