@@ -23,21 +23,33 @@ void setEnv(Response &response, std::string const &path, ParseRequest &request) 
 	response.setEnv(env);
 }
 
+std::string generateRandomString() {
+	std::string str = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+	std::string newstr;
+	int pos;
+	while (newstr.size() != 10) {
+		pos = ((rand() % (str.size() - 1)));
+		newstr += str.substr(pos, 1);
+	}
+	return newstr;
+}
+
 void Cgi(char *args[3], Response &response, ParseRequest &req, std::string filePath) {
-	int file;
+	int file = 0;
 	if (req.requestLine.method == "POST")
 		file = open(filePath.c_str(), O_RDONLY);
-	else
-		file = 0;
-	int fd = open("tmp", O_RDWR | O_CREAT | O_TRUNC, 0666);
+	std::cout << filePath << std::endl;
+	req.tmpFile = "tmp" + generateRandomString();
+	int fd = open(req.tmpFile .c_str(), O_RDWR | O_CREAT | O_TRUNC, 0666);
 		if (fd == -1)
 			throw std::runtime_error("open error");
 	req.pid = fork();
 	if (req.pid == 0) {
 		dup2(file, 0);
 		dup2(fd, 1);
-		close(file);
 		close(fd);
+		if (file != 0)
+			close(file);
 		if (execve(args[0], args, response.getEnv()) == -1) {
 			std::cerr << "execve error" << std::endl;
 			exit(1);
@@ -47,6 +59,9 @@ void Cgi(char *args[3], Response &response, ParseRequest &req, std::string fileP
 	else if (req.pid == -1)
 		throw std::runtime_error("fork error");
 	close(fd);
+	if (file != 0)
+		close(file);
+	// remove(filePath.c_str());
 }
 
 std::string parseCgiBody(std::string const &body) {
@@ -99,7 +114,7 @@ void CgiProcess(Server &server, int j, std::string const &path, std::string cons
 				std::string body;
 				int byteRead;
 				char buf[1025];
-				int fd = open("tmp", O_RDONLY);
+				int fd = open(req.tmpFile.c_str(), O_RDONLY);
 				if (fd == -1)
 					throw std::runtime_error("open error");
 				while ((byteRead = read(fd, buf, 1024)) > 0) {
@@ -110,8 +125,8 @@ void CgiProcess(Server &server, int j, std::string const &path, std::string cons
 				res.setResponse(parseCgiBody(body));
 				// exit(0);
 				close(fd);
-				unlink("tmp");
-				remove("tmp");
+				unlink(req.tmpFile.c_str());
+				remove(req.tmpFile.c_str());
 				req.cgiFlag = 2;
 			}
 		}
