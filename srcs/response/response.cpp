@@ -100,6 +100,9 @@ void Response::set_Header_Response(Server &serv, int j) {
 		sending_data = true;
 	}
 	else if(sending_data){
+		if(_response == "" && !close_connection){
+			return ;
+		}
 			std::ostringstream chunck_stream;
 			chunck_stream << std::hex << (int)_response.length() << "\r\n";
 			std::string chunck_header = chunck_stream.str();
@@ -164,7 +167,7 @@ void	Response::GET(Server &serv,int j){
     std::string extention = path.substr(lastDotPos);
 	if(!file.is_open()){
 		serv._responses[serv._pollfds[j].fd].setStatusCode("404");
-		response = "<html><body><h1>404 Not Found</h1></body></html>";
+		_response = "<html><body><h1>404 Not Found</h1></body></html>";
 		close_connection = true;
 		return ;
 	}
@@ -172,13 +175,9 @@ void	Response::GET(Server &serv,int j){
         std::vector<std::string>::iterator it;
         for (it = location->_cgi_extensions.begin(); it != location->_cgi_extensions.end(); it++) {
             if (extention == *it) {
+				// _response = "";
                 CgiProcess(serv, j, path, extention, "");
-				response = _response;
-				break ;
-				// file.seekg(0, std::ios::end);
-				// pospause = file.tellg();
-				// if(!sending_data)
-					// return ;
+				return ;
             }
         }
         if (it == location->_cgi_extensions.end()){

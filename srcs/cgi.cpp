@@ -23,23 +23,30 @@ void setEnv(Response &response, std::string const &path, ParseRequest &request) 
 	response.setEnv(env);
 }
 
-void Cgi(char *args[3], Response &response, ParseRequest &req, int fd, std::string filePath) {
-
-	(void)filePath;
-	// (void)fd;
-	int status;
+void Cgi(char *args[3], Response &response, ParseRequest &req, std::string filePath) {
+	int file;
+	if (req.requestLine.method == "POST")
+		file = open(filePath.c_str(), O_RDONLY);
+	else
+		file = 0;
+	int fd = open("tmp", O_RDWR | O_CREAT | O_TRUNC, 0666);
+		if (fd == -1)
+			throw std::runtime_error("open error");
 	req.pid = fork();
 	if (req.pid == 0) {
+		dup2(file, 0);
 		dup2(fd, 1);
+		close(file);
+		close(fd);
 		if (execve(args[0], args, response.getEnv()) == -1) {
 			std::cerr << "execve error" << std::endl;
 			exit(1);
 		}
+		exit(0);
 	}
-	else if (req.pid > 0)
-		waitpid(req.pid, &status, WNOHANG);
-	else
+	else if (req.pid == -1)
 		throw std::runtime_error("fork error");
+	close(fd);
 }
 
 std::string parseCgiBody(std::string const &body) {
@@ -53,14 +60,15 @@ void CgiProcess(Server &server, int j, std::string const &path, std::string cons
 	char *args[3];
 	ParseRequest &req = server._requests[server._pollfds[j].fd];
 	Response &res = server._responses[server._pollfds[j].fd];
-
+	if (req.cgiFlag == 2) {
+		res.setResponse("");
+		res.close_connection = true;
+		return;
+	}
 	try
 	{
 		if (!req.cgiFlag) {
 			setEnv(res, path, req);
-			req.fd = open("tmp", O_RDWR | O_CREAT | O_TRUNC, 0666);
-			std::cout << "fd = " << req.fd << std::endl;
-			std::cout << "path in cgi " << path << std::endl;
 			if (extension == ".py") {
 				args[0] = strdup("cgi-bin/python3");
 				args[1] = strdup(path.c_str());
@@ -72,34 +80,41 @@ void CgiProcess(Server &server, int j, std::string const &path, std::string cons
 				args[2] = NULL;
 			}
 
-			if (req.fd == -1)
-				throw std::runtime_error("open error");
 
-			Cgi(args, res, req, req.fd, filePath);
+			Cgi(args, res, req, filePath);
 			free(args[0]);
 			free(args[1]);
 			req.cgiFlag = 1;
 		}
 		else {
-			waitpid(req.pid, &req.status, WNOHANG);
+			// res.setResponse("");
+			std::cout << "path in cgi " << path << " flag " << req.cgiFlag << std::endl;
+			int check = waitpid(req.pid, &req.status, WNOHANG);
+			if (check == 0){
+				res.setResponse("");
+				return ;
+			}
 			if (WIFEXITED(req.status)) {
 				std::cout << "wlh ta dkhaal" << std::endl;
 				std::string body;
 				int byteRead;
 				char buf[1024];
-				while ((byteRead = read(req.fd, buf, 1024)) > 0) {
+				int fd = open("tmp", O_RDONLY);
+				if (fd == -1)
+					throw std::runtime_error("open error");
+				while ((byteRead = read(fd, buf, 1024)) > 0) {
 					buf[byteRead] = '\0';
 					body += buf;
 				}
-				std::cout << "fd1 = " << req.fd << std::endl;
 				std::cout << "body ====================== " << body << std::endl;
 				res.setResponse(parseCgiBody(body));
-				if(res.sending_data)
-					res.close_connection = true;
 				// exit(0);
+				close(fd);
+				unlink("tmp");
+				remove("tmp");
+				req.cgiFlag = 2;
 			}
 		}
-		close(req.fd);
 	} catch (std::exception &e) {
 		std::cerr << e.what() << std::endl;
 		res.setStatusCode("500");
