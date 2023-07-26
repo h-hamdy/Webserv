@@ -98,7 +98,7 @@ void CgiProcess(Server &server, int j, std::string const &path, std::string cons
 				std::cout << "wlh ta dkhaal" << std::endl;
 				std::string body;
 				int byteRead;
-				char buf[1024];
+				char buf[1025];
 				int fd = open("tmp", O_RDONLY);
 				if (fd == -1)
 					throw std::runtime_error("open error");
