@@ -51,7 +51,7 @@ int	ParseRequest::get_size (std::string &body, Server &server, int j)
 		_EOF = 0;
 		// FD_SET(server._pollfds[j].fd, &server._write_set);
 		if (!server._location_match->_upload_path.empty())
-				throw 201;
+			throw 201;
 		return 1;
 	}
 	body = body.substr((hex.length() + 2));
@@ -89,6 +89,7 @@ void ParseRequest::ParseBody (const std::string& _body, Server &server, int j) {
 	if (it != header.end()) {
 		file << _body;
 		_EOF = 1;
+		fileSize = file.tellg();
 		if (std::stoi(it->second) == fileSize) {
 			_EOF = 0;
 			// FD_SET(server._pollfds[j].fd, &server._write_set);

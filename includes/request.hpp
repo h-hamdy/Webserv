@@ -32,6 +32,8 @@ class ParseRequest {
 		pid_t pid;
 		int status;
 		int fd;
+		bool flag;
+		std::string rest;
 
 		ParseRequest () {
 			_EOF = 3;
@@ -42,6 +44,7 @@ class ParseRequest {
 			pid = 0;
 			status = 0;
 			fd = -1;
+			flag = false;
 		}
 		// ~ParseRequest ();
 

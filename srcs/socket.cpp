@@ -200,7 +200,7 @@ void HandlePathType(const std::string& path, std::vector<Location>::iterator &lo
         throw 404;
 }
 
-void    POST (Server &_servers, int j, std::string rest, std::string bb, std::string &path)
+void    POST (Server &_servers, int j, std::string &rest, std::string bb, std::string &path)
 {
     if (_servers._requests[ _servers._pollfds[j].fd].requestLine.method == "POST" && _servers._requests[ _servers._pollfds[j].fd].create_file == true)
     {
@@ -220,8 +220,10 @@ void    POST (Server &_servers, int j, std::string rest, std::string bb, std::st
         _servers._requests[ _servers._pollfds[j].fd].create_file = false;
     }
     if (_servers._requests[ _servers._pollfds[j].fd].requestLine.method == "POST") {
-        if (!rest.empty())
+        if (!rest.empty()) {
             _servers._requests[ _servers._pollfds[j].fd].ParseBody(rest, _servers, j);
+            rest = "";
+        }
         else
             _servers._requests[ _servers._pollfds[j].fd].ParseBody(bb, _servers, j);
     }
@@ -274,8 +276,9 @@ void    Socket::acceptConnection(){
         }
         for(unsigned long j = 0 ; j <  _servers[i]->_pollfds.size(); j++) {
             if (FD_ISSET( _servers[i]->_pollfds[j].fd,& _servers[i]->_read_set)) {
-                char buffer[2048] = {0};
-                 _servers[i]->_bytesRead = recv( _servers[i]->_pollfds[j].fd,buffer,sizeof(buffer),0);
+                char buffer[1025] = {0};
+                 _servers[i]->_bytesRead = recv( _servers[i]->_pollfds[j].fd,buffer,1024 ,0);
+                //  std::cout<<"buffer recv :" << buffer << std::endl;
                 if ( _servers[i]->_bytesRead < 1) {
                     if(errno != EWOULDBLOCK && errno != EAGAIN) {
                         std::cout << "Error reading socket" << std::endl;
@@ -292,15 +295,15 @@ void    Socket::acceptConnection(){
                 }
                 if ( _servers[i]->_requests[ _servers[i]->_pollfds[j].fd]._EOF != 0) {
                     std::string def_root = "./root";
-                    std::string rest;
                     if (_servers[i]->_bytesRead > 1) {
                         try {
                             std::vector<Location>::iterator location;
                             std::string bb(buffer, _servers[i]->_bytesRead);
                             if (_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.method.empty()) {
-                                rest.append(bb);
-                                if (rest.find("\r\n\r\n") != std::string::npos) {
-                                    rest = _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].ParseHttpRequest(rest, _servers[i]->_bytesRead,*_servers[i], j);
+                                _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].rest.append(bb);
+                                if (_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].rest.find("\r\n\r\n") != std::string::npos) {
+                                    _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].flag = true;
+                                    _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].rest = _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].ParseHttpRequest(_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].rest, _servers[i]->_bytesRead,*_servers[i], j);
                                     size_t pos = _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.url.find("?");
                                     if (pos != std::string::npos) {
                                         _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].queryString = _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.url.substr(pos + 1);
@@ -315,8 +318,9 @@ void    Socket::acceptConnection(){
                                         throw 405;
                                 }
                             }
-                            if (_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.method == "POST")
-                                POST (*(_servers[i]), j, rest, bb, _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].path);
+                            if (_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.method == "POST" && _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].flag == true) {
+                                POST (*(_servers[i]), j, _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].rest, bb, _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].path);
+                            }
                         }
                         catch (int status) {
                             std::cout << status << std::endl;
