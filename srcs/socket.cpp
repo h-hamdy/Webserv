@@ -258,6 +258,9 @@ void    Socket::acceptConnection(){
                 if(fcntl(clientSocket,F_SETFL,O_NONBLOCK) == -1){
                     std::cout << "Error setting socket flags" << std::endl;
                     continue;
+                //sigpipe
+                // int set = 1;
+                // setsockopt(clientSocket,SOL_SOCKET,SO_NOSIGPIPE,&set,sizeof(int));
                     // this->~Socket();
                     // exit(1);
                 }
@@ -310,9 +313,9 @@ void    Socket::acceptConnection(){
                                     _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestStatusCode();
                                     std::map<std::string, std::string>::iterator it = _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].header.find("Host");
                                     pos = it->second.find(":");
-                                    std::cout << "===============================================================================" << std::endl;
-                                    std::cout << _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.method << " " << _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.url  << std::endl;
-                                    std::cout << "===============================================================================" << std::endl;
+                                    // std::cout << "===============================================================================" << std::endl;
+                                    // std::cout << _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.method << " " << _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.url  << std::endl;
+                                    // std::cout << "===============================================================================" << std::endl;
                                     // _servers[i]->_location_match = _servers[i]->matching(it->second.substr(0, pos), it->second.substr(pos + 1), _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.url, path, _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.method);
                                      _servers[i]->_location_match = _servers[i]->matching(it->second.substr(0, pos), it->second.substr(pos + 1), _servers[i]->_requests[ _servers[i]->_pollfds[j].fd], *_servers[i], j);
                                     if (_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.method == "POST" && _servers[i]->configs[0]->postAllowed(_servers[i]->_location_match) == false)

@@ -11,8 +11,11 @@ Response::Response() {
 	_date = "";
 	_allow = "";
 	_cgiHeader = "";
+	_ReasonPhrase = "";
+	_redirect = "";
 	close_connection = false;
 	sending_data = false;
+	finished = false;
 }
 
 Response::~Response() {}
@@ -54,6 +57,10 @@ std::string Response::getAllow() { return (_allow); }
 
 std::string Response::getReasonPhrase() { return (_ReasonPhrase) ;}
 
+std::string Response::getRedirect() { return (_redirect); }
+
+void Response::setRedirect(std::string redirect) { _redirect = redirect; }
+
 void Response::setReasonPhrase(std::string ReasonPhrase) { _ReasonPhrase = ReasonPhrase; }
 
 void Response::setResponse(std::string response) { _response = response; }
@@ -86,10 +93,12 @@ void Response::set_Header_Response(Server &serv, int j) {
 		std::string extension = serv.configs[0]->_locations->begin()->_root.substr(serv.configs[0]->_locations->begin()->_root.find_last_of(".") + 1);
 		response_stream << "HTTP/1.1 " + serv._responses[serv._pollfds[j].fd].getStatusCode() + " " + serv._responses[serv._pollfds[j].fd].getReasonPhrase() + "\r\n";
 		response_stream << "Content-Type: "  + serv._responses[serv._pollfds[j].fd].getContentType() + "\r\n";
-		response_stream << "Connection: keep-alive\r\n";
-		response_stream << "Transfer-Encoding: chunked\r\n";
+		if(serv._responses[serv._pollfds[j].fd].getRedirect() != "")
+			response_stream << "Location: " + serv._responses[serv._pollfds[j].fd].getRedirect() + "\r\n";
 		if (_cgiHeader != "")
 			response_stream << _cgiHeader + "\r\n";
+		response_stream << "Connection: keep-alive\r\n";
+		response_stream << "Transfer-Encoding: chunked\r\n";
 		response_stream << "\r\n";
 		std::string response_header = response_stream.str();
 		if(_response != ""){
@@ -98,7 +107,7 @@ void Response::set_Header_Response(Server &serv, int j) {
 			chunck_stream << std::hex << chunck_size << "\r\n";
 			std::string chunck_header = chunck_stream.str();
 			std::string response = chunck_header + _response + "\r\n";
-			_response = response_header + response;
+			_response = response_header + response + (this->_status_code != "200" ? "0\r\n\r\n" : "");
 		}
 		else
 			_response = response_header;

@@ -143,6 +143,7 @@ void    Socket::status_response(Server  &server,int j){
     }
     else if(status == "302"){
         server._responses[server._pollfds[j].fd].setReasonPhrase("Found");
+        server._responses[server._pollfds[j].fd].setRedirect(server._requests[server._pollfds[j].fd].requestLine.url);
     }
     else if(status == "304"){
         server._responses[server._pollfds[j].fd].setReasonPhrase("Not Modified");
@@ -245,10 +246,8 @@ void    send_chuncked_response(Server &server,int j){
         return ;
     }
     int ret = send(server._pollfds[j].fd, response.c_str(), response.length(), 0);
-    if(ret < 1 ){
-        server._responses[server._pollfds[j].fd].response_not_send = "";
+    if(ret < 1 )
         server._responses[server._pollfds[j].fd].close_connection = true;
-    }
     else if (ret < (int)response.length())
         server._responses[server._pollfds[j].fd].response_not_send = response.substr(ret);
 	else

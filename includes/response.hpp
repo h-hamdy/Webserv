@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   response.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: omanar <omanar@student.42.fr>              +#+  +:+       +#+        */
+/*   By: mac <mac@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/04 17:35:49 by omanar            #+#    #+#             */
-/*   Updated: 2023/07/27 03:03:27 by omanar           ###   ########.fr       */
+/*   Updated: 2023/07/27 18:42:01 by mac              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,9 +41,11 @@ class Response
 		std::string _allow;
 		std::string _ReasonPhrase;
 		std::string _cgiHeader;
+		std::string _redirect;
 	public:
 		bool close_connection;
 		bool sending_data;
+		bool finished;
 		std::string response_not_send;			
 		Response();
 		~Response();
@@ -58,6 +60,8 @@ class Response
 		std::string getDate();
 		std::string getAllow();
 		std::string getReasonPhrase();
+		std::string getRedirect();
+		void setRedirect(std::string redirect);
 		void setReasonPhrase(std::string ReasonPhrase);
 		void setResponse(std::string response);
 		void setCgiHeader(std::string cgiHeader);

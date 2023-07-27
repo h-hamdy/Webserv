@@ -37,7 +37,7 @@ std::vector<Location>::iterator	Server::matching (const std::string &host, const
     if (host == (*it)->_host || host == (*it)->_server_name) {
         int Post = std::atoi(port.c_str());
         if (Post == (*it)->_port) {
-            std::cout << "Server matched" << std::endl;
+            // std::cout << "Server matched" << std::endl;
             location = (*it)->getLocation(req.requestLine.url);
             if (location == (*it)->_locations->end())
                 throw 404;
