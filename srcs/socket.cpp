@@ -105,100 +105,101 @@ std::string get_ContentType (std::string value)
 	throw 400;
 }
 
-void HandleFile(const std::string& path, std::vector<Location>::iterator &location, Server &server, int j, std::string  &filePath) {
-    std::string extention;
-    std::cout << "file" << std::endl;
-    if (location->_cgi_extensions.size() == 0)
-        throw 403;
-    size_t lastDotPos = path.rfind('.');
-    if (lastDotPos != std::string::npos) {
-        std::vector<std::string>::iterator it;
-        extention = path.substr(lastDotPos);
-        for (it = location->_cgi_extensions.begin(); it != location->_cgi_extensions.end(); it++) {
-            if (extention == *it) {
-                std::cout << "Da5lo a7biba" << std::endl;
-                CgiProcess(server, j, path, extention, filePath);
-                std::cout << "rah da5l" << std::endl;
-            }
-        }
-        if (it == location->_cgi_extensions.end())
-            throw 403;
-    }
-    else
-        throw 403;
-}
+// void HandleFile(const std::string& path, std::vector<Location>::iterator &location, Server &server, int j, std::string  &filePath) {
+//     std::string extention;
+//     std::cout << "file" << std::endl;
+//     if (location->_cgi_extensions.size() == 0)
+//         throw 4030;
+//     size_t lastDotPos = path.rfind('.');
+//     if (lastDotPos != std::string::npos) {
+//         std::vector<std::string>::iterator it;
+//         extention = path.substr(lastDotPos);
+//         for (it = location->_cgi_extensions.begin(); it != location->_cgi_extensions.end(); it++) {
+//             if (extention == *it) {
+//                 std::cout << "Da5lo a7biba" << std::endl;
+//                 CgiProcess(server, j, path, extention, filePath);
+//                 std::cout << "rah da5l" << std::endl;
+//                 return ;    
+//             }
+//         }
+//         if (it == location->_cgi_extensions.end())
+//             throw 4031;
+//     }
+//     else
+//         throw 4032;
+// }
 
-bool fileExists(const char* directoryPath, const char* fileName, std::string &indexfile) {
-    DIR* dir = opendir(directoryPath);
-    if (dir == NULL) {
-        std::cerr << "Error opening directory." << std::endl;
-        return false;
-    }
-    bool found = false;
-    struct dirent* entry;
-    while ((entry = readdir(dir)) != NULL) {
-        if (std::strncmp(entry->d_name, fileName, 5) == 0) {
-            indexfile = entry->d_name;
-            found = true;
-            break;
-        }
-    }
-    closedir(dir);
-    return found;
-}
+// bool fileExists(const char* directoryPath, const char* fileName, std::string &indexfile) {
+//     DIR* dir = opendir(directoryPath);
+//     if (dir == NULL) {
+//         std::cerr << "Error opening directory." << std::endl;
+//         return false;
+//     }
+//     bool found = false;
+//     struct dirent* entry;
+//     while ((entry = readdir(dir)) != NULL) {
+//         if (std::strncmp(entry->d_name, fileName, 5) == 0) {
+//             indexfile = entry->d_name;
+//             found = true;
+//             break;
+//         }
+//     }
+//     closedir(dir);
+//     return found;
+// }
 
-void HandleDir(const std::string& path, std::vector<Location>::iterator &location, std::string &filePath) {
-    (void)location;
-    std::string indexFile;
-    std::string extention;
-    if (path[path.length() - 1] != '/') {
-        path + "/"; 
-        // set responce
-        throw 301;
-    }
-    else {
-        if (location->_cgi_extensions.size() == 0)
-            throw 403;
-        std::cout << "check index files" << std::endl;
-        if (!fileExists(path.c_str(), "index", indexFile))
-            throw 403;
-        size_t lastDotPos = indexFile.rfind('.');
-        if (lastDotPos != std::string::npos) {
-            std::vector<std::string>::iterator it;
-            extention = indexFile.substr(lastDotPos);
-            for (it = location->_cgi_extensions.begin(); it != location->_cgi_extensions.end(); it++) {
-                if ((*it)[0] == ' ')
-                    (*it).erase(1);
-                if (extention == *it) {
-                    (void)filePath;
-                    std::cout << "pass to cgi" << std::endl;
-                    return ;
-                }
-            }
-            if (it == location->_cgi_extensions.end())
-                throw 404;
-        }
-        else
-            throw 403;
-    }
-}
+// void HandleDir(const std::string& path, std::vector<Location>::iterator &location, std::string &filePath) {
+//     (void)location;
+//     std::string indexFile;
+//     std::string extention;
+//     if (path[path.length() - 1] != '/') {
+//         path + "/"; 
+//         // set responce
+//         throw 301;
+//     }
+//     else {
+//         if (location->_cgi_extensions.size() == 0)
+//             throw 4035;
+//         std::cout << "check index files" << std::endl;
+//         if (!fileExists(path.c_str(), "index", indexFile))
+//             throw 4036;
+//         size_t lastDotPos = indexFile.rfind('.');
+//         if (lastDotPos != std::string::npos) {
+//             std::vector<std::string>::iterator it;
+//             extention = indexFile.substr(lastDotPos);
+//             for (it = location->_cgi_extensions.begin(); it != location->_cgi_extensions.end(); it++) {
+//                 if ((*it)[0] == ' ')
+//                     (*it).erase(1);
+//                 if (extention == *it) {
+//                     (void)filePath;
+//                     std::cout << "pass to cgi" << std::endl;
+//                     return ;
+//                 }
+//             }
+//             if (it == location->_cgi_extensions.end())
+//                 throw 404;
+//         }
+//         else
+//             throw 4037;
+//     }
+// }
 
-void HandlePathType(const std::string& path, std::vector<Location>::iterator &location, Server &server, int j, std::string &filePath)
-{
-    struct stat fileStat;
-    std::cout << "Path=" << path << std::endl;
-    if (stat(path.c_str(), &fileStat) == 0)
-    {
-        if (S_ISREG(fileStat.st_mode))
-            HandleFile(path, location, server, j, filePath);
-        else if (S_ISDIR(fileStat.st_mode))
-            HandleDir(path, location, filePath);
-        else
-            throw 404;
-    }
-    else
-        throw 404;
-}
+// void HandlePathType(const std::string& path, std::vector<Location>::iterator &location, Server &server, int j, std::string &filePath)
+// {
+//     struct stat fileStat;
+//     std::cout << "Path=" << path << std::endl;
+//     if (stat(path.c_str(), &fileStat) == 0)
+//     {
+//         if (S_ISREG(fileStat.st_mode))
+//             HandleFile(path, location, server, j, filePath);
+//         else if (S_ISDIR(fileStat.st_mode))
+//             HandleDir(path, location, filePath);
+//         else
+//             throw 404;
+//     }
+//     else
+//         throw 404;
+// }
 
 void    POST (Server &_servers, int j, std::string &rest, std::string bb, std::string &path)
 {
@@ -226,11 +227,6 @@ void    POST (Server &_servers, int j, std::string &rest, std::string bb, std::s
         }
         else
             _servers._requests[ _servers._pollfds[j].fd].ParseBody(bb, _servers, j);
-    }
-    if (_servers._requests[ _servers._pollfds[j].fd]._EOF == 0) {
-        std::cout << "Location does not support upload" << std::endl;
-        std::string resource = _servers._requests[ _servers._pollfds[j].fd].requestLine.url.substr(_servers._location_match->_url.length());
-        HandlePathType(path + resource, _servers._location_match, _servers, j, _servers._requests[ _servers._pollfds[j].fd].filePath);
     }
 }
 
@@ -299,11 +295,13 @@ void    Socket::acceptConnection(){
                         try {
                             std::vector<Location>::iterator location;
                             std::string bb(buffer, _servers[i]->_bytesRead);
-                            if (_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.method.empty()) {
+                            if (_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.method.empty())
+                            {
                                 _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].rest.append(bb);
                                 if (_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].rest.find("\r\n\r\n") != std::string::npos) {
                                     _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].flag = true;
                                     _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].rest = _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].ParseHttpRequest(_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].rest, _servers[i]->_bytesRead,*_servers[i], j);
+                                    bb = _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].rest;
                                     size_t pos = _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.url.find("?");
                                     if (pos != std::string::npos) {
                                         _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].queryString = _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.url.substr(pos + 1);
@@ -312,10 +310,20 @@ void    Socket::acceptConnection(){
                                     _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestStatusCode();
                                     std::map<std::string, std::string>::iterator it = _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].header.find("Host");
                                     pos = it->second.find(":");
+                                    std::cout << "===============================================================================" << std::endl;
+                                    std::cout << _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.method << " " << _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.url  << std::endl;
+                                    std::cout << "===============================================================================" << std::endl;
                                     // _servers[i]->_location_match = _servers[i]->matching(it->second.substr(0, pos), it->second.substr(pos + 1), _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.url, path, _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.method);
                                      _servers[i]->_location_match = _servers[i]->matching(it->second.substr(0, pos), it->second.substr(pos + 1), _servers[i]->_requests[ _servers[i]->_pollfds[j].fd], *_servers[i], j);
                                     if (_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.method == "POST" && _servers[i]->configs[0]->postAllowed(_servers[i]->_location_match) == false)
                                         throw 405;
+                                    // if (_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.method == "POST")
+                                    // {
+                                    //     std::cerr << _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].rest  << std::endl;
+                                    //     std::exit(0);
+                                    //     // for (std::map<std::string, std::string>::iterator it5 = _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].header.begin(); it5 != _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].header.end(); it5++)
+                                    //     //     std::cerr << it5->first << " : " << it5->second << std::endl;
+                                    // }
                                 }
                             }
                             if (_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.method == "POST" && _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].flag == true) {

@@ -10,6 +10,7 @@ Response::Response() {
 	_content_length = "";
 	_date = "";
 	_allow = "";
+	_cgiHeader = "";
 	close_connection = false;
 	sending_data = false;
 }
@@ -59,6 +60,8 @@ void Response::setResponse(std::string response) { _response = response; }
 
 void Response::setProtocol(std::string protocol) { _protocol = protocol; }
 
+void Response::setCgiHeader(std::string cgiHeader) { _cgiHeader = cgiHeader; }
+
 void Response::setStatusCode(std::string status_code) { _status_code = status_code; }
 
 void Response::setStatusMessage(std::string status_message) { _status_message = status_message; }
@@ -85,6 +88,8 @@ void Response::set_Header_Response(Server &serv, int j) {
 		response_stream << "Content-Type: "  + serv._responses[serv._pollfds[j].fd].getContentType() + "\r\n";
 		response_stream << "Connection: keep-alive\r\n";
 		response_stream << "Transfer-Encoding: chunked\r\n";
+		if (_cgiHeader != "")
+			response_stream << _cgiHeader + "\r\n";
 		response_stream << "\r\n";
 		std::string response_header = response_stream.str();
 		if(_response != ""){

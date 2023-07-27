@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/04 17:35:49 by omanar            #+#    #+#             */
-/*   Updated: 2023/07/24 01:59:31 by omanar           ###   ########.fr       */
+/*   Updated: 2023/07/27 03:03:27 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ class Response
 		std::string _date;
 		std::string _allow;
 		std::string _ReasonPhrase;
+		std::string _cgiHeader;
 	public:
 		bool close_connection;
 		bool sending_data;
@@ -59,6 +60,7 @@ class Response
 		std::string getReasonPhrase();
 		void setReasonPhrase(std::string ReasonPhrase);
 		void setResponse(std::string response);
+		void setCgiHeader(std::string cgiHeader);
 		void setProtocol(std::string protocol);
 		void setStatusCode(std::string status_code);
 		void setStatusMessage(std::string status_message);

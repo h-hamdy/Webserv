@@ -4,7 +4,7 @@
 void setEnv(Response &response, std::string const &path, ParseRequest &request) {
 	std::vector<std::string> env;
 
-	env.push_back("SCRIPT_NAME=" + request.requestLine.url);
+	env.push_back("SCRIPT_NAME=" + path);
 	env.push_back("SCRIPT_FILENAME=" + path);
 	env.push_back("PATH_INFO=" + path);
 	env.push_back("QUERY_STRING=" + request.queryString);
@@ -36,10 +36,17 @@ std::string generateRandomString() {
 
 void Cgi(char *args[3], Response &response, ParseRequest &req, std::string filePath) {
 	int file = 0;
-	if (req.requestLine.method == "POST")
+	if (req.requestLine.method == "POST") {
+
 		file = open(filePath.c_str(), O_RDONLY);
+		
+		if (file == -1) {
+			throw std::runtime_error("open error");
+			exit(1);
+		}
+	}
 	std::cout << filePath << std::endl;
-	req.tmpFile = "tmp" + generateRandomString();
+	req.tmpFile = "/tmp/tmp" + generateRandomString();
 	int fd = open(req.tmpFile .c_str(), O_RDWR | O_CREAT | O_TRUNC, 0666);
 		if (fd == -1)
 			throw std::runtime_error("open error");
@@ -54,14 +61,20 @@ void Cgi(char *args[3], Response &response, ParseRequest &req, std::string fileP
 			std::cerr << "execve error" << std::endl;
 			exit(1);
 		}
-		exit(0);
 	}
 	else if (req.pid == -1)
 		throw std::runtime_error("fork error");
 	close(fd);
 	if (file != 0)
 		close(file);
-	// remove(filePath.c_str());
+	remove(filePath.c_str());
+}
+
+std::string parseCgiHeader(std::string const &header) {
+	size_t pos = header.find("\r\n\r\n");
+	if (pos != std::string::npos)
+		return header.substr(0, pos);
+	return header;
 }
 
 std::string parseCgiBody(std::string const &body) {
@@ -95,14 +108,12 @@ void CgiProcess(Server &server, int j, std::string const &path, std::string cons
 				args[2] = NULL;
 			}
 
-
 			Cgi(args, res, req, filePath);
 			free(args[0]);
 			free(args[1]);
 			req.cgiFlag = 1;
 		}
 		else {
-			// res.setResponse("");
 			std::cout << "path in cgi " << path << " flag " << req.cgiFlag << std::endl;
 			int check = waitpid(req.pid, &req.status, WNOHANG);
 			if (check == 0){
@@ -122,8 +133,8 @@ void CgiProcess(Server &server, int j, std::string const &path, std::string cons
 					body += buf;
 				}
 				std::cout << "body ====================== " << body << std::endl;
+				res.setCgiHeader(parseCgiHeader(body));
 				res.setResponse(parseCgiBody(body));
-				// exit(0);
 				close(fd);
 				unlink(req.tmpFile.c_str());
 				remove(req.tmpFile.c_str());
