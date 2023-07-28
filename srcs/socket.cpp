@@ -105,102 +105,6 @@ std::string get_ContentType (std::string value)
 	throw 400;
 }
 
-// void HandleFile(const std::string& path, std::vector<Location>::iterator &location, Server &server, int j, std::string  &filePath) {
-//     std::string extention;
-//     std::cout << "file" << std::endl;
-//     if (location->_cgi_extensions.size() == 0)
-//         throw 4030;
-//     size_t lastDotPos = path.rfind('.');
-//     if (lastDotPos != std::string::npos) {
-//         std::vector<std::string>::iterator it;
-//         extention = path.substr(lastDotPos);
-//         for (it = location->_cgi_extensions.begin(); it != location->_cgi_extensions.end(); it++) {
-//             if (extention == *it) {
-//                 std::cout << "Da5lo a7biba" << std::endl;
-//                 CgiProcess(server, j, path, extention, filePath);
-//                 std::cout << "rah da5l" << std::endl;
-//                 return ;    
-//             }
-//         }
-//         if (it == location->_cgi_extensions.end())
-//             throw 4031;
-//     }
-//     else
-//         throw 4032;
-// }
-
-// bool fileExists(const char* directoryPath, const char* fileName, std::string &indexfile) {
-//     DIR* dir = opendir(directoryPath);
-//     if (dir == NULL) {
-//         std::cerr << "Error opening directory." << std::endl;
-//         return false;
-//     }
-//     bool found = false;
-//     struct dirent* entry;
-//     while ((entry = readdir(dir)) != NULL) {
-//         if (std::strncmp(entry->d_name, fileName, 5) == 0) {
-//             indexfile = entry->d_name;
-//             found = true;
-//             break;
-//         }
-//     }
-//     closedir(dir);
-//     return found;
-// }
-
-// void HandleDir(const std::string& path, std::vector<Location>::iterator &location, std::string &filePath) {
-//     (void)location;
-//     std::string indexFile;
-//     std::string extention;
-//     if (path[path.length() - 1] != '/') {
-//         path + "/"; 
-//         // set responce
-//         throw 301;
-//     }
-//     else {
-//         if (location->_cgi_extensions.size() == 0)
-//             throw 4035;
-//         std::cout << "check index files" << std::endl;
-//         if (!fileExists(path.c_str(), "index", indexFile))
-//             throw 4036;
-//         size_t lastDotPos = indexFile.rfind('.');
-//         if (lastDotPos != std::string::npos) {
-//             std::vector<std::string>::iterator it;
-//             extention = indexFile.substr(lastDotPos);
-//             for (it = location->_cgi_extensions.begin(); it != location->_cgi_extensions.end(); it++) {
-//                 if ((*it)[0] == ' ')
-//                     (*it).erase(1);
-//                 if (extention == *it) {
-//                     (void)filePath;
-//                     std::cout << "pass to cgi" << std::endl;
-//                     return ;
-//                 }
-//             }
-//             if (it == location->_cgi_extensions.end())
-//                 throw 404;
-//         }
-//         else
-//             throw 4037;
-//     }
-// }
-
-// void HandlePathType(const std::string& path, std::vector<Location>::iterator &location, Server &server, int j, std::string &filePath)
-// {
-//     struct stat fileStat;
-//     std::cout << "Path=" << path << std::endl;
-//     if (stat(path.c_str(), &fileStat) == 0)
-//     {
-//         if (S_ISREG(fileStat.st_mode))
-//             HandleFile(path, location, server, j, filePath);
-//         else if (S_ISDIR(fileStat.st_mode))
-//             HandleDir(path, location, filePath);
-//         else
-//             throw 404;
-//     }
-//     else
-//         throw 404;
-// }
-
 void    POST (Server &_servers, int j, std::string &rest, std::string bb, std::string &path)
 {
     if (_servers._requests[ _servers._pollfds[j].fd].requestLine.method == "POST" && _servers._requests[ _servers._pollfds[j].fd].create_file == true)
@@ -208,14 +112,8 @@ void    POST (Server &_servers, int j, std::string &rest, std::string bb, std::s
         std::string filename;
         std::map<std::string, std::string>::iterator it = _servers._requests[ _servers._pollfds[j].fd].header.find("Content-Type");
         filename = get_ContentType(it->second);
-            
-        // if (!_servers._location_match->_upload_path.empty())
+
         _servers._requests[ _servers._pollfds[j].fd].filePath = path + filename;
-        // else {
-        //     std::cout << "Location does not support upload" << std::endl;
-        //     std::string resource = _servers._requests[ _servers._pollfds[j].fd].requestLine.url.substr(_servers._location_match->_url.length());
-        //     HandlePathType(path + resource, _servers._location_match, _servers, j);
-        // }
         _servers._requests[ _servers._pollfds[j].fd].file.open(_servers._requests[ _servers._pollfds[j].fd].filePath, std::ios::binary | std::ios::app | std::ios::ate);
         _servers._requests[ _servers._pollfds[j].fd]._EOF = 1;
         _servers._requests[ _servers._pollfds[j].fd].create_file = false;
@@ -277,7 +175,6 @@ void    Socket::acceptConnection(){
             if (FD_ISSET( _servers[i]->_pollfds[j].fd,& _servers[i]->_read_set)) {
                 char buffer[1025] = {0};
                  _servers[i]->_bytesRead = recv( _servers[i]->_pollfds[j].fd,buffer,1024 ,0);
-                //  std::cout<<"buffer recv :" << buffer << std::endl;
                 if ( _servers[i]->_bytesRead < 1) {
                     if(errno != EWOULDBLOCK && errno != EAGAIN) {
                         std::cout << "Error reading socket" << std::endl;
@@ -313,25 +210,13 @@ void    Socket::acceptConnection(){
                                     _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestStatusCode();
                                     std::map<std::string, std::string>::iterator it = _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].header.find("Host");
                                     pos = it->second.find(":");
-                                    // std::cout << "===============================================================================" << std::endl;
-                                    // std::cout << _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.method << " " << _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.url  << std::endl;
-                                    // std::cout << "===============================================================================" << std::endl;
-                                    // _servers[i]->_location_match = _servers[i]->matching(it->second.substr(0, pos), it->second.substr(pos + 1), _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.url, path, _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.method);
                                      _servers[i]->_location_match = _servers[i]->matching(it->second.substr(0, pos), it->second.substr(pos + 1), _servers[i]->_requests[ _servers[i]->_pollfds[j].fd], *_servers[i], j);
                                     if (_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.method == "POST" && _servers[i]->configs[0]->postAllowed(_servers[i]->_location_match) == false)
                                         throw 405;
-                                    // if (_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.method == "POST")
-                                    // {
-                                    //     std::cerr << _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].rest  << std::endl;
-                                    //     std::exit(0);
-                                    //     // for (std::map<std::string, std::string>::iterator it5 = _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].header.begin(); it5 != _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].header.end(); it5++)
-                                    //     //     std::cerr << it5->first << " : " << it5->second << std::endl;
-                                    // }
                                 }
                             }
-                            if (_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.method == "POST" && _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].flag == true) {
+                            if (_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.method == "POST" && _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].flag == true)
                                 POST (*(_servers[i]), j, _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].rest, bb, _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].path);
-                            }
                         }
                         catch (int status) {
                             std::cout << status << std::endl;
@@ -351,38 +236,7 @@ void    Socket::acceptConnection(){
                 }
                 else{
                     FD_SET(_servers[i]->_pollfds[j].fd, &_servers[i]->_write_set);
-                    // Read request from the client
-                    // Parse the request and extract relevant information
 
-                    // Process the request
-                    // Perform necessary business logic or data processing
-                    // Check if the request requires CGI execution
-                    // bool isCGI = /* Logic to determine if CGI execution is needed */
-
-                    // if (isCGI) {
-                        // Execute CGI script
-                        // Pass request information to the CGI script (e.g., environment variables, request data)
-                        // Capture the output generated by the CGI script
-                        // Set appropriate status code, headers, and response body based on the CGI script output
-                    // } else {
-                        // Process the request
-                        // Perform necessary business logic or data processing
-
-                        // Construct the response
-                        // Set appropriate status code, headers, and response body
-                    // }
-
-                    // Construct the response
-                    // Set appropriate status code, headers, and response body
-
-                    // Send the response to the client
-                    // Format the response message and send it over the client socket
-
-                    // Close the client socket
-
-                    // Handle errors and exceptions
-                    // FD_CLR( _servers[i]->_pollfds[j].fd,& _servers[i]->_read_set);
-                    // FD_SET( _servers[i]->_pollfds[j].fd,& _servers[i]->_write_set);
                     if(FD_ISSET( _servers[i]->_pollfds[j].fd,& _servers[i]->_write_set)){
                         //Implement a method specifically designed to generate a response.
                         if(_servers[i]->_responses[ _servers[i]->_pollfds[j].fd].response_not_send == ""){
