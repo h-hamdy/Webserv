@@ -301,7 +301,7 @@ void Response::HandleDir(const std::string& path, std::vector<Location>::iterato
             throw 403;
         std::cout << "check index files" << std::endl;
         if (!fileExists(path.c_str(), "index", indexFile))
-            throw 4036;
+            throw 403;
         size_t lastDotPos = indexFile.rfind('.');
         if (lastDotPos != std::string::npos) {
             std::vector<std::string>::iterator it;
@@ -327,7 +327,7 @@ void Response::HandleFile(const std::string& path, std::vector<Location>::iterat
     std::string extention;
     std::cout << "file" << std::endl;
     if (location->_cgi_extensions.size() == 0)
-        throw 4030;
+        throw 403;
     size_t lastDotPos = path.rfind('.');
     if (lastDotPos != std::string::npos) {
         std::vector<std::string>::iterator it;
@@ -341,10 +341,10 @@ void Response::HandleFile(const std::string& path, std::vector<Location>::iterat
             }
         }
         if (it == location->_cgi_extensions.end())
-            throw 4031;
+            throw 403;
     }
     else
-        throw 4032;
+        throw 403;
 }
 
 void Response::HandlePathType(const std::string& path, std::vector<Location>::iterator &location, Server &server, int j, std::string &filePath)
@@ -368,7 +368,7 @@ void    Socket::check_methods(Server &server,int j){
     std::string method =  server._requests[server._pollfds[j].fd].requestLine.method;
         if(method == "GET")
             server._responses[server._pollfds[j].fd].GET(server, j);
-        else if(method == "POST"){
+        else if(method == "POST" && server._location_match->_upload_path.empty()) {
         std::cout << "Location does not support upload" << std::endl;
         std::string resource = server._requests[ server._pollfds[j].fd].requestLine.url.substr(server._location_match->_url.length());
         server._responses[server._pollfds[j].fd].HandlePathType(server._requests[server._pollfds[j].fd].path + resource, server._location_match, server, j,server._requests[ server._pollfds[j].fd].filePath);

@@ -103,7 +103,7 @@ void ParseRequest::ParseBody (const std::string& _body, Server &server, int j) {
 bool check_url(const std::string& url) {
 	std::string allowd = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~:/?#[]@!$&'()*+,;=";
 	for (size_t i = 0; i < url.length(); i++)
-		if (allowd.find(url[i]) == std::string::npos)
+		if (allowd.find(url[i]) != std::string::npos)
 			return (false);
 	return (true);
 }
@@ -125,6 +125,12 @@ void	ParseRequest::requestStatusCode () {
 	it1 = header.find("Content-Type");
 	if (it1 == header.end() && requestLine.method == "POST")
 		throw 400;
+	if (it1 != header.end() && it != header.end()) {
+		std::string flag = "multipart/form-data; boundary=";
+		std::string boudrie = it1->second.substr(0, flag.length());
+		if (boudrie == flag)
+			throw 400;
+	}
 	if (it != header.end() && it->second != "chunked")
 		throw 501;
 	if (it == header.end()) {
