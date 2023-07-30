@@ -1,346 +1,771 @@
-<!DOCTYPE html>
 <html>
+
 <head>
-<title>W3.CSS Template</title>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Oswald">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open Sans">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<style>
-h1,h2,h3,h4,h5,h6 {font-family: "Oswald"}
-body {font-family: "Open Sans"}
-</style>
+    <meta charset="utf-8">
+
+    <title>Experience the Journey</title>
+    <meta name="description" content="Made with Framer">
+
+    <style data-framer-css-ssr-minified="" data-framer-components="framer-hYnFO">
+        html,
+        body,
+        #main {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box
+        }
+
+        :root {
+            -webkit-font-smoothing: antialiased
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-font-smoothing: inherit
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        p,
+        figure {
+            margin: 0
+        }
+
+        body,
+        input,
+        textarea,
+        select,
+        button {
+            font-size: 12px;
+            font-family: sans-serif
+        }
+
+        @font-face {
+            font-family: "Noto Emoji";
+            font-style: normal;
+            font-weight: 400;
+            font-display: swap;
+            src: url(https://fonts.gstatic.com/s/notoemoji/v39/bMrnmSyK7YY-MEu6aWjPDs-ar6uWaGWuob-r0jwqI-xEIF50anKtsFA.5.woff2) format("woff2");
+            unicode-range: U+2693, U+26e9-26ea, U+26f1-26f2, U+26f4-26f5, U+26fa, U+26fd, U+2708, U+fe0f, U+1f301, U+1f303, U+1f306-1f307, U+1f309, U+1f310, U+1f3a0-1f3a2, U+1f3aa, U+1f3cd-1f3ce, U+1f3d5, U+1f3d7-1f3db, U+1f3df-1f3e6, U+1f3e8-1f3ed, U+1f3ef-1f3f0, U+1f488, U+1f492, U+1f4ba, U+1f54b-1f54d, U+1f5fa-1f5ff, U+1f680-1f6a2, U+1f6a4-1f6a8, U+1f6b2, U+1f6d1, U+1f6d5-1f6d6, U+1f6dd-1f6df, U+1f6e2-1f6e5, U+1f6e9, U+1f6eb-1f6ec, U+1f6f3-1f6f6, U+1f6f8, U+1f6fa-1f6fb, U+1f9bc-1f9bd, U+1f9ed, U+1f9f3, U+1fa7c
+        }
+
+        @font-face {
+            font-family: Bowlby One;
+            font-style: normal;
+            font-weight: 400;
+            src: url(https://fonts.gstatic.com/s/bowlbyone/v19/taiPGmVuC4y96PFeqp8sqomI_A.woff2) format("woff2");
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD
+        }
+
+        @font-face {
+            font-family: DM Sans;
+            font-style: normal;
+            font-weight: 500;
+            src: url(https://fonts.gstatic.com/s/dmsans/v14/rP2tp2ywxg089UriI5-g4vlH9VoD8CmcqZG40F9JadbnoEwAkJxRSW32.woff2) format("woff2");
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD
+        }
+
+
+        p.framer-text,
+        div.framer-text,
+        h1.framer-text,
+        h2.framer-text,
+        h3.framer-text,
+        h4.framer-text,
+        h5.framer-text,
+        h6.framer-text,
+        li.framer-text,
+        ol.framer-text,
+        ul.framer-text,
+        span.framer-text:not([data-text-fill]) {
+            font-family: var(--framer-font-family, Inter, Inter Placeholder, sans-serif);
+            font-style: var(--framer-font-style, normal);
+            font-weight: var(--framer-font-weight, 400);
+            color: var(--framer-text-color, #000);
+            font-size: calc(var(--framer-font-size, 16px) * var(--framer-font-size-scale, 1));
+            letter-spacing: var(--framer-letter-spacing, 0);
+            text-transform: var(--framer-text-transform, none);
+            text-decoration: var(--framer-text-decoration, none);
+            line-height: var(--framer-line-height, 1.2em);
+            text-align: var(--framer-text-alignment, start)
+        }
+
+        .framer-hYnFO .framer-1dkhgwd {
+            align-content: center;
+            align-items: center;
+            background-color: #2c3540;
+            display: flex;
+            flex: none;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            gap: 10px;
+            height: min-content;
+            justify-content: center;
+            overflow: hidden;
+            padding: 100px 50px;
+            position: relative;
+            width: 100%
+        }
+
+        .framer-hYnFO .framer-z0csi8 {
+            align-content: center;
+            align-items: center;
+            display: flex;
+            flex: 1 0 0px;
+            flex-direction: column;
+            flex-wrap: nowrap;
+            gap: 0px;
+            height: min-content;
+            justify-content: center;
+            max-width: 1000px;
+            overflow: visible;
+            padding: 0;
+            position: relative;
+            width: 1px;
+            z-index: 5
+        }
+
+        .framer-hYnFO .framer-w84h3i {
+            align-content: center;
+            align-items: center;
+            display: flex;
+            flex: none;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            height: min-content;
+            justify-content: space-between;
+            overflow: hidden;
+            padding: 0;
+            position: relative;
+            width: 100%
+        }
+
+        .framer-hYnFO .framer-1d0ywjt {
+            align-content: center;
+            align-items: center;
+            background-color: #465973;
+            display: flex;
+            flex: none;
+            flex-direction: column;
+            flex-wrap: nowrap;
+            gap: 0px;
+            height: min-content;
+            justify-content: flex-start;
+            overflow: hidden;
+            padding: 60px 100px;
+            position: relative;
+            width: 100%
+        }
+
+        .framer-hYnFO .framer-j4v5co {
+            align-content: flex-start;
+            align-items: flex-start;
+            display: flex;
+            flex: none;
+            flex-direction: column;
+            flex-wrap: nowrap;
+            gap: 40px;
+            height: min-content;
+            justify-content: flex-start;
+            max-width: 1000px;
+            overflow: visible;
+            padding: 0;
+            position: relative;
+            width: 100%
+        }
+
+        .framer-hYnFO .framer-n3kg9b {
+            align-content: flex-start;
+            align-items: flex-start;
+            display: flex;
+            flex: none;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            gap: 40px;
+            height: min-content;
+            justify-content: center;
+            overflow: hidden;
+            padding: 0;
+            position: relative;
+            width: 100%
+        }
+
+        .framer-hYnFO .framer-f7n2tg,
+        .framer-hYnFO .framer-i59scf {
+            --framer-paragraph-spacing: 0px;
+            flex: 1 0 0px;
+            height: auto;
+            overflow: visible;
+            position: relative;
+            white-space: pre-wrap;
+            width: 1px;
+            word-break: break-word;
+            word-wrap: break-word
+        }
+
+        .framer-hYnFO .framer-xf3h85 {
+            align-content: center;
+            align-items: center;
+            background-color: #465973;
+            display: flex;
+            flex: none;
+            flex-direction: column;
+            flex-wrap: nowrap;
+            gap: 25px;
+            height: min-content;
+            justify-content: center;
+            overflow: visible;
+            padding: 25px 100px;
+            position: relative;
+            width: 100%
+        }
+
+        .framer-hYnFO .framer-15qhh0z {
+            --framer-link-text-color: #0099ff;
+            --framer-link-text-decoration: underline;
+            --framer-paragraph-spacing: 0px;
+            flex: none;
+            height: auto;
+            max-width: 100%;
+            overflow: visible;
+            position: relative;
+            white-space: pre-wrap;
+            width: 400px;
+            word-break: break-word;
+            word-wrap: break-word
+        }
+
+        .framer-hYnFO .framer-15o1xf {
+            align-content: center;
+            align-items: center;
+            background-color: #2cbf6c;
+            border-radius: 8px;
+            display: flex;
+            flex: none;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            gap: 10px;
+            height: 40px;
+            justify-content: center;
+            overflow: visible;
+            padding: 15px;
+            position: relative;
+            width: min-content
+        }
+
+        .framer-hYnFO .framer-1lnw8ig {
+            --framer-link-text-color: #0099ff;
+            --framer-link-text-decoration: underline;
+            --framer-paragraph-spacing: 0px;
+            flex: none;
+            height: auto;
+            position: relative;
+            white-space: pre;
+            width: auto
+        }
+
+        .framer-hYnFO .framer-1nwnlvp-container {
+            flex: none;
+            height: auto;
+            left: 5px;
+            position: absolute;
+            top: -61px;
+            transform: rotate(16deg);
+            width: 200px;
+            z-index: 1
+        }
+
+        .framer-hYnFO .framer-srn6pj {
+            align-content: center;
+            align-items: center;
+            background-color: #465973;
+            display: flex;
+            flex: none;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            gap: 40px;
+            height: 400px;
+            justify-content: center;
+            overflow: visible;
+            padding: 100px;
+            position: relative;
+            width: 100%
+        }
+
+        .framer-hYnFO .framer-1hkz78s,
+        .framer-hYnFO .framer-1lnc29m,
+        .framer-hYnFO .framer-1vo0ow9 {
+            align-content: center;
+            align-items: center;
+            display: flex;
+            flex: 1 0 0px;
+            flex-direction: column;
+            flex-wrap: nowrap;
+            gap: 20px;
+            height: 300px;
+            justify-content: center;
+            overflow: visible;
+            padding: 0;
+            position: relative;
+            width: 1px
+        }
+
+        .framer-hYnFO .framer-a29ed,
+        .framer-hYnFO .framer-1e6mw,
+        .framer-hYnFO .framer-18qrfsq {
+            -webkit-filter: grayscale(1);
+            aspect-ratio: 1 / 1;
+            border-radius: 64px;
+            filter: grayscale(1);
+            flex: none;
+            height: var(--framer-aspect-ratio-supported, 80px);
+            overflow: hidden;
+            position: relative;
+            width: 80px;
+            will-change: transform
+        }
+
+        .framer-hYnFO .framer-13qau0m,
+        .framer-hYnFO .framer-1vr3vw9,
+        .framer-hYnFO .framer-1l38jsq {
+            align-content: center;
+            align-items: center;
+            display: flex;
+            flex: none;
+            flex-direction: column;
+            flex-wrap: nowrap;
+            gap: 10px;
+            height: min-content;
+            justify-content: flex-start;
+            overflow: hidden;
+            padding: 0;
+            position: relative;
+            width: 100%
+        }
+
+        .framer-hYnFO .framer-m038m5 {
+            align-content: center;
+            align-items: center;
+            background-color: #465973;
+            display: flex;
+            flex: none;
+            flex-direction: column;
+            flex-wrap: nowrap;
+            gap: 0px;
+            height: min-content;
+            justify-content: flex-start;
+            overflow: hidden;
+            padding: 100px;
+            position: relative;
+            width: 100%
+        }
+
+        .framer-hYnFO .framer-18pwypq {
+            align-content: center;
+            align-items: center;
+            display: flex;
+            flex: none;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            gap: 20px;
+            height: min-content;
+            justify-content: center;
+            max-width: 1000px;
+            overflow: visible;
+            padding: 0;
+            position: relative;
+            width: 100%
+        }
+
+        .framer-hYnFO .framer-10wh8hz,
+        .framer-hYnFO .framer-8y3tdu {
+            align-content: center;
+            align-items: center;
+            background-color: #2c3540;
+            display: flex;
+            flex: 1 0 0px;
+            flex-direction: column;
+            flex-wrap: nowrap;
+            gap: 20px;
+            height: min-content;
+            justify-content: center;
+            overflow: visible;
+            padding: 60px;
+            position: relative;
+            width: 1px
+        }
+
+        .framer-hYnFO .framer-ajirim-container {
+            flex: none;
+            height: auto;
+            position: relative;
+            transform: rotate(5deg);
+            width: 200px;
+            z-index: 1
+        }
+
+        .framer-hYnFO .framer-a58y0i-container {
+            bottom: -100px;
+            flex: none;
+            height: auto;
+            left: -100px;
+            position: absolute;
+            transform: rotate(25deg);
+            width: 200px;
+            z-index: 1
+        }
+
+        .framer-hYnFO .framer-k4rgzm-container {
+            flex: none;
+            height: auto;
+            position: relative;
+            transform: rotate(-10deg);
+            width: 200px;
+            z-index: 1
+        }
+
+
+        .framer-hYnFO .framer-2t8jqc {
+            align-content: center;
+            align-items: center;
+            background-color: #465973;
+            display: flex;
+            flex: none;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            gap: 20px;
+            height: min-content;
+            justify-content: center;
+            overflow: hidden;
+            padding: 100px;
+            position: relative;
+            width: 100%
+        }
+
+        .framer-hYnFO .framer-qva60c {
+            align-content: center;
+            align-items: center;
+            display: flex;
+            flex: 1 0 0px;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            height: min-content;
+            justify-content: space-between;
+            overflow: hidden;
+            padding: 0;
+            position: relative;
+            width: 1px
+        }
+
+        .framer-hYnFO .framer-ngppbq {
+            align-content: flex-start;
+            align-items: flex-start;
+            display: flex;
+            flex: none;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            gap: 34px;
+            height: min-content;
+            justify-content: flex-start;
+            overflow: visible;
+            padding: 0;
+            position: relative;
+            width: min-content
+        }
+
+
+
+
+            .framer-hYnFO .framer-1dkhgwd>*,
+            .framer-hYnFO .framer-15o1xf>* {
+                margin: 0 5px
+            }
+
+
+            .framer-hYnFO .framer-13qau0m>*,
+            .framer-hYnFO .framer-1vr3vw9>*,
+            .framer-hYnFO .framer-1l38jsq>* {
+                margin: 5px 0
+            }
+
+            .framer-hYnFO .framer-18pwypq>*,
+            .framer-hYnFO .framer-2t8jqc>* {
+                margin: 0 10px
+            }
+
+
+
+
+        @media (max-width: 809px) {
+            .framer-hYnFO .hidden-18eeqq1 {
+                display: none !important
+            }
+
+
+    </style>
+
+    <!-- End of headEnd -->
 </head>
-<body class="w3-light-grey">
 
-<!-- Navigation bar with social media icons -->
-<div class="w3-bar w3-black w3-hide-small">
-  <a href="#" class="w3-bar-item w3-button"><i class="fa fa-facebook-official"></i></a>
-  <a href="#" class="w3-bar-item w3-button"><i class="fa fa-instagram"></i></a>
-  <a href="#" class="w3-bar-item w3-button"><i class="fa fa-snapchat"></i></a>
-  <a href="#" class="w3-bar-item w3-button"><i class="fa fa-flickr"></i></a>
-  <a href="#" class="w3-bar-item w3-button"><i class="fa fa-twitter"></i></a>
-  <a href="#" class="w3-bar-item w3-button"><i class="fa fa-linkedin"></i></a>
-  <a href="#" class="w3-bar-item w3-button w3-right"><i class="fa fa-search"></i></a>
-</div>
-  
-<!-- w3-content defines a container for fixed size centered content, 
-and is wrapped around the whole page content, except for the footer in this example -->
-<div class="w3-content" style="max-width:1600px">
+<body>
 
-  <!-- Header -->
-  <header class="w3-container w3-center w3-padding-48 w3-white">
-    <h1 class="w3-xxxlarge"><b>JANE BLOGLIFE</b></h1>
-    <h6>Welcome to the blog of <span class="w3-tag">Jane's world</span></h6>
-  </header>
 
-  <!-- Image header -->
-  <header class="w3-display-container w3-wide" id="home">
-    <img class="w3-image" src="/w3images/jane.jpg" alt="Fashion Blog" width="1600" height="1060">
-    <div class="w3-display-left w3-padding-large">
-      <h1 class="w3-text-white">Jane's</h1>
-      <h1 class="w3-jumbo w3-text-white w3-hide-small"><b>FASHION BLOG</b></h1>
-      <h6><button class="w3-button w3-white w3-padding-large w3-large w3-opacity w3-hover-opacity-off" onclick="document.getElementById('subscribe').style.display='block'">SUBSCRIBE</button></h6>
+
+
+    <div id="main"
+        data-framer-hydrate-v2="{&quot;routeId&quot;:&quot;lhYlMFGDN&quot;,&quot;localizationId&quot;:&quot;default&quot;}"
+        data-framer-ssr-released-at="2023-07-18T16:14:19.171Z" data-framer-page-optimized-at="2023-07-28T00:47:51.172Z">
+        <div class="framer-hYnFO" style="display:contents">
+            <div class="framer-qqztfn" style="min-height:100%;width:auto">
+                <div class="framer-1dkhgwd" data-framer-name="Hero" name="Hero">
+                    <div class="framer-z0csi8" data-framer-name="Content" name="Content"><svg class="framer-vfjlgb"
+                            style="outline:none;display:flex;flex-direction:column;justify-content:flex-start;flex-shrink:0;transform:none"
+                            data-framer-component-type="RichTextContainer" viewBox="0 0 1000 81">
+                            <foreignObject width="100%" height="100%" transform="scale(1)"
+                                style="overflow:visible;transform-origin:center center">
+                                <h1 style="--font-selector:R0Y7Qm93bGJ5IE9uZS1yZWd1bGFy;--framer-font-family:&quot;Bowlby One&quot;, sans-serif;--framer-font-size:73.27634851126267px;--framer-line-height:1.1em;--framer-text-alignment:center;--framer-text-color:rgb(255, 255, 255)" class="framer-text">The VibeSphere Server</h1>
+                            </foreignObject>
+                        </svg>
+                        <div class="framer-w84h3i">
+                            <div class="framer-193vgqs"
+                                style="outline:none;display:flex;flex-direction:column;justify-content:flex-start;flex-shrink:0;transform:none"
+                                data-framer-component-type="RichTextContainer">
+                                <p style="--font-selector:R0Y7RE0gU2Fucy01MDA=;--framer-font-family:&quot;DM Sans&quot;, sans-serif;--framer-font-weight:500;--framer-text-alignment:left;--framer-text-color:rgb(255, 255, 255)"
+                                    class="framer-text">Experience the Journey</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="framer-1d0ywjt" data-framer-name="Text" name="Text">
+                    <div class="framer-j4v5co" data-framer-name="Content" name="Content">
+                        <div class="framer-1lau63"
+                            style="outline:none;display:flex;flex-direction:column;justify-content:flex-start;flex-shrink:0;transform:none"
+                            data-framer-component-type="RichTextContainer">
+                            <h2 style="--font-selector:R0Y7Qm93bGJ5IE9uZS1yZWd1bGFy;--framer-font-family:&quot;Bowlby One&quot;, sans-serif;--framer-font-size:48px;--framer-text-alignment:left;--framer-text-color:rgb(255, 255, 255)"
+                                class="framer-text">A Whimsical Journey of Love, Toxicity, and Laughter</h2>
+                        </div>
+                        <div class="framer-n3kg9b" data-framer-name="Text" name="Text">
+                            <div class="framer-f7n2tg"
+                                style="outline:none;display:flex;flex-direction:column;justify-content:flex-start;flex-shrink:0;transform:none"
+                                data-framer-component-type="RichTextContainer">
+                                <h3 style="--font-selector:R0Y7RE0gU2Fucy01MDA=;--framer-font-family:&quot;DM Sans&quot;, sans-serif;--framer-font-size:20px;--framer-font-weight:500;--framer-line-height:1.5em;--framer-text-alignment:left;--framer-text-color:rgb(255, 255, 255)"
+                                    class="framer-text">Discover the full potential of WebServ, The ultimate webserver experience you’ve been longing for.</h3>
+                            </div>
+                            <div class="framer-i59scf"
+                                style="outline:none;display:flex;flex-direction:column;justify-content:flex-start;flex-shrink:0;transform:none"
+                                data-framer-component-type="RichTextContainer">
+                                <h3 style="--font-selector:R0Y7RE0gU2Fucy01MDA=;--framer-font-family:&quot;DM Sans&quot;, sans-serif;--framer-font-size:20px;--framer-font-weight:500;--framer-line-height:1.5em;--framer-text-alignment:left;--framer-text-color:rgb(255, 255, 255)"
+                                    class="framer-text">VibeSphere: Where Love, Toxins, and Humor Collide</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="framer-xf3h85" data-framer-name="Call to Action" name="Call to Action">
+                    <div class="framer-uh4ufi"
+                        style="outline:none;display:flex;flex-direction:column;justify-content:flex-start;flex-shrink:0;transform:none"
+                        data-framer-component-type="RichTextContainer">
+                        <p style="--font-selector:R0Y7Tm90byBFbW9qaS1yZWd1bGFy;--framer-font-family:&quot;Noto Emoji&quot;, &quot;Noto Emoji Placeholder&quot;, sans-serif;--framer-font-size:123px;--framer-text-alignment:center;--framer-text-color:rgb(44, 191, 108)"
+                            class="framer-text">🌐</p>
+                    </div>
+                    <div class="framer-g8cvn0"
+                        style="outline:none;display:flex;flex-direction:column;justify-content:flex-start;flex-shrink:0;transform:none"
+                        data-framer-component-type="RichTextContainer">
+                        <h2 style="--font-selector:R0Y7Qm93bGJ5IE9uZS1yZWd1bGFy;--framer-font-family:&quot;Bowlby One&quot;, sans-serif;--framer-font-size:50px;--framer-text-alignment:center;--framer-text-color:rgb(255, 255, 255)"
+                            class="framer-text">Welcome to VibeSphere</h2>
+                    </div>
+                    <div class="framer-15qhh0z"
+                        style="outline:none;display:flex;flex-direction:column;justify-content:flex-start;flex-shrink:0;transform:none"
+                        data-framer-component-type="RichTextContainer">
+                        <p style="--font-selector:R0Y7RE0gU2Fucy01MDA=;--framer-font-family:&quot;DM Sans&quot;, sans-serif;--framer-font-weight:500;--framer-line-height:1.5em;--framer-text-alignment:center;--framer-text-color:rgb(255, 255, 255)"
+                            class="framer-text">Where Love, Laughter, and a Dash of Sarcasm Unite! Embark on our Whimsical Web Journey!</p>
+                    </div>
+                    <div class="framer-15o1xf" data-framer-name="Button" name="Button">
+                        <div class="framer-1lnw8ig"
+                            style="outline:none;display:flex;flex-direction:column;justify-content:flex-start;flex-shrink:0;transform:none"
+                            data-framer-component-type="RichTextContainer">
+                            <p style="--font-selector:R0Y7RE0gU2Fucy03MDA=;--framer-font-family:&quot;DM Sans&quot;, &quot;DM Sans Placeholder&quot;, sans-serif;--framer-font-size:14px;--framer-font-weight:700;--framer-text-alignment:center;--framer-text-color:rgb(255, 255, 255)"
+                                class="framer-text">Dive In!</p>
+                        </div>
+                    </div>
+                    <div class="framer-1nwnlvp-container" style="transform:rotate(16deg)"><svg viewBox="0 0 200 200">
+                            <path
+                                d="M 21.315 99.618 C 44.533 89.027 105.309 75.676 162.682 107.011 M 153.343 119.746 C 157.643 119.41 162.188 119.364 166.499 119.518 C 167.533 119.555 178.436 120.304 178.314 119.61 C 177.732 116.283 175.701 112.966 174.542 109.81 C 172.172 103.358 170.203 97.019 169.525 90.161 C 169.187 86.729 169.212 83.309 169.017 79.904"
+                                stroke-width="5" stroke="rgb(44, 191, 108)" stroke-linecap="round" fill="none"
+                                stroke-miterlimit="10"></path>
+                        </svg></div>
+                </div>
+                <div class="framer-srn6pj" data-framer-name="Shapes" name="Shapes">
+                    <div class="framer-1hkz78s" data-framer-name="Page" name="Page">
+                        <div class="framer-a29ed">
+                            <div style="position:absolute;border-radius:inherit;top:0;right:0;bottom:0;left:0"
+                                data-framer-background-image-wrapper="true"><img
+                                    src="https://framerusercontent.com/images/Jzkw7QiR5MwzEa1qgFO91WDLkOA.jpg?scale-down-to=512"
+                                    alt=""
+                                    srcset="https://framerusercontent.com/images/Jzkw7QiR5MwzEa1qgFO91WDLkOA.jpg?scale-down-to=512 409w, https://framerusercontent.com/images/Jzkw7QiR5MwzEa1qgFO91WDLkOA.jpg?scale-down-to=1024 819w, https://framerusercontent.com/images/Jzkw7QiR5MwzEa1qgFO91WDLkOA.jpg 1200w"
+                                    sizes="80px"
+                                    style="display:block;width:100%;height:100%;border-radius:inherit;object-position:center;object-fit:cover;image-rendering:auto"
+                                    loading="lazy"></div>
+                        </div>
+                        <div class="framer-13qau0m">
+                            <div class="framer-oc98ue"
+                                style="outline:none;display:flex;flex-direction:column;justify-content:flex-start;flex-shrink:0;transform:none"
+                                data-framer-component-type="RichTextContainer">
+                                <h3 style="--font-selector:R0Y7U3RhYXRsaWNoZXMtcmVndWxhcg==;--framer-font-family:&quot;Staatliches&quot;, sans-serif;--framer-font-size:20px;--framer-line-height:1.4em;--framer-text-alignment:center;--framer-text-color:rgb(44, 191, 108);--framer-text-transform:uppercase"
+                                    class="framer-text">OMANAR</h3>
+                            </div>
+                            <div class="framer-3r2mh7"
+                                style="outline:none;display:flex;flex-direction:column;justify-content:flex-start;flex-shrink:0;transform:none"
+                                data-framer-component-type="RichTextContainer">
+                                <p style="--font-selector:R0Y7SW50ZXItNTAw;--framer-font-weight:500;--framer-line-height:1.5em;--framer-text-alignment:center;--framer-text-color:rgb(255, 255, 255)"
+                                    class="framer-text">Oussama Manar</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="framer-1lnc29m" data-framer-name="Page" name="Page">
+                        <div class="framer-1e6mw">
+                            <div style="position:absolute;border-radius:inherit;top:0;right:0;bottom:0;left:0"
+                                data-framer-background-image-wrapper="true"><img
+                                    src="https://framerusercontent.com/images/Jzkw7QiR5MwzEa1qgFO91WDLkOA.jpg?scale-down-to=512"
+                                    alt=""
+                                    srcset="https://framerusercontent.com/images/Jzkw7QiR5MwzEa1qgFO91WDLkOA.jpg?scale-down-to=512 409w, https://framerusercontent.com/images/Jzkw7QiR5MwzEa1qgFO91WDLkOA.jpg?scale-down-to=1024 819w, https://framerusercontent.com/images/Jzkw7QiR5MwzEa1qgFO91WDLkOA.jpg 1200w"
+                                    sizes="80px"
+                                    style="display:block;width:100%;height:100%;border-radius:inherit;object-position:center;object-fit:cover;image-rendering:auto"
+                                    loading="lazy"></div>
+                        </div>
+                        <div class="framer-1vr3vw9">
+                            <div class="framer-awnf91"
+                                style="outline:none;display:flex;flex-direction:column;justify-content:flex-start;flex-shrink:0;transform:none"
+                                data-framer-component-type="RichTextContainer">
+                                <h3 style="--font-selector:R0Y7U3RhYXRsaWNoZXMtcmVndWxhcg==;--framer-font-family:&quot;Staatliches&quot;, sans-serif;--framer-font-size:20px;--framer-line-height:1.4em;--framer-text-alignment:center;--framer-text-color:rgb(44, 191, 108);--framer-text-transform:uppercase"
+                                    class="framer-text">omeslall</h3>
+                            </div>
+                            <div class="framer-190qbal"
+                                style="outline:none;display:flex;flex-direction:column;justify-content:flex-start;flex-shrink:0;transform:none"
+                                data-framer-component-type="RichTextContainer">
+                                <p style="--font-selector:R0Y7SW50ZXItNTAw;--framer-font-weight:500;--framer-line-height:1.5em;--framer-text-alignment:center;--framer-text-color:rgb(255, 255, 255)"
+                                    class="framer-text">Oussama Meslalla</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="framer-1vo0ow9" data-framer-name="Page" name="Page">
+                        <div class="framer-18qrfsq">
+                            <div style="position:absolute;border-radius:inherit;top:0;right:0;bottom:0;left:0"
+                                data-framer-background-image-wrapper="true"><img
+                                    src="https://framerusercontent.com/images/Jzkw7QiR5MwzEa1qgFO91WDLkOA.jpg?scale-down-to=512"
+                                    alt=""
+                                    srcset="https://framerusercontent.com/images/Jzkw7QiR5MwzEa1qgFO91WDLkOA.jpg?scale-down-to=512 409w, https://framerusercontent.com/images/Jzkw7QiR5MwzEa1qgFO91WDLkOA.jpg?scale-down-to=1024 819w, https://framerusercontent.com/images/Jzkw7QiR5MwzEa1qgFO91WDLkOA.jpg 1200w"
+                                    sizes="80px"
+                                    style="display:block;width:100%;height:100%;border-radius:inherit;object-position:center;object-fit:cover;image-rendering:auto"
+                                    loading="lazy"></div>
+                        </div>
+                        <div class="framer-1l38jsq">
+                            <div class="framer-1cdjfhm"
+                                style="outline:none;display:flex;flex-direction:column;justify-content:flex-start;flex-shrink:0;transform:none"
+                                data-framer-component-type="RichTextContainer">
+                                <h3 style="--font-selector:R0Y7U3RhYXRsaWNoZXMtcmVndWxhcg==;--framer-font-family:&quot;Staatliches&quot;, sans-serif;--framer-font-size:20px;--framer-line-height:1.4em;--framer-text-alignment:center;--framer-text-color:rgb(44, 191, 108);--framer-text-transform:uppercase"
+                                    class="framer-text">HHAMDY</h3>
+                            </div>
+                            <div class="framer-r7290o"
+                                style="outline:none;display:flex;flex-direction:column;justify-content:flex-start;flex-shrink:0;transform:none"
+                                data-framer-component-type="RichTextContainer">
+                                <p style="--font-selector:R0Y7SW50ZXItNTAw;--framer-font-weight:500;--framer-line-height:1.5em;--framer-text-alignment:center;--framer-text-color:rgb(255, 255, 255)"
+                                    class="framer-text">Houssam Hamdy</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="framer-m038m5" data-framer-name="Metrics" name="Metrics">
+                    <div class="framer-18pwypq">
+                        <div class="framer-10wh8hz" data-framer-name="Card" name="Card">
+                            <div class="framer-ajirim-container" style="transform:rotate(5deg)"><svg
+                                    viewBox="0 0 200 200">
+                                    <path
+                                        d="M 29.062 108.641 C 29.212 109.479 30.212 110.369 30.741 110.977 C 32.582 113.092 34.192 115.391 36.06 117.486 C 39.889 121.781 43.815 126.006 47.587 130.348 C 48.21 131.065 49.725 133.378 50.762 133.611 C 51.147 133.697 51.27 133.261 51.453 132.998 C 52.856 130.983 54.106 128.937 55.63 126.987 C 64.51 115.62 73.293 103.828 83.454 93.571 C 85.021 91.988 86.674 90.485 88.293 88.956 C 88.538 88.725 89.46 87.759 89.859 87.759 C 90.067 87.759 90.678 88.389 90.818 88.5 C 92.298 89.669 93.754 90.853 95.079 92.204 C 101.177 98.418 106.775 105.218 112.603 111.689 C 117.003 116.576 121.386 121.468 125.414 126.674 C 126.016 127.451 126.932 129.686 127.587 127.984 C 128.592 125.376 130.446 122.968 131.834 120.563 C 135.177 114.773 138.216 108.814 141.514 103 C 146.199 94.739 151.292 86.625 157.612 79.527 C 158.599 78.418 160.195 77.273 160.857 75.937 M 146.889 76.962 C 146.888 76.962 148.436 76.029 148.836 75.795 C 152.765 73.489 157.177 71.997 161.351 70.225 C 163.718 69.22 166.178 68.38 168.476 67.22 C 169.207 66.851 170 66.082 170 67.22 C 170 69.203 169.656 71.143 169.492 73.117 C 169.07 78.214 168.768 83.366 167.912 88.414 C 167.346 91.751 167.251 95.287 166.191 98.499"
+                                        stroke-width="10" stroke="rgb(44, 191, 108)" stroke-linecap="round" fill="none"
+                                        stroke-miterlimit="10"></path>
+                                </svg></div>
+                            <div class="framer-1iwvbil"
+                                style="outline:none;display:flex;flex-direction:column;justify-content:flex-start;flex-shrink:0;transform:none"
+                                data-framer-component-type="RichTextContainer">
+                                <h2 style="--font-selector:R0Y7Qm93bGJ5IE9uZS1yZWd1bGFy;--framer-font-family:&quot;Bowlby One&quot;, sans-serif;--framer-font-size:48px;--framer-text-alignment:left;--framer-text-color:rgb(44, 191, 108)"
+                                    class="framer-text">100%</h2>
+                            </div>
+                            <div class="framer-wbcyd7"
+                                style="outline:none;display:flex;flex-direction:column;justify-content:flex-start;flex-shrink:0;transform:none"
+                                data-framer-component-type="RichTextContainer">
+                                <p style="--font-selector:R0Y7RE0gU2Fucy03MDA=;--framer-font-family:&quot;DM Sans&quot;, &quot;DM Sans Placeholder&quot;, sans-serif;--framer-font-size:25px;--framer-font-weight:700;--framer-line-height:1.5em;--framer-text-alignment:center;--framer-text-color:rgb(44, 191, 108)"
+                                    class="framer-text">Availability</p>
+                            </div>
+                            <div class="framer-a58y0i-container" style="transform:rotate(25deg)"><svg
+                                    viewBox="0 0 200 200">
+                                    <path
+                                        d="M 85.358 98.416 C 85.358 99.097 85.159 100.262 86.176 100.262 C 86.864 100.262 87.888 99.354 87.928 98.647 C 87.97 97.904 87.818 97.032 86.876 97.032 C 86.368 97.032 85.115 96.819 84.891 97.263 M 108.956 96.34 C 108.956 97.833 108.759 98.871 110.695 98.365 C 112.088 98.001 113.862 96.891 113.862 95.302 C 113.862 93.445 112.278 93.572 110.825 93.572 C 109.422 93.572 109.89 95.28 109.89 96.34 M 73.909 111.797 C 78.077 115.538 81.873 119.475 87.253 121.563 C 90.788 122.935 94.778 122.64 98.494 122.64 C 102.819 122.64 106.434 121.405 110.15 119.23 C 116.961 115.243 124.241 109.542 128.166 102.595 C 129.843 99.627 130.268 96.784 130.918 93.572 M 89.204 78.491 C 81.393 78.491 76.555 79.951 70.73 85.668 C 64.032 92.244 60.511 100.298 59.455 109.4 C 58.448 118.088 58.655 125.956 64.907 132.607 C 74.799 143.128 91.711 145.457 105.507 144.184 C 117.567 143.072 129.89 135.719 135.626 124.88 C 142.159 112.536 142.598 95.625 137.691 82.735 C 134.982 75.62 130.235 69.525 124.457 64.556 C 118.131 59.115 110.368 57.185 102.199 56.174 C 91.064 54.797 79.165 55.193 69.195 60.575"
+                                        stroke-width="5" stroke="rgb(44, 191, 108)" stroke-linecap="round" fill="none"
+                                        stroke-miterlimit="10"></path>
+                                </svg></div>
+                        </div>
+                        <div class="framer-8y3tdu" data-framer-name="Card" name="Card">
+                            <div class="framer-k4rgzm-container" style="transform:rotate(-10deg)"><svg
+                                    viewBox="0 0 200 200">
+                                    <path
+                                        d="M 43.268 68.491 C 45.299 73.362 49.466 84.503 49.894 90.103 M 96.026 42.825 C 91.393 56.451 81.245 85.486 77.722 92.618 M 106.911 105.701 C 115.338 96.409 133.856 76.994 140.501 73.674 M 121.449 128.144 C 128.309 126.305 144.878 122.279 156.268 120.889 M 120.076 150.692 C 123.463 151.132 131.74 153.176 137.755 157.825"
+                                        stroke-width="10" stroke="rgb(44, 191, 108)" stroke-linecap="round" fill="none"
+                                        stroke-miterlimit="10"></path>
+                                </svg></div>
+                            <div class="framer-1ne9to7"
+                                style="outline:none;display:flex;flex-direction:column;justify-content:flex-start;flex-shrink:0;transform:none"
+                                data-framer-component-type="RichTextContainer">
+                                <h2 style="--font-selector:R0Y7Qm93bGJ5IE9uZS1yZWd1bGFy;--framer-font-family:&quot;Bowlby One&quot;, sans-serif;--framer-font-size:48px;--framer-text-alignment:left;--framer-text-color:rgb(44, 191, 108)"
+                                    class="framer-text">1000+</h2>
+                            </div>
+                            <div class="framer-1vlgyr2"
+                                style="outline:none;display:flex;flex-direction:column;justify-content:flex-start;flex-shrink:0;transform:none"
+                                data-framer-component-type="RichTextContainer">
+                                <p style="--font-selector:R0Y7RE0gU2Fucy03MDA=;--framer-font-family:&quot;DM Sans&quot;, &quot;DM Sans Placeholder&quot;, sans-serif;--framer-font-size:25px;--framer-font-weight:700;--framer-line-height:1.5em;--framer-text-alignment:center;--framer-text-color:rgb(44, 191, 108)"
+                                    class="framer-text">Satisfied Clients</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="framer-2t8jqc" data-framer-name="Footer" name="Footer">
+                    <div class="framer-qva60c" data-framer-name="Copyright" name="Copyright">
+                        <div class="framer-vymbue"
+                            style="outline:none;display:flex;flex-direction:column;justify-content:flex-start;flex-shrink:0;transform:none"
+                            data-framer-component-type="RichTextContainer">
+                            <p style="--font-selector:R0Y7RE0gU2Fucy01MDA=;--framer-font-family:&quot;DM Sans&quot;, sans-serif;--framer-font-weight:500;--framer-line-height:1.5em;--framer-text-alignment:left;--framer-text-color:rgb(255, 255, 255)"
+                                class="framer-text">© 2023 VibeSphere Server</p>
+                        </div>
+                    </div>
+                    <div class="framer-kgjlq" data-framer-name="Vertical" name="Vertical">
+                        <div class="framer-ngppbq">
+                            <div class="framer-manwn7"
+                                style="outline:none;display:flex;flex-direction:column;justify-content:flex-start;flex-shrink:0;transform:none"
+                                data-framer-component-type="RichTextContainer">
+                                <p style="--font-selector:R0Y7TWFydGlhbiBNb25vLXJlZ3VsYXI=;--framer-font-family:&quot;Martian Mono&quot;, monospace;--framer-line-height:1.5em;--framer-text-alignment:left;--framer-text-color:rgb(255, 255, 255)"
+                                    class="framer-text">About</p>
+                            </div>
+                            <div class="framer-11c0v38"
+                                style="outline:none;display:flex;flex-direction:column;justify-content:flex-start;flex-shrink:0;transform:none"
+                                data-framer-component-type="RichTextContainer">
+                                <p style="--font-selector:R0Y7TWFydGlhbiBNb25vLXJlZ3VsYXI=;--framer-font-family:&quot;Martian Mono&quot;, monospace;--framer-line-height:1.5em;--framer-text-alignment:left;--framer-text-color:rgb(255, 255, 255)"
+                                    class="framer-text">Page2</p>
+                            </div>
+                            <div class="framer-1610ul4"
+                                style="outline:none;display:flex;flex-direction:column;justify-content:flex-start;flex-shrink:0;transform:none"
+                                data-framer-component-type="RichTextContainer">
+                                <p style="--font-selector:R0Y7TWFydGlhbiBNb25vLXJlZ3VsYXI=;--framer-font-family:&quot;Martian Mono&quot;, monospace;--framer-line-height:1.5em;--framer-text-alignment:left;--framer-text-color:rgb(255, 255, 255)"
+                                    class="framer-text">Page3</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-  </header>
-
-  <!-- Grid -->
-  <div class="w3-row w3-padding w3-border">
-
-    <!-- Blog entries -->
-    <div class="w3-col l8 s12">
-    
-      <!-- Blog entry -->
-      <div class="w3-container w3-white w3-margin w3-padding-large">
-        <div class="w3-center">
-          <h3>TITLE HEADING</h3>
-          <h5>Title description, <span class="w3-opacity">May 2, 2016</span></h5>
-        </div>
-
-        <div class="w3-justify">
-          <img src="/w3images/girl_hat.jpg" alt="Girl Hat" style="width:100%" class="w3-padding-16">
-          <p><strong>More Hats!</strong> I am crazy about hats these days. Some text about this blog entry. Fashion fashion and mauris neque quam, fermentum ut nisl vitae, convallis maximus nisl. Sed mattis nunc id lorem euismod placerat. Vivamus porttitor
-            magna enim, ac accumsan tortor cursus at. Phasellus sed ultricies mi non congue ullam corper. Praesent tincidunt sedtellus ut rutrum. Sed vitae justo condimentum, porta lectus vitae, ultricies congue gravida diam non fringilla.</p>
-          <p>Sunt in culpa qui officia deserunt mollit anim id est laborum consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco.</p>
-          <p class="w3-left"><button class="w3-button w3-white w3-border" onclick="likeFunction(this)"><b><i class="fa fa-thumbs-up"></i> Like</b></button></p>
-          <p class="w3-right"><button class="w3-button w3-black" onclick="myFunction('demo1')" id="myBtn"><b>Replies  </b> <span class="w3-tag w3-white">1</span></button></p>
-          <p class="w3-clear"></p>
-          <div class="w3-row w3-margin-bottom" id="demo1" style="display:none">
-            <hr>
-              <div class="w3-col l2 m3">
-                <img src="/w3images/avatar_smoke.jpg" style="width:90px;">
-              </div>
-              <div class="w3-col l10 m9">
-                <h4>George <span class="w3-opacity w3-medium">May 3, 2015, 6:32 PM</span></h4>
-                <p>Great blog post! Following</p>
-              </div>
-          </div>
-        </div>
-      </div>
-      <hr>
-
-      <!-- Blog entry -->
-      <div class="w3-container w3-white w3-margin w3-padding-large">
-        <div class="w3-center">
-          <h3>TITLE HEADING</h3>
-          <h5>Title description, <span class="w3-opacity">April 23, 2016</span></h5>
-        </div>
-
-        <div class="w3-justify">
-          <img src="/w3images/man_hat.jpg" alt="Men in Hats" style="width:100%" class="w3-padding-16">
-          <p><strong>Hats!</strong> The trend this summer is hats for men!</p>
-          <p>Some text about this blog entry. Fashion fashion and mauris neque quam, fermentum ut nisl vitae, convallis maximus nisl. Sed mattis nunc id lorem euismod placerat. Vivamus porttitor magna enim, ac accumsan tortor cursus at. Phasellus sed ultricies
-            mi non congue ullam corper. Praesent tincidunt sedtellus ut rutrum. Sed vitae justo condimentum, porta lectus vitae, ultricies congue gravida diam non fringilla.</p>
-          <p class="w3-left"><button class="w3-button w3-white w3-border" onclick="likeFunction(this)"><b><i class="fa fa-thumbs-up"></i> Like</b></button></p>
-          <p class="w3-right"><button class="w3-button w3-black" onclick="myFunction('demo2')"><b>Replies  </b> <span class="w3-tag w3-white">2</span></button></p>
-          <p class="w3-clear"></p>
-          
-          <!-- Example of comment field -->
-          <div id="demo2" style="display:none">
-            <div class="w3-row">
-              <hr>
-              <div class="w3-col l2 m3">
-                <img src="/w3images/girl_train.jpg" style="width:90px;">
-              </div>
-              <div class="w3-col l10 m9">
-                <h4>Amber <span class="w3-opacity w3-medium">April 26, 2015, 10:52 PM</span></h4>
-                <p>Love your blog page! Simply the best! Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p><br>
-              </div>
-            </div>
-            <div class="w3-row w3-margin-bottom">
-              <div class="w3-col l2 m3">
-                <img src="/w3images/girl.jpg" style="width:90px;">
-              </div>
-              <div class="w3-col l10 m9">
-                <h4>Angie <span class="w3-opacity w3-medium">April 23, 2015, 9:12 PM</span></h4>
-                <p>Love hats!!</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Blog entry -->
-      <div class="w3-container w3-white w3-margin w3-padding-large">
-        <div class="w3-center">
-          <h3>TITLE HEADING</h3>
-          <h5>Title description, <span class="w3-opacity">April 7, 2016</span></h5>
-        </div>
-
-        <div class="w3-justify">
-          <img src="/w3images/runway.jpg" alt="Runway" style="width:100%" class="w3-padding-16">
-          <p><strong>Dont miss!</strong> The runway in New York City this weekend is gonna be legendary!</p>
-          <p>Some text about this blog entry. Fashion fashion and mauris neque quam, fermentum ut nisl vitae, convallis maximus nisl. Sed mattis nunc id lorem euismod placerat. Vivamus porttitor magna enim, ac accumsan tortor cursus at. Phasellus sed ultricies
-            mi non congue ullam corper. Praesent tincidunt sedtellus ut rutrum. Sed vitae justo condimentum, porta lectus vitae, ultricies congue gravida diam non fringilla.</p>
-          <p class="w3-left"><button class="w3-button w3-white w3-border" onclick="likeFunction(this)"><b><i class="fa fa-thumbs-up"></i> Like</b></button></p>
-          <p class="w3-right"><button class="w3-button w3-black" onclick="myFunction('demo3')"><b>Replies  </b> <span class="w3-tag w3-white">3</span></button></p>
-          <p class="w3-clear"></p>
-          
-          <!-- Example of comment field -->
-          <div id="demo3" style="display:none">
-            <hr>
-            <div class="w3-row w3-margin-bottom">
-              <div class="w3-col l2 m3">
-                <img src="/w3images/girl_mountain.jpg" style="width:90px;">
-              </div>
-              <div class="w3-col l10 m9">
-                <h4>Jane <span class="w3-opacity w3-medium">April 10, 2015, 7:22 PM</span></h4>
-                <p>That was a great runway show! Thanks for everything.</p>
-              </div>
-            </div>
-            <div class="w3-row w3-margin-bottom">
-              <div class="w3-col l2 m3">
-                <img src="/w3images/boy.jpg" style="width:90px;">
-              </div>
-              <div class="w3-col l10 m9">
-                <h4>John <span class="w3-opacity w3-medium">April 8, 2015, 10:32 PM</span></h4>
-                <p>Keep up the GREAT work! I am cheering for you!! Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.</p>
-              </div>
-            </div>
-            <div class="w3-row w3-margin-bottom">
-              <div class="w3-col l2 m3">
-                <img src="/w3images/girl_hood.jpg" style="width:90px;">
-              </div>
-              <div class="w3-col l10 m9">
-                <h4>Anja <span class="w3-opacity w3-medium">April 7, 2015, 9:12 PM</span></h4>
-                <p>Cant wait for the runway to start!</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-    <!-- END BLOG ENTRIES -->
-    </div>
-
-    <!-- About/Information menu -->
-    <div class="w3-col l4">
-      <!-- About Card -->
-      <div class="w3-white w3-margin">
-        <img src="/w3images/avatar_girl2.jpg" alt="Jane" style="width:100%" class="w3-grayscale">
-        <div class="w3-container w3-black">
-          <h4>My Name</h4>
-          <p>Just me, myself and I, exploring the universe of uknownment. I have a heart of love and a interest of lorem ipsum and mauris neque quam blog. I want to share my world with you.</p>
-        </div>
-      </div>
-      <hr>
-
-      <!-- Posts -->
-      <div class="w3-white w3-margin">
-        <div class="w3-container w3-padding w3-black">
-          <h4>Popular Posts</h4>
-        </div>
-        <ul class="w3-ul w3-hoverable w3-white">
-          <li class="w3-padding-16">
-            <img src="/w3images/avatar_smoke.jpg" alt="Image" class="w3-left w3-margin-right" style="width:50px">
-            <span class="w3-large">Denim</span>
-            <br>
-            <span>Sed mattis nunc</span>
-          </li>
-          <li class="w3-padding-16">
-            <img src="/w3images/bandmember.jpg" alt="Image" class="w3-left w3-margin-right" style="width:50px">
-            <span class="w3-large">Sweaters</span>
-            <br>
-            <span>Praes tinci sed</span>
-          </li>
-          <li class="w3-padding-16">
-            <img src="/w3images/workshop.jpg" alt="Image" class="w3-left w3-margin-right" style="width:50px">
-            <span class="w3-large">Workshop</span>
-            <br>
-            <span>Ultricies congue</span>
-          </li>
-          <li class="w3-padding-16">
-            <img src="/w3images/avatar_smoke.jpg" alt="Image" class="w3-left w3-margin-right w3-sepia" style="width:50px">
-            <span class="w3-large">Trends</span>
-            <br>
-            <span>Lorem ipsum dipsum</span>
-          </li>
-        </ul>
-      </div>
-      <hr>
-
-      <!-- Advertising -->
-      <div class="w3-white w3-margin">
-        <div class="w3-container w3-padding w3-black">
-          <h4>Advertise</h4>
-        </div>
-        <div class="w3-container w3-white">
-          <div class="w3-container w3-display-container w3-light-grey w3-section" style="height:200px">
-            <span class="w3-display-middle">Your AD Here</span>
-          </div>
-        </div>
-      </div>
-      <hr>
-
-      <!-- Tags -->
-      <div class="w3-white w3-margin">
-        <div class="w3-container w3-padding w3-black">
-          <h4>Tags</h4>
-        </div>
-        <div class="w3-container w3-white">
-          <p>
-            <span class="w3-tag w3-black w3-margin-bottom">Fashion</span> <span class="w3-tag w3-light-grey w3-small w3-margin-bottom">New York</span> <span class="w3-tag w3-light-grey w3-small w3-margin-bottom">London</span>
-            <span class="w3-tag w3-light-grey w3-small w3-margin-bottom">Hats</span> <span class="w3-tag w3-light-grey w3-small w3-margin-bottom">Norway</span> <span class="w3-tag w3-light-grey w3-small w3-margin-bottom">Sweaters</span>
-            <span class="w3-tag w3-light-grey w3-small w3-margin-bottom">Ideas</span> <span class="w3-tag w3-light-grey w3-small w3-margin-bottom">Deals</span> <span class="w3-tag w3-light-grey w3-small w3-margin-bottom">Accessories</span>
-            <span class="w3-tag w3-light-grey w3-small w3-margin-bottom">News</span> <span class="w3-tag w3-light-grey w3-small w3-margin-bottom">Clothing</span> <span class="w3-tag w3-light-grey w3-small w3-margin-bottom">Shopping</span>
-            <span class="w3-tag w3-light-grey w3-small w3-margin-bottom">Jeans</span> <span class="w3-tag w3-light-grey w3-small w3-margin-bottom">Trends</span>
-          </p>
-        </div>
-      </div>
-      <hr>
-
-      <!-- Inspiration -->
-      <div class="w3-white w3-margin">
-        <div class="w3-container w3-padding w3-black">
-          <h4>Inspiration</h4>
-        </div>
-        <div class="w3-row-padding w3-white">
-          <div class="w3-col s6">
-            <p><img src="/w3images/jeans.jpg" alt="Jeans" style="width:100%"></p>
-            <p><img src="/w3images/team1.jpg" alt="Jeans" style="width:100%"></p>
-          </div>
-          <div class="w3-col s6">
-            <p><img src="/w3images/avatar_hat.jpg" alt="Men in Hats" style="width:100%" class="w3-grayscale"></p>
-            <p><img src="/w3images/team4.jpg" alt="Jeans" style="width:100%"></p>
-         </div>
-        </div>
-      </div>
-      <hr>
-
-      <div class="w3-white w3-margin">
-        <div class="w3-container w3-padding w3-black">
-          <h4>Follow Me</h4>
-        </div>
-        <div class="w3-container w3-xlarge w3-padding">
-          <i class="fa fa-facebook-official w3-hover-opacity"></i>
-          <i class="fa fa-instagram w3-hover-opacity"></i>
-          <i class="fa fa-snapchat w3-hover-opacity"></i>
-          <i class="fa fa-pinterest-p w3-hover-opacity"></i>
-          <i class="fa fa-twitter w3-hover-opacity"></i>
-          <i class="fa fa-linkedin w3-hover-opacity"></i>
-        </div>
-      </div>
-      <hr>
-      
-      <!-- Subscribe -->
-      <div class="w3-white w3-margin">
-        <div class="w3-container w3-padding w3-black">
-          <h4>Subscribe</h4>
-        </div>
-        <div class="w3-container w3-white">
-          <p>Enter your e-mail below and get notified on the latest blog posts.</p>
-          <p><input class="w3-input w3-border" type="text" placeholder="Enter e-mail" style="width:100%"></p>
-          <p><button type="button" onclick="document.getElementById('subscribe').style.display='block'" class="w3-button w3-block w3-red">Subscribe</button></p>
-        </div>
-      </div>
-
-    <!-- END About/Intro Menu -->
-    </div>
-
-  <!-- END GRID -->
-  </div>
-
-<!-- END w3-content -->
-</div>
-
-<!-- Subscribe Modal -->
-<div id="subscribe" class="w3-modal w3-animate-opacity">
-  <div class="w3-modal-content" style="padding:32px">
-    <div class="w3-container w3-white">
-      <i onclick="document.getElementById('subscribe').style.display='none'" class="fa fa-remove w3-transparent w3-button w3-xlarge w3-right"></i>
-      <h2 class="w3-wide">SUBSCRIBE</h2>
-      <p>Join my mailing list to receive updates on the latest blog posts and other things.</p>
-      <p><input class="w3-input w3-border" type="text" placeholder="Enter e-mail"></p>
-      <button type="button" class="w3-button w3-block w3-padding-large w3-red w3-margin-bottom" onclick="document.getElementById('subscribe').style.display='none'">Subscribe</button>
-    </div>
-  </div>
-</div>
-
-<!-- Footer -->
-<footer class="w3-container w3-dark-grey" style="padding:32px">
-  <a href="#" class="w3-button w3-black w3-padding-large w3-margin-bottom"><i class="fa fa-arrow-up w3-margin-right"></i>To the top</a>
-  <p>Powered by <a href="https://www.w3schools.com/w3css/default.asp" target="_blank">w3.css</a></p>
-</footer>
-
-<script>
-// Toggle between hiding and showing blog replies/comments
-document.getElementById("myBtn").click();
-function myFunction(id) {
-  var x = document.getElementById(id);
-  if (x.className.indexOf("w3-show") == -1) {
-    x.className += " w3-show";
-  } else { 
-    x.className = x.className.replace(" w3-show", "");
-  }
-}
-
-function likeFunction(x) {
-  x.style.fontWeight = "bold";
-  x.innerHTML = "✓ Liked";
-}
-</script>
-
 </body>
 </html>

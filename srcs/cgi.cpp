@@ -91,6 +91,7 @@ void CgiProcess(Server &server, int j, std::string const &path, std::string cons
 	if (req.cgiFlag == 2) {
 		res.setResponse("");
 		res.close_connection = true;
+		res.freeEnv();
 		return;
 	}
 	try
@@ -139,6 +140,7 @@ void CgiProcess(Server &server, int j, std::string const &path, std::string cons
 				unlink(req.tmpFile.c_str());
 				remove(req.tmpFile.c_str());
 				req.cgiFlag = 2;
+				
 			}
 		}
 	} catch (std::exception &e) {

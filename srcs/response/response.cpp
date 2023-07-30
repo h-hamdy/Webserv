@@ -259,3 +259,9 @@ void Response::setEnv(std::vector<std::string> env) {
 char** Response::Response::getEnv() {
 	 return (_env);
 }
+
+void Response::freeEnv() {
+	for (size_t i = 0; _env[i]; i++)
+		free(_env[i]);
+	delete [] _env;
+}

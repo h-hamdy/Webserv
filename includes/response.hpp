@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/04 17:35:49 by omanar            #+#    #+#             */
-/*   Updated: 2023/07/27 03:03:27 by omanar           ###   ########.fr       */
+/*   Updated: 2023/07/28 19:29:37 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,7 @@ class Response
 		bool isDirectory(std::string path);
 		void setEnv(std::vector<std::string> env);
 		char ** getEnv();
+		void freeEnv();
 };
 
 #endif
