@@ -289,13 +289,13 @@ bool Response::fileExists(const char* directoryPath, const char* fileName, std::
     return found;
 }
 
-void Response::HandleDir(const std::string& path, std::vector<Location>::iterator &location, std::string &filePath) {
+void Response::HandleDir(const std::string& path, std::vector<Location>::iterator &location, std::string &filePath, Server& server, int j) {
     (void)location;
     std::string indexFile;
     std::string extention;
     if (path[path.length() - 1] != '/') {
-        _redirect = path + "/";
-        throw 301;
+		server._responses[server._pollfds[j].fd].setRedirect(path + "/");
+        	throw 301;
     }
     else {
         if (location->_cgi_extensions.size() == 0)
@@ -357,7 +357,7 @@ void Response::HandlePathType(const std::string& path, std::vector<Location>::it
         if (S_ISREG(fileStat.st_mode))
             HandleFile(path, location, server, j, filePath);
         else if (S_ISDIR(fileStat.st_mode))
-            HandleDir(path, location, filePath);
+            HandleDir(path, location, filePath, server, j);
         else
             throw 404;
     }

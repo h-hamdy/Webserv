@@ -84,7 +84,7 @@ class Response
 		void freeEnv();
 		void HandlePathType(const std::string& path, std::vector<Location>::iterator &location, Server &server, int j, std::string &filePath);
 		void HandleFile(const std::string& path, std::vector<Location>::iterator &location, Server &server, int j, std::string  &filePath);
-		void HandleDir(const std::string& path, std::vector<Location>::iterator &location, std::string &filePath);
+		void HandleDir(const std::string& path, std::vector<Location>::iterator &location, std::string &filePath, Server& server, int j);
 		bool fileExists(const char* directoryPath, const char* fileName, std::string &indexfile);
 };
 
