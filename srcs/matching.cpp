@@ -42,7 +42,9 @@ std::vector<Location>::iterator	Server::matching (const std::string &host, const
             if (location == (*it)->_locations->end())
                 throw 404;
             if (!location->_redirect.empty()) {
-                server._responses[server._pollfds[j].fd].setRedirect(location->_redirect);
+                // server._responses[server._pollfds[j].fd].setRedirect(location->_redirect);
+                // std::cout << location->_redirect << std::endl;
+                // std::exit (1);
                 throw 301;
             }
             if (location->_upload_path.empty()) {
@@ -69,6 +71,6 @@ std::vector<Location>::iterator	Server::matching (const std::string &host, const
         }
     }
     else
-        throw 400;
+        throw 401;
     return location;
 }
