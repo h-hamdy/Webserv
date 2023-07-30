@@ -235,7 +235,6 @@ void    Socket::acceptConnection(){
                 }
                 else{
                     FD_SET(_servers[i]->_pollfds[j].fd, &_servers[i]->_write_set);
-
                     if(FD_ISSET( _servers[i]->_pollfds[j].fd,& _servers[i]->_write_set)){
                         //Implement a method specifically designed to generate a response.
                         if(_servers[i]->_responses[ _servers[i]->_pollfds[j].fd].response_not_send == ""){

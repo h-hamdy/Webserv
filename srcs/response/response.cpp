@@ -95,8 +95,10 @@ void Response::set_Header_Response(Server &serv, int j) {
 		response_stream << "Content-Type: "  + serv._responses[serv._pollfds[j].fd].getContentType() + "\r\n";
 		if(serv._responses[serv._pollfds[j].fd].getRedirect() != "")
 			response_stream << "Location: " + serv._responses[serv._pollfds[j].fd].getRedirect() + "\r\n";
-		if (_cgiHeader != "")
+		if (_cgiHeader != ""){
 			response_stream << _cgiHeader + "\r\n";
+			std::cout << "cgi header: " << _cgiHeader << std::endl;
+		}
 		response_stream << "Connection: keep-alive\r\n";
 		response_stream << "Transfer-Encoding: chunked\r\n";
 		response_stream << "\r\n";
@@ -108,6 +110,7 @@ void Response::set_Header_Response(Server &serv, int j) {
 			std::string chunck_header = chunck_stream.str();
 			std::string response = chunck_header + _response + "\r\n";
 			_response = response_header + response + (this->_status_code != "200" ? "0\r\n\r\n" : "");
+			std::cout << "response: " << _response << std::endl;
 		}
 		else
 			_response = response_header;
@@ -129,7 +132,7 @@ void	Response::GET(Server &serv,int j){
 	std::string body = "";
 	std::string response = "";
 	std::string path =  serv._requests[serv._pollfds[j].fd].path;
-	std::cout << "path: ======= " << path << std::endl;
+	// std::cout << "path: ======= " << path << std::endl;
 	struct stat path_stat;
 	if(stat(path.c_str(), &path_stat) == 0){
 		if((path_stat.st_mode & S_IFDIR) && serv.configs[0]->_locations->begin()->_index != ""){
@@ -176,12 +179,11 @@ void	Response::GET(Server &serv,int j){
 	std::ifstream file(path.c_str(), std::ios::binary);
 	std::vector<Location>::iterator location = serv._location_match;
 	if (location->_cgi_extensions.size() == 0)
-        setStatusCode("4031");
+        setStatusCode("403");
     size_t lastDotPos = path.rfind('.');
     std::string extention = path.substr(lastDotPos);
 	if(!file.is_open()){
 		serv._responses[serv._pollfds[j].fd].setStatusCode("404");
-		_response = "<html><body><h1>404 Not Found</h1></body></html>";
 		close_connection = true;
 		return ;
 	}
@@ -196,7 +198,6 @@ void	Response::GET(Server &serv,int j){
         }
         if (it == location->_cgi_extensions.end()){
             setStatusCode("403");
-			response = "<html><body><h1>403 Forbidden</h1></body></html>";
 			close_connection = true;
 		}
     }
@@ -226,29 +227,23 @@ bool Response::isDirectory(std::string path) {
 
 void Response::DELETE(Server &serv, int j) {
 	std::string path = serv._requests[serv._pollfds[j].fd].path;
-	std::cout << "path: ======= " << path << std::endl;
+	// std::cout << "path: ======= " << path << std::endl;
 	if(sending_data){
 		close_connection = true;
 		return ;
 	}
 	if (access(path.c_str(), F_OK) != 0) {
-		std::cout << "test1" << std::endl;
 		setStatusCode("404");
 	}
 	else if (access(path.c_str(), W_OK) != 0) {
-		std::cout << "test2 " << std::endl;
 		setStatusCode("403");
 
 	}
 	else if (isDirectory(path)) {
-
-		std::cout << "test3" << std::endl;
 		setStatusCode("403");
 	}
 	else if (remove(path.c_str()) != 0) {
-		std::cout << "test4" << std::endl;
 		setStatusCode("500");
-
 	}
 	else {
 		std::cout << "test5" << std::endl;
