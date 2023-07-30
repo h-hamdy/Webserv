@@ -49,7 +49,6 @@ int	ParseRequest::get_size (std::string &body, Server &server, int j)
 	size = convert_hex(hex);
 	if (size == 0) {
 		_EOF = 0;
-		// FD_SET(server._pollfds[j].fd, &server._write_set);
 		if (!server._location_match->_upload_path.empty())
 			throw 201;
 		return 1;
@@ -73,7 +72,6 @@ void	ParseRequest::ParseChunked (std::string _body, Server &server, int j)
 		body = body.substr(size);
 		if (body[2] == '0') {
 			_EOF = 0;
-			// FD_SET(server._pollfds[j].fd, &server._write_set);
 			if (!server._location_match->_upload_path.empty())
 				throw 201;
 		}
@@ -93,7 +91,6 @@ void ParseRequest::ParseBody (const std::string& _body, Server &server, int j) {
 		fileSize = file.tellg();
 		if (fileSize >= std::stoi(it->second) ) {
 			_EOF = 0;
-			// FD_SET(server._pollfds[j].fd, &server._write_set);
 			if (!server._location_match->_upload_path.empty())
 				throw 201;
 		}
@@ -164,7 +161,6 @@ std::string ParseRequest::ParseHttpRequest( std::string request, ssize_t byteRea
 	}
 	if (requestLine.method != "POST") {
 		_EOF = 0;
-		// FD_SET(server._pollfds[j].fd, &server._write_set);
 		return ("");
 	}
 	return (request.substr(headers));

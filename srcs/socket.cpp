@@ -105,7 +105,6 @@ std::string get_ContentType (std::string value)
 	throw 400;
 }
 
-
 void    POST (Server &_servers, int j, std::string &rest, std::string bb, std::string &path)
 {
     if (_servers._requests[ _servers._pollfds[j].fd].requestLine.method == "POST" && _servers._requests[ _servers._pollfds[j].fd].create_file == true)
@@ -113,14 +112,8 @@ void    POST (Server &_servers, int j, std::string &rest, std::string bb, std::s
         std::string filename;
         std::map<std::string, std::string>::iterator it = _servers._requests[ _servers._pollfds[j].fd].header.find("Content-Type");
         filename = get_ContentType(it->second);
-            
-        // if (!_servers._location_match->_upload_path.empty())
+
         _servers._requests[ _servers._pollfds[j].fd].filePath = path + filename;
-        // else {
-        //     std::cout << "Location does not support upload" << std::endl;
-        //     std::string resource = _servers._requests[ _servers._pollfds[j].fd].requestLine.url.substr(_servers._location_match->_url.length());
-        //     HandlePathType(path + resource, _servers._location_match, _servers, j);
-        // }
         _servers._requests[ _servers._pollfds[j].fd].file.open(_servers._requests[ _servers._pollfds[j].fd].filePath, std::ios::binary | std::ios::app | std::ios::ate);
         _servers._requests[ _servers._pollfds[j].fd]._EOF = 1;
         _servers._requests[ _servers._pollfds[j].fd].create_file = false;
@@ -182,7 +175,6 @@ void    Socket::acceptConnection(){
             if (FD_ISSET( _servers[i]->_pollfds[j].fd,& _servers[i]->_read_set)) {
                 char buffer[1025] = {0};
                  _servers[i]->_bytesRead = recv( _servers[i]->_pollfds[j].fd,buffer,1024 ,0);
-                //  std::cout<<"buffer recv :" << buffer << std::endl;
                 if ( _servers[i]->_bytesRead < 1) {
                     if(errno != EWOULDBLOCK && errno != EAGAIN) {
                         std::cout << "Error reading socket" << std::endl;
@@ -218,39 +210,25 @@ void    Socket::acceptConnection(){
                                     _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestStatusCode();
                                     std::map<std::string, std::string>::iterator it = _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].header.find("Host");
                                     pos = it->second.find(":");
-                                    // std::cout << "===============================================================================" << std::endl;
-                                    // std::cout << _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.method << " " << _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.url  << std::endl;
-                                    // std::cout << "===============================================================================" << std::endl;
-                                    // _servers[i]->_location_match = _servers[i]->matching(it->second.substr(0, pos), it->second.substr(pos + 1), _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.url, path, _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.method);
                                      _servers[i]->_location_match = _servers[i]->matching(it->second.substr(0, pos), it->second.substr(pos + 1), _servers[i]->_requests[ _servers[i]->_pollfds[j].fd], *_servers[i], j);
                                     if (_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.method == "POST" && _servers[i]->configs[0]->postAllowed(_servers[i]->_location_match) == false)
                                         throw 405;
-                                    // if (_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.method == "POST")
-                                    // {
-                                    //     std::cerr << _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].rest  << std::endl;
-                                    //     std::exit(0);
-                                    //     // for (std::map<std::string, std::string>::iterator it5 = _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].header.begin(); it5 != _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].header.end(); it5++)
-                                    //     //     std::cerr << it5->first << " : " << it5->second << std::endl;
-                                    // }
                                 }
                             }
-                            if (_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.method == "POST" && _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].flag == true) {
+                            if (_servers[i]->_requests[ _servers[i]->_pollfds[j].fd].requestLine.method == "POST" && _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].flag == true)
                                 POST (*(_servers[i]), j, _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].rest, bb, _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].path);
-                            }
                         }
                         catch (int status) {
                             std::cout << status << std::endl;
                             if (status == 201){
                                 std::cout << "Upload Created successfully!" << std::endl;
-                                _servers[i]->_responses[_servers[i]->_pollfds[j].fd].close_connection = true;
+                                // _servers[i]->_responses[_servers[i]->_pollfds[j].fd].close_connection = true;
                             }
-                            else {
-                                std::cout << "Throw error page" << std::endl;
-                                _servers[i]->_responses[_servers[i]->_pollfds[j].fd].setStatusCode(std::to_string(status));
-                                _servers[i]->_responses[_servers[i]->_pollfds[j].fd].close_connection = true;
-                                _servers[i]->_requests[ _servers[i]->_pollfds[j].fd]._EOF = 0;
-                                
-                            }
+                            else
+                                std::cout << "Throw error page" << std::endl; 
+                            _servers[i]->_responses[_servers[i]->_pollfds[j].fd].setStatusCode(std::to_string(status));
+                            _servers[i]->_responses[_servers[i]->_pollfds[j].fd].close_connection = true;
+                            _servers[i]->_requests[ _servers[i]->_pollfds[j].fd]._EOF = 0;
                         }
                     }
                 }
