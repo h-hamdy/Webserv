@@ -127,7 +127,8 @@ void    Socket::check_methods(Server &server,int j){
 void    Socket::status_response(Server  &server,int j){
     std::string status = server._responses[server._pollfds[j].fd].getStatusCode();
     if(status == "200"){
-        server._responses[server._pollfds[j].fd].setReasonPhrase("OK");  
+        server._responses[server._pollfds[j].fd].setReasonPhrase("OK");
+        return ;
     }
     else if(status == "201"){
         server._responses[server._pollfds[j].fd].setReasonPhrase("Created");
@@ -143,7 +144,6 @@ void    Socket::status_response(Server  &server,int j){
     }
     else if(status == "302"){
         server._responses[server._pollfds[j].fd].setReasonPhrase("Found");
-        server._responses[server._pollfds[j].fd].setRedirect(server._requests[server._pollfds[j].fd].requestLine.url);
     }
     else if(status == "304"){
         server._responses[server._pollfds[j].fd].setReasonPhrase("Not Modified");
@@ -178,6 +178,7 @@ void    Socket::status_response(Server  &server,int j){
     else if(status == "505"){
         server._responses[server._pollfds[j].fd].setReasonPhrase("HTTP Version Not Supported");
     }
+    server._responses[server._pollfds[j].fd].setErrPage(server, j);
 }
 
 void    Socket::content_type(){
@@ -227,7 +228,8 @@ int   Socket::content_type(Server &server,int j){
 void    Socket::prepare_response(Server &server,int j){
     check_methods_allowed(server,j);
     content_type(server,j);
-    check_methods(server,j);
+    if(server._responses[server._pollfds[j].fd].getStatusCode() == "200")
+        check_methods(server,j);
     status_response(server,j);
 }
 
@@ -241,13 +243,14 @@ void    send_chuncked_response(Server &server,int j){
 	    response = server._responses[server._pollfds[j].fd].getResponse();
 	else
 		response = server._responses[server._pollfds[j].fd].response_not_send;
-    std::cout<<"response to send: "<<response<<std::endl;
+    // std::cout<<"response to send: "<<response<<std::endl;
     if(response == "" && !server._responses[server._pollfds[j].fd].close_connection){
         return ;
     }
     int ret = send(server._pollfds[j].fd, response.c_str(), response.length(), 0);
-    if(ret < 1 )
-        server._responses[server._pollfds[j].fd].close_connection = true;
+    if(ret < 1 ){
+        server._responses[server._pollfds[j].fd].response_not_send = response;
+    }
     else if (ret < (int)response.length())
         server._responses[server._pollfds[j].fd].response_not_send = response.substr(ret);
 	else

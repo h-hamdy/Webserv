@@ -96,6 +96,7 @@ void CgiProcess(Server &server, int j, std::string const &path, std::string cons
 	try
 	{
 		if (!req.cgiFlag) {
+			res.sending_data = true;
 			setEnv(res, path, req);
 			if (extension == ".py") {
 				args[0] = strdup("cgi-bin/python3");
@@ -118,7 +119,12 @@ void CgiProcess(Server &server, int j, std::string const &path, std::string cons
 			int check = waitpid(req.pid, &req.status, WNOHANG);
 			if (check == 0){
 				res.setResponse("");
+				res.sending_data = true;
 				return ;
+			}
+			else{
+				res.sending_data = false;
+				res.setResponse("");
 			}
 			if (WIFEXITED(req.status)) {
 				// std::cout << "wlh ta dkhaal" << std::endl;

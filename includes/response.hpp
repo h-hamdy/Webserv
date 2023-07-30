@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   response.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mac <mac@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: omeslall <omeslall@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/04 17:35:49 by omanar            #+#    #+#             */
-/*   Updated: 2023/07/27 18:42:01 by mac              ###   ########.fr       */
+/*   Updated: 2023/07/29 23:04:58 by omeslall         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,6 +79,7 @@ class Response
 		void DELETE(Server &server, int j);
 		bool isDirectory(std::string path);
 		void setEnv(std::vector<std::string> env);
+		void setErrPage(Server &server, int j);
 		char ** getEnv();
 };
 
