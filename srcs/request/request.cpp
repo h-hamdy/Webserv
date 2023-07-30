@@ -100,7 +100,7 @@ void ParseRequest::ParseBody (const std::string& _body, Server &server, int j) {
 }
 
 bool check_url(const std::string& url) {
-	std::string allowd = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~:/?#[]@!$&'()*+,;=";
+	std::string allowd = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 ._~:/?#[]@!$&'()*+,;=%";
 	for (size_t i = 0; i < url.length(); i++)
 		if (allowd.find(url[i]) == std::string::npos)
 			return (false);
