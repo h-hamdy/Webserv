@@ -85,7 +85,6 @@ void ParseRequest::ParseBody (const std::string& _body, Server &server, int j) {
 		throw 413;
 	std::map<std::string, std::string>::iterator it = header.find("Content-Length");
 	if (it != header.end()) {
-		std::cerr << _body << std::endl;
 		file << _body;
 		_EOF = 1;
 		fileSize = file.tellg();

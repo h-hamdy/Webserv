@@ -110,7 +110,7 @@ void Response::set_Header_Response(Server &serv, int j) {
 			std::string chunck_header = chunck_stream.str();
 			std::string response = chunck_header + _response + "\r\n";
 			_response = response_header + response + (this->_status_code != "200" ? "0\r\n\r\n" : "");
-			std::cout << "response: " << _response << std::endl;
+			// std::cout << "response: " << _response << std::endl;
 		}
 		else
 			_response = response_header;
@@ -132,13 +132,14 @@ void	Response::GET(Server &serv,int j){
 	std::string body = "";
 	std::string response = "";
 	std::string path =  serv._requests[serv._pollfds[j].fd].path;
-	// std::cout << "path: ======= " << path << std::endl;
 	struct stat path_stat;
+
 	if(stat(path.c_str(), &path_stat) == 0){
-		if((path_stat.st_mode & S_IFDIR) && serv.configs[0]->_locations->begin()->_index != ""){
-			path += "/" + serv.configs[0]->_locations->begin()->_index;
+		if((path_stat.st_mode & S_IFDIR) && serv._location_match->_index != ""){
+			std::cout << "path: ======= " << path << std::endl;
+			path += "/" + serv._location_match->_index;
 		}
-		else if((path_stat.st_mode & S_IFDIR) && serv.configs[0]->_locations->begin()->_directory_listing){
+		else if((path_stat.st_mode & S_IFDIR) && serv._location_match->_directory_listing){
 			DIR *dir;
 			struct dirent *ent;
 			if ((dir = opendir(path.c_str())) != NULL) {
@@ -293,16 +294,24 @@ void Response::HandleDir(const std::string& path, std::vector<Location>::iterato
     (void)location;
     std::string indexFile;
     std::string extention;
+	std::cout << "dir" << std::endl;
     if (path[path.length() - 1] != '/') {
 		server._responses[server._pollfds[j].fd].setRedirect(path + "/");
-        	throw 301;
+		server._responses[server._pollfds[j].fd].setStatusCode("301");
+		close_connection = true;
     }
     else {
-        if (location->_cgi_extensions.size() == 0)
-            throw 403;
+        if (location->_cgi_extensions.size() == 0) {
+			server._responses[server._pollfds[j].fd].setStatusCode("403");
+			close_connection = true;
+			return ;
+		}
         std::cout << "check index files" << std::endl;
-        if (!fileExists(path.c_str(), "index", indexFile))
-            throw 403;
+        if (!fileExists(path.c_str(), "index", indexFile)) {
+			server._responses[server._pollfds[j].fd].setStatusCode("403");
+			close_connection = true;
+			return ;
+		}
         size_t lastDotPos = indexFile.rfind('.');
         if (lastDotPos != std::string::npos) {
             std::vector<std::string>::iterator it;
@@ -313,22 +322,30 @@ void Response::HandleDir(const std::string& path, std::vector<Location>::iterato
                 if (extention == *it) {
                     (void)filePath;
                     std::cout << "pass to cgi" << std::endl;
+					CgiProcess(server, j, path + indexFile, extention, filePath);
                     return ;
                 }
             }
-            if (it == location->_cgi_extensions.end())
-                throw 404;
+            if (it == location->_cgi_extensions.end()) {
+				server._responses[server._pollfds[j].fd].setStatusCode("403");
+				close_connection = true;
+			}
         }
-        else
-            throw 403;
+        else {
+			server._responses[server._pollfds[j].fd].setStatusCode("403");
+			close_connection = true;
+		}
     }
 }
 
 void Response::HandleFile(const std::string& path, std::vector<Location>::iterator &location, Server &server, int j, std::string  &filePath) {
     std::string extention;
     std::cout << "file" << std::endl;
-    if (location->_cgi_extensions.size() == 0)
-        throw 403;
+    if (location->_cgi_extensions.size() == 0) {
+		server._responses[server._pollfds[j].fd].setStatusCode("403");
+		close_connection = true;
+		return ;
+	}
     size_t lastDotPos = path.rfind('.');
     if (lastDotPos != std::string::npos) {
         std::vector<std::string>::iterator it;
@@ -341,11 +358,15 @@ void Response::HandleFile(const std::string& path, std::vector<Location>::iterat
                 return ;    
             }
         }
-        if (it == location->_cgi_extensions.end())
-            throw 403;
+        if (it == location->_cgi_extensions.end()) {
+			server._responses[server._pollfds[j].fd].setStatusCode("403");
+			close_connection = true;
+		}
     }
-    else
-        throw 403;
+    else {
+		server._responses[server._pollfds[j].fd].setStatusCode("403");
+		close_connection = true;
+	}
 }
 
 void Response::HandlePathType(const std::string& path, std::vector<Location>::iterator &location, Server &server, int j, std::string &filePath)
@@ -358,11 +379,15 @@ void Response::HandlePathType(const std::string& path, std::vector<Location>::it
             HandleFile(path, location, server, j, filePath);
         else if (S_ISDIR(fileStat.st_mode))
             HandleDir(path, location, filePath, server, j);
-        else
-            throw 404;
+        else {
+			server._responses[server._pollfds[j].fd].setStatusCode("404");
+			close_connection = true;
+		}
     }
-    else
-        throw 404;
+    else {
+		server._responses[server._pollfds[j].fd].setStatusCode("404");
+		close_connection = true;
+	}
 }
 
 void    Socket::check_methods(Server &server,int j){

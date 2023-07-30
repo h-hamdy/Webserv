@@ -9,12 +9,12 @@ bool pathExists(const std::string& path) {
 }
 
 bool createDirectory(const std::string& path) {
+    std::cout << path << std::endl;
     int result = mkdir(path.c_str(), 0777);
     return (result == 0);
 }
 
 void check_upload_path(std::string pathToCheck) {
-
     if (pathExists(pathToCheck))
         std::cout << "Path exists!" << std::endl;
     else {
@@ -42,7 +42,7 @@ std::vector<Location>::iterator	Server::matching (const std::string &host, const
             if (location == (*it)->_locations->end())
                 throw 404;
             if (!location->_redirect.empty()) {
-                // server._responses[server._pollfds[j].fd].setRedirect(location->_redirect);
+                server._responses[server._pollfds[j].fd].setRedirect(location->_redirect);
                 // std::cout << location->_redirect << std::endl;
                 // std::exit (1);
                 throw 301;

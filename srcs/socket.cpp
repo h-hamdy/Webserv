@@ -223,6 +223,7 @@ void    Socket::acceptConnection(){
                             if (status == 201){
                                 std::cout << "Upload Created successfully!" << std::endl;
                                 _servers[i]->_responses[_servers[i]->_pollfds[j].fd].close_connection = true;
+                                // _servers[i]->_requests[ _servers[i]->_pollfds[j].fd]._EOF = 0;
                             }
                             else {
                                 std::cout << "Throw error page" << std::endl; 
