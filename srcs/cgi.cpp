@@ -45,7 +45,7 @@ void Cgi(char *args[3], Response &response, ParseRequest &req, std::string fileP
 			exit(1);
 		}
 	}
-	std::cout << filePath << std::endl;
+	// std::cout << filePath << std::endl;
 	req.tmpFile = "/tmp/tmp" + generateRandomString();
 	int fd = open(req.tmpFile .c_str(), O_RDWR | O_CREAT | O_TRUNC, 0666);
 		if (fd == -1)
@@ -97,6 +97,7 @@ void CgiProcess(Server &server, int j, std::string const &path, std::string cons
 	try
 	{
 		if (!req.cgiFlag) {
+			res.sending_data = true;
 			setEnv(res, path, req);
 			if (extension == ".py") {
 				args[0] = strdup("cgi-bin/python3");
@@ -115,14 +116,19 @@ void CgiProcess(Server &server, int j, std::string const &path, std::string cons
 			req.cgiFlag = 1;
 		}
 		else {
-			std::cout << "path in cgi " << path << " flag " << req.cgiFlag << std::endl;
+			// std::cout << "path in cgi " << path << " flag " << req.cgiFlag << std::endl;
 			int check = waitpid(req.pid, &req.status, WNOHANG);
 			if (check == 0){
 				res.setResponse("");
+				res.sending_data = true;
 				return ;
 			}
+			else{
+				res.sending_data = false;
+				res.setResponse("");
+			}
 			if (WIFEXITED(req.status)) {
-				std::cout << "wlh ta dkhaal" << std::endl;
+				// std::cout << "wlh ta dkhaal" << std::endl;
 				std::string body;
 				int byteRead;
 				char buf[1025];
@@ -133,7 +139,7 @@ void CgiProcess(Server &server, int j, std::string const &path, std::string cons
 					buf[byteRead] = '\0';
 					body += buf;
 				}
-				std::cout << "body ====================== " << body << std::endl;
+				// std::cout << "body ====================== " << body << std::endl;
 				res.setCgiHeader(parseCgiHeader(body));
 				res.setResponse(parseCgiBody(body));
 				close(fd);

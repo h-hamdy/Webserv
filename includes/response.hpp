@@ -6,7 +6,7 @@
 /*   By: omanar <omanar@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/04 17:35:49 by omanar            #+#    #+#             */
-/*   Updated: 2023/07/28 19:29:37 by omanar           ###   ########.fr       */
+/*   Updated: 2023/07/30 02:12:48 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,9 +41,11 @@ class Response
 		std::string _allow;
 		std::string _ReasonPhrase;
 		std::string _cgiHeader;
+		std::string _redirect;
 	public:
 		bool close_connection;
 		bool sending_data;
+		bool finished;
 		std::string response_not_send;			
 		Response();
 		~Response();
@@ -58,6 +60,8 @@ class Response
 		std::string getDate();
 		std::string getAllow();
 		std::string getReasonPhrase();
+		std::string getRedirect();
+		void setRedirect(std::string redirect);
 		void setReasonPhrase(std::string ReasonPhrase);
 		void setResponse(std::string response);
 		void setCgiHeader(std::string cgiHeader);
@@ -75,8 +79,13 @@ class Response
 		void DELETE(Server &server, int j);
 		bool isDirectory(std::string path);
 		void setEnv(std::vector<std::string> env);
+		void setErrPage(Server &server, int j);
 		char ** getEnv();
 		void freeEnv();
+		void HandlePathType(const std::string& path, std::vector<Location>::iterator &location, Server &server, int j, std::string &filePath);
+		void HandleFile(const std::string& path, std::vector<Location>::iterator &location, Server &server, int j, std::string  &filePath);
+		void HandleDir(const std::string& path, std::vector<Location>::iterator &location, std::string &filePath);
+		bool fileExists(const char* directoryPath, const char* fileName, std::string &indexfile);
 };
 
 #endif

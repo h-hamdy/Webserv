@@ -37,11 +37,15 @@ std::vector<Location>::iterator	Server::matching (const std::string &host, const
     if (host == (*it)->_host || host == (*it)->_server_name) {
         int Post = std::atoi(port.c_str());
         if (Post == (*it)->_port) {
-            std::cout << "Server matched" << std::endl;
+            // std::cout << "Server matched" << std::endl;
             location = (*it)->getLocation(req.requestLine.url);
             if (location == (*it)->_locations->end())
                 throw 404;
             if (!location->_redirect.empty()) {
+                server._responses[server._pollfds[j].fd]._redirect = location->_redirect;
+
+                // set the responce with the new url
+
                 // std::cout << "seting responce for redirection" << std::endl;
                 // server._responses[server._pollfds[j].fd].setResponse(location->_redirect);
                 // server._responses[server._pollfds[j].fd].setStatusCode("301");

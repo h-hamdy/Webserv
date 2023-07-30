@@ -11,8 +11,11 @@ Response::Response() {
 	_date = "";
 	_allow = "";
 	_cgiHeader = "";
+	_ReasonPhrase = "";
+	_redirect = "";
 	close_connection = false;
 	sending_data = false;
+	finished = false;
 }
 
 Response::~Response() {}
@@ -54,6 +57,10 @@ std::string Response::getAllow() { return (_allow); }
 
 std::string Response::getReasonPhrase() { return (_ReasonPhrase) ;}
 
+std::string Response::getRedirect() { return (_redirect); }
+
+void Response::setRedirect(std::string redirect) { _redirect = redirect; }
+
 void Response::setReasonPhrase(std::string ReasonPhrase) { _ReasonPhrase = ReasonPhrase; }
 
 void Response::setResponse(std::string response) { _response = response; }
@@ -86,10 +93,14 @@ void Response::set_Header_Response(Server &serv, int j) {
 		std::string extension = serv.configs[0]->_locations->begin()->_root.substr(serv.configs[0]->_locations->begin()->_root.find_last_of(".") + 1);
 		response_stream << "HTTP/1.1 " + serv._responses[serv._pollfds[j].fd].getStatusCode() + " " + serv._responses[serv._pollfds[j].fd].getReasonPhrase() + "\r\n";
 		response_stream << "Content-Type: "  + serv._responses[serv._pollfds[j].fd].getContentType() + "\r\n";
+		if(serv._responses[serv._pollfds[j].fd].getRedirect() != "")
+			response_stream << "Location: " + serv._responses[serv._pollfds[j].fd].getRedirect() + "\r\n";
+		if (_cgiHeader != ""){
+			response_stream << _cgiHeader + "\r\n";
+			std::cout << "cgi header: " << _cgiHeader << std::endl;
+		}
 		response_stream << "Connection: keep-alive\r\n";
 		response_stream << "Transfer-Encoding: chunked\r\n";
-		if (_cgiHeader != "")
-			response_stream << _cgiHeader + "\r\n";
 		response_stream << "\r\n";
 		std::string response_header = response_stream.str();
 		if(_response != ""){
@@ -98,7 +109,8 @@ void Response::set_Header_Response(Server &serv, int j) {
 			chunck_stream << std::hex << chunck_size << "\r\n";
 			std::string chunck_header = chunck_stream.str();
 			std::string response = chunck_header + _response + "\r\n";
-			_response = response_header + response;
+			_response = response_header + response + (this->_status_code != "200" ? "0\r\n\r\n" : "");
+			std::cout << "response: " << _response << std::endl;
 		}
 		else
 			_response = response_header;
@@ -120,7 +132,7 @@ void	Response::GET(Server &serv,int j){
 	std::string body = "";
 	std::string response = "";
 	std::string path =  serv._requests[serv._pollfds[j].fd].path;
-	std::cout << "path: ======= " << path << std::endl;
+	// std::cout << "path: ======= " << path << std::endl;
 	struct stat path_stat;
 	if(stat(path.c_str(), &path_stat) == 0){
 		if((path_stat.st_mode & S_IFDIR) && serv.configs[0]->_locations->begin()->_index != ""){
@@ -167,12 +179,11 @@ void	Response::GET(Server &serv,int j){
 	std::ifstream file(path.c_str(), std::ios::binary);
 	std::vector<Location>::iterator location = serv._location_match;
 	if (location->_cgi_extensions.size() == 0)
-        setStatusCode("4031");
+        setStatusCode("403");
     size_t lastDotPos = path.rfind('.');
     std::string extention = path.substr(lastDotPos);
 	if(!file.is_open()){
 		serv._responses[serv._pollfds[j].fd].setStatusCode("404");
-		_response = "<html><body><h1>404 Not Found</h1></body></html>";
 		close_connection = true;
 		return ;
 	}
@@ -187,7 +198,6 @@ void	Response::GET(Server &serv,int j){
         }
         if (it == location->_cgi_extensions.end()){
             setStatusCode("403");
-			response = "<html><body><h1>403 Forbidden</h1></body></html>";
 			close_connection = true;
 		}
     }
@@ -217,29 +227,23 @@ bool Response::isDirectory(std::string path) {
 
 void Response::DELETE(Server &serv, int j) {
 	std::string path = serv._requests[serv._pollfds[j].fd].path;
-	std::cout << "path: ======= " << path << std::endl;
+	// std::cout << "path: ======= " << path << std::endl;
 	if(sending_data){
 		close_connection = true;
 		return ;
 	}
 	if (access(path.c_str(), F_OK) != 0) {
-		std::cout << "test1" << std::endl;
 		setStatusCode("404");
 	}
 	else if (access(path.c_str(), W_OK) != 0) {
-		std::cout << "test2 " << std::endl;
 		setStatusCode("403");
 
 	}
 	else if (isDirectory(path)) {
-
-		std::cout << "test3" << std::endl;
 		setStatusCode("403");
 	}
 	else if (remove(path.c_str()) != 0) {
-		std::cout << "test4" << std::endl;
 		setStatusCode("500");
-
 	}
 	else {
 		std::cout << "test5" << std::endl;
@@ -264,4 +268,112 @@ void Response::freeEnv() {
 	for (size_t i = 0; _env[i]; i++)
 		free(_env[i]);
 	delete [] _env;
+}
+
+bool Response::fileExists(const char* directoryPath, const char* fileName, std::string &indexfile) {
+    DIR* dir = opendir(directoryPath);
+    if (dir == NULL) {
+        std::cerr << "Error opening directory." << std::endl;
+        return false;
+    }
+    bool found = false;
+    struct dirent* entry;
+    while ((entry = readdir(dir)) != NULL) {
+        if (std::strncmp(entry->d_name, fileName, 5) == 0) {
+            indexfile = entry->d_name;
+            found = true;
+            break;
+        }
+    }
+    closedir(dir);
+    return found;
+}
+
+void Response::HandleDir(const std::string& path, std::vector<Location>::iterator &location, std::string &filePath) {
+    (void)location;
+    std::string indexFile;
+    std::string extention;
+    if (path[path.length() - 1] != '/') {
+        _redirect = path + "/";
+        throw 301;
+    }
+    else {
+        if (location->_cgi_extensions.size() == 0)
+            throw 403;
+        std::cout << "check index files" << std::endl;
+        if (!fileExists(path.c_str(), "index", indexFile))
+            throw 403;
+        size_t lastDotPos = indexFile.rfind('.');
+        if (lastDotPos != std::string::npos) {
+            std::vector<std::string>::iterator it;
+            extention = indexFile.substr(lastDotPos);
+            for (it = location->_cgi_extensions.begin(); it != location->_cgi_extensions.end(); it++) {
+                if ((*it)[0] == ' ')
+                    (*it).erase(1);
+                if (extention == *it) {
+                    (void)filePath;
+                    std::cout << "pass to cgi" << std::endl;
+                    return ;
+                }
+            }
+            if (it == location->_cgi_extensions.end())
+                throw 404;
+        }
+        else
+            throw 403;
+    }
+}
+
+void Response::HandleFile(const std::string& path, std::vector<Location>::iterator &location, Server &server, int j, std::string  &filePath) {
+    std::string extention;
+    std::cout << "file" << std::endl;
+    if (location->_cgi_extensions.size() == 0)
+        throw 403;
+    size_t lastDotPos = path.rfind('.');
+    if (lastDotPos != std::string::npos) {
+        std::vector<std::string>::iterator it;
+        extention = path.substr(lastDotPos);
+        for (it = location->_cgi_extensions.begin(); it != location->_cgi_extensions.end(); it++) {
+            if (extention == *it) {
+                std::cout << "Da5lo a7biba" << std::endl;
+                CgiProcess(server, j, path, extention, filePath);
+                std::cout << "rah da5l" << std::endl;
+                return ;    
+            }
+        }
+        if (it == location->_cgi_extensions.end())
+            throw 403;
+    }
+    else
+        throw 403;
+}
+
+void Response::HandlePathType(const std::string& path, std::vector<Location>::iterator &location, Server &server, int j, std::string &filePath)
+{
+    struct stat fileStat;
+    std::cout << "Path=" << path << std::endl;
+    if (stat(path.c_str(), &fileStat) == 0)
+    {
+        if (S_ISREG(fileStat.st_mode))
+            HandleFile(path, location, server, j, filePath);
+        else if (S_ISDIR(fileStat.st_mode))
+            HandleDir(path, location, filePath);
+        else
+            throw 404;
+    }
+    else
+        throw 404;
+}
+
+void    Socket::check_methods(Server &server,int j){
+    std::string method =  server._requests[server._pollfds[j].fd].requestLine.method;
+        if(method == "GET")
+            server._responses[server._pollfds[j].fd].GET(server, j);
+        else if(method == "POST" && server._location_match->_upload_path.empty()) {
+        std::cout << "Location does not support upload" << std::endl;
+        std::string resource = server._requests[ server._pollfds[j].fd].requestLine.url.substr(server._location_match->_url.length());
+        server._responses[server._pollfds[j].fd].HandlePathType(server._requests[server._pollfds[j].fd].path + resource, server._location_match, server, j,server._requests[ server._pollfds[j].fd].filePath);
+    }
+        else if(method == "DELETE")
+            server._responses[server._pollfds[j].fd].DELETE(server, j);
 }
