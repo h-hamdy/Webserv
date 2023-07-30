@@ -42,17 +42,8 @@ std::vector<Location>::iterator	Server::matching (const std::string &host, const
             if (location == (*it)->_locations->end())
                 throw 404;
             if (!location->_redirect.empty()) {
-                server._responces[server._pollfds[j].fd]._redirect = location->_redirect;
-
-                // set the responce with the new url
-
-                // std::cout << "seting responce for redirection" << std::endl;
-                // server._responses[server._pollfds[j].fd].setResponse(location->_redirect);
-                // server._responses[server._pollfds[j].fd].setStatusCode("301");
-                // if(server._responses[server._pollfds[j].fd].sending_data){
-                //     server._responses[server._pollfds[j].fd].setResponse("");
-                //     server._responses[server._pollfds[j].fd].close_connection = true;
-                // }
+                server._responses[server._pollfds[j].fd].setRedirect(location->_redirect);
+                throw 301;
             }
             if (location->_upload_path.empty()) {
                 std::string resource = req.requestLine.url.substr(location->_url.length());
