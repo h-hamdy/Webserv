@@ -9,6 +9,7 @@ void    Response::setErrPage(Server &serv,int j){
     serv._responses[serv._pollfds[j].fd].setContentType("text/html");
     
     std::string path_err = serv.configs[0]->_error_pages[atoi(status.c_str())];
+    std::cout << "path_err: " << path_err << std::endl;
     if(path_err != ""){
         std::ifstream file_err(path_err.c_str());
         if(file_err.is_open()){    
