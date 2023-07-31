@@ -180,8 +180,6 @@ void	Response::GET(Server &serv,int j){
 	}
 	std::ifstream file(path.c_str(), std::ios::binary);
 	std::vector<Location>::iterator location = serv._location_match;
-	if (location->_cgi_extensions.size() == 0)
-        setStatusCode("403");
     size_t lastDotPos = path.rfind('.');
     std::string extention = path.substr(lastDotPos);
 	if(!file.is_open()){
@@ -190,6 +188,8 @@ void	Response::GET(Server &serv,int j){
 		return ;
 	}
     else if (lastDotPos != std::string::npos && (extention == ".py"|| extention == ".php" )) {
+		if (location->_cgi_extensions.size() == 0)
+        	setStatusCode("403");
         std::vector<std::string>::iterator it;
         for (it = location->_cgi_extensions.begin(); it != location->_cgi_extensions.end(); it++) {
             if (extention == *it) {
@@ -236,20 +236,23 @@ void Response::DELETE(Server &serv, int j) {
 	}
 	if (access(path.c_str(), F_OK) != 0) {
 		setStatusCode("404");
+		close_connection = true;
 	}
 	else if (access(path.c_str(), W_OK) != 0) {
 		setStatusCode("403");
-
+		close_connection = true;
 	}
 	else if (isDirectory(path)) {
 		setStatusCode("403");
+		close_connection = true;
 	}
 	else if (remove(path.c_str()) != 0) {
 		setStatusCode("500");
+		close_connection = true;
 	}
 	else {
-		std::cout << "test5" << std::endl;
 		setResponse("<html><body><h1>File deleted.</h1></body></html>");
+		close_connection = true;
 	}
 	// std::cout << "File deleted successfully." << std::endl;
 }
