@@ -74,7 +74,7 @@ std::string parseCgiHeader(std::string const &header) {
 	size_t pos = header.find("\r\n\r\n");
 	if (pos != std::string::npos)
 		return header.substr(0, pos);
-	return header;
+	return "";
 }
 
 std::string parseCgiBody(std::string const &body) {
