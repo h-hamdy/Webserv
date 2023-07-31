@@ -57,7 +57,7 @@ void    Socket::setupServer(){
     if(_servers[i]->configs.front()->_host == "0.0.0.0")
          _servers[i]->_ServerAddress.sin_addr.s_addr = INADDR_ANY;
     else
-         _servers[i]->_ServerAddress.sin_addr.s_addr = inet_addr(_servers[i]->configs.front()->_host.c_str());
+        _servers[i]->_ServerAddress.sin_addr.s_addr = inet_addr(_servers[i]->configs.front()->_host.c_str());
     _servers[i]->_ServerAddress.sin_port = htons(_servers[i]->configs.front()->_port);
     if (bind(ServerSocket,(struct sockaddr *)& _servers[i]->_ServerAddress,sizeof( _servers[i]->_ServerAddress)) < 0) {
         std::cout << "Error binding socket" << std::endl;
