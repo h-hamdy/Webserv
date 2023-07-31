@@ -301,21 +301,21 @@ void Response::HandleDir(const std::string& path, std::vector<Location>::iterato
 	std::cout << "dir" << std::endl;
 	std::cout << path << std::endl;
     if (path[path.length() - 1] != '/') {
-		remove(path.c_str());
+		remove(filePath.c_str());
 		server._responses[server._pollfds[j].fd].setRedirect(path + "/");
 		server._responses[server._pollfds[j].fd].setStatusCode("301");
 		close_connection = true;
     }
     else {
         if (location->_cgi_extensions.size() == 0) {
-			remove(path.c_str());
+			remove(filePath.c_str());
 			server._responses[server._pollfds[j].fd].setStatusCode("403");
 			close_connection = true;
 			return ;
 		}
         std::cout << "check index files" << std::endl;
         if (!fileExists(path.c_str(), "index", indexFile)) {
-			remove(path.c_str());
+			remove(filePath.c_str());
 			server._responses[server._pollfds[j].fd].setStatusCode("403");
 			close_connection = true;
 			return ;
@@ -335,14 +335,14 @@ void Response::HandleDir(const std::string& path, std::vector<Location>::iterato
                 }
             }
             if (it == location->_cgi_extensions.end()) {
-				remove(path.c_str());
+				remove(filePath.c_str());
 				server._responses[server._pollfds[j].fd].setStatusCode("403");
 				close_connection = true;
 				return ;
 			}
         }
         else {
-			remove(path.c_str());
+			remove(filePath.c_str());
 			server._responses[server._pollfds[j].fd].setStatusCode("403");
 			close_connection = true;
 		}
@@ -353,7 +353,7 @@ void Response::HandleFile(const std::string& path, std::vector<Location>::iterat
     std::string extention;
     std::cout << "file" << std::endl;
     if (location->_cgi_extensions.size() == 0) {
-		remove(path.c_str());
+		remove(filePath.c_str());
 		server._responses[server._pollfds[j].fd].setStatusCode("403");
 		close_connection = true;
 		return ;
@@ -369,13 +369,13 @@ void Response::HandleFile(const std::string& path, std::vector<Location>::iterat
             }
         }
         if (it == location->_cgi_extensions.end()) {
-			remove(path.c_str());
+			remove(filePath.c_str());
 			server._responses[server._pollfds[j].fd].setStatusCode("403");
 			close_connection = true;
 		}
     }
     else {
-		remove(path.c_str());
+		remove(filePath.c_str());
 		server._responses[server._pollfds[j].fd].setStatusCode("403");
 		close_connection = true;
 	}
@@ -392,11 +392,14 @@ void Response::HandlePathType(const std::string& path, std::vector<Location>::it
         else if (S_ISDIR(fileStat.st_mode))
             HandleDir(path, location, filePath, server, j);
         else {
+			remove(filePath.c_str());
 			server._responses[server._pollfds[j].fd].setStatusCode("404");
 			close_connection = true;
 		}
+		// std::cout << path << " vs " << filePath << std::endl;
     }
     else {
+		remove(filePath.c_str());
 		server._responses[server._pollfds[j].fd].setStatusCode("404");
 		close_connection = true;
 	}
