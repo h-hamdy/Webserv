@@ -148,3 +148,16 @@ void    send_chuncked_response(Server &server,int j){
 		server._responses[server._pollfds[j].fd].response_not_send = "";
     server._responses[server._pollfds[j].fd].setResponse("");
 }
+
+void    close_connection(Server &server,int j){
+    if(server._responses[server._pollfds[j].fd].close_connection){
+        std::cout<<"close connection"<<std::endl;
+        close(server._pollfds[j].fd);
+        FD_CLR( server._pollfds[j].fd,& server._read_set);
+        FD_CLR( server._pollfds[j].fd,& server._write_set);
+        server._requests.erase(server._pollfds[j].fd);
+        server._responses.erase(server._pollfds[j].fd);
+        server._pollfds.erase(server._pollfds.begin() + j);
+        server._nclients --;
+    }
+}

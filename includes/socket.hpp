@@ -42,5 +42,6 @@ class Socket{
         void    prepare_response(Server &server,int j);
 };
 
+void    close_connection(Server &server,int j);
 void    send_chuncked_response(Server &server,int j);
 #endif
