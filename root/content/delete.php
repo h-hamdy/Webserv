@@ -1,6 +1,6 @@
 <?php
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $directory = './';
+    $directory = '../uploads/';
 
     // Check if the file name is provided
     if (isset($_POST["fileToDelete"]) && !empty($_POST["fileToDelete"])) {
@@ -40,7 +40,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         <label for="fileToDelete">Select a file to delete:</label>
         <select name="fileToDelete" id="fileToDelete">
             <?php
-            $directory = './';
+            $directory = '../uploads/';
             $files = scandir($directory);
             foreach ($files as $file) {
                 if ($file !== '.' && $file !== '..') {

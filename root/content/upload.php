@@ -11,7 +11,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Move uploaded file to a permanent location
     $filename = $_FILES['upload']['name'];
     $tmpname = $_FILES['upload']['tmp_name'];
-    $destination = './' . $filename;
+    $destination = '../uploads/' . $filename;
+    // check if destination exists if not create it
+    if (!file_exists('../uploads/')) {
+      mkdir('../uploads/', 0777, true);
+    }
     if (move_uploaded_file ($tmpname ,$destination )) {
       echo 'File uploaded successfully!';
     } else {
@@ -26,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 ?>
 
 <!-- HTML form to upload files -->
-<form action="index.php" method="post" enctype="multipart/form-data">
+<form action="upload.php" method="post" enctype="multipart/form-data">
   <input type="file" name="upload">
   <input type="submit" value="Upload">
 </form>
