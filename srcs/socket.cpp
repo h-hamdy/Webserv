@@ -219,7 +219,6 @@ void    Socket::acceptConnection(){
                                 POST (*(_servers[i]), j, _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].rest, bb, _servers[i]->_requests[ _servers[i]->_pollfds[j].fd].path);
                         }
                         catch (int status) {
-                            std::cout << status << std::endl;
                             if (status == 201){
                                 std::cout << "Upload Created successfully!" << std::endl;
                                 _servers[i]->_responses[_servers[i]->_pollfds[j].fd].setStatusCode(std::to_string(status));
@@ -228,6 +227,7 @@ void    Socket::acceptConnection(){
                                 // _servers[i]->_requests[ _servers[i]->_pollfds[j].fd]._EOF = 0;
                             }
                             else {
+                                std::cout << status << std::endl;
                                 std::cout << "Throw error page" << std::endl; 
                                 _servers[i]->_responses[_servers[i]->_pollfds[j].fd].setStatusCode(std::to_string(status));
                                 _servers[i]->_responses[_servers[i]->_pollfds[j].fd].close_connection = true;

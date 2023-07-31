@@ -296,6 +296,7 @@ void Response::HandleDir(const std::string& path, std::vector<Location>::iterato
     std::string indexFile;
     std::string extention;
 	std::cout << "dir" << std::endl;
+	std::cout << path << std::endl;
     if (path[path.length() - 1] != '/') {
 		server._responses[server._pollfds[j].fd].setRedirect(path + "/");
 		server._responses[server._pollfds[j].fd].setStatusCode("301");
@@ -330,6 +331,7 @@ void Response::HandleDir(const std::string& path, std::vector<Location>::iterato
             if (it == location->_cgi_extensions.end()) {
 				server._responses[server._pollfds[j].fd].setStatusCode("403");
 				close_connection = true;
+				return ;
 			}
         }
         else {
