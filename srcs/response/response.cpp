@@ -301,18 +301,21 @@ void Response::HandleDir(const std::string& path, std::vector<Location>::iterato
 	std::cout << "dir" << std::endl;
 	std::cout << path << std::endl;
     if (path[path.length() - 1] != '/') {
+		remove(path.c_str());
 		server._responses[server._pollfds[j].fd].setRedirect(path + "/");
 		server._responses[server._pollfds[j].fd].setStatusCode("301");
 		close_connection = true;
     }
     else {
         if (location->_cgi_extensions.size() == 0) {
+			remove(path.c_str());
 			server._responses[server._pollfds[j].fd].setStatusCode("403");
 			close_connection = true;
 			return ;
 		}
         std::cout << "check index files" << std::endl;
         if (!fileExists(path.c_str(), "index", indexFile)) {
+			remove(path.c_str());
 			server._responses[server._pollfds[j].fd].setStatusCode("403");
 			close_connection = true;
 			return ;
@@ -332,12 +335,14 @@ void Response::HandleDir(const std::string& path, std::vector<Location>::iterato
                 }
             }
             if (it == location->_cgi_extensions.end()) {
+				remove(path.c_str());
 				server._responses[server._pollfds[j].fd].setStatusCode("403");
 				close_connection = true;
 				return ;
 			}
         }
         else {
+			remove(path.c_str());
 			server._responses[server._pollfds[j].fd].setStatusCode("403");
 			close_connection = true;
 		}
@@ -348,6 +353,7 @@ void Response::HandleFile(const std::string& path, std::vector<Location>::iterat
     std::string extention;
     std::cout << "file" << std::endl;
     if (location->_cgi_extensions.size() == 0) {
+		remove(path.c_str());
 		server._responses[server._pollfds[j].fd].setStatusCode("403");
 		close_connection = true;
 		return ;
@@ -358,18 +364,18 @@ void Response::HandleFile(const std::string& path, std::vector<Location>::iterat
         extention = path.substr(lastDotPos);
         for (it = location->_cgi_extensions.begin(); it != location->_cgi_extensions.end(); it++) {
             if (extention == *it) {
-                std::cout << "Da5lo a7biba" << std::endl;
                 CgiProcess(server, j, path, extention, filePath);
-                std::cout << "rah da5l" << std::endl;
                 return ;    
             }
         }
         if (it == location->_cgi_extensions.end()) {
+			remove(path.c_str());
 			server._responses[server._pollfds[j].fd].setStatusCode("403");
 			close_connection = true;
 		}
     }
     else {
+		remove(path.c_str());
 		server._responses[server._pollfds[j].fd].setStatusCode("403");
 		close_connection = true;
 	}
