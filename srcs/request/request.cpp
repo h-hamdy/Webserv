@@ -126,9 +126,11 @@ void	ParseRequest::requestStatusCode () {
 		throw 400;
 	if (it1 != header.end() && it != header.end()) {
 		std::string flag = "multipart/form-data; boundary=";
-		std::string boudrie = it1->second.substr(0, flag.length());
-		if (boudrie == flag)
-			throw 400;
+		if (it1->second.length() > flag.length()) {
+			std::string boudrie = it1->second.substr(0, flag.length());
+			if (boudrie == flag)
+				throw 400;
+		}
 	}
 	if (it != header.end() && it->second != "chunked")
 		throw 501;

@@ -5,12 +5,4 @@ Setuping Servers
 Mime types loaded
 Socket created
 Socket flags set
-Socket binded
-Socket listening
-Servers setup complete
-Socket created
-Socket flags set
-Socket binded
-Socket listening
-Servers setup complete
-Socket accepted
+Error binding socket

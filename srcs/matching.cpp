@@ -41,10 +41,11 @@ std::vector<Location>::iterator	Server::matching (const std::string &host, const
             location = (*it)->getLocation(req.requestLine.url);
             if (location == (*it)->_locations->end())
                 throw 404;
+            std::map<std::string, std::string>::iterator it = req.header.find("Content-Type");
+            if (req.requestLine.method == "POST" && it->second.find("multipart/form-data; boundary=") != std::string::npos && (location->_cgi_extensions.size() == 0 || !location->_upload_path.empty()))
+                throw 400;
             if (!location->_redirect.empty()) {
                 server._responses[server._pollfds[j].fd].setRedirect(location->_redirect);
-                // std::cout << location->_redirect << std::endl;
-                // std::exit (1);
                 throw 301;
             }
             if (location->_upload_path.empty()) {

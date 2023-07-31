@@ -222,6 +222,8 @@ void    Socket::acceptConnection(){
                             std::cout << status << std::endl;
                             if (status == 201){
                                 std::cout << "Upload Created successfully!" << std::endl;
+                                _servers[i]->_responses[_servers[i]->_pollfds[j].fd].setStatusCode(std::to_string(status));
+                                // _servers[i]->_responses[_servers[i]->_pollfds[j].fd].setResponse("<html><head> <title>201 Created</title></head><body><h1>201 Created</h1><p>The request was successful, and a new resource has been created.</p> </body></html>");
                                 _servers[i]->_responses[_servers[i]->_pollfds[j].fd].close_connection = true;
                                 // _servers[i]->_requests[ _servers[i]->_pollfds[j].fd]._EOF = 0;
                             }

@@ -103,6 +103,7 @@ void Response::set_Header_Response(Server &serv, int j) {
 		response_stream << "Transfer-Encoding: chunked\r\n";
 		response_stream << "\r\n";
 		std::string response_header = response_stream.str();
+		// std::cout << "res :" << response_header << std::endl;
 		if(_response != ""){
 			std::ostringstream chunck_stream;
 			int chunck_size = (int)_response.length();
@@ -204,7 +205,7 @@ void	Response::GET(Server &serv,int j){
     }
 	else if (file.is_open() ){
 		char chunk_buffer[4096];
-		std::cout<<"sending file"<<std::endl;
+		// std::cout<<"sending file"<<std::endl;
 		file.seekg(pospause);
 		file.read(chunk_buffer, sizeof(chunk_buffer));
 		pospause = file.tellg();
