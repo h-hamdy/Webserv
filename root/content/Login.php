@@ -100,6 +100,8 @@ else if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['logout']))
               <span></span>
               <span></span>
               <div class="button_wrapper">
+                <a class="profile_button" href="./upload.php">Upload</a>
+                <a class="profile_button" href="./delete.php">Delete</a>
                 <a class="profile_button" href="https://profile.intra.42.fr/users/<?= $_COOKIE['login'] ?>" target="_blank" >Profile</a>
                 <a class="profile_button" href="?logout">Logout</a>
               </div>
