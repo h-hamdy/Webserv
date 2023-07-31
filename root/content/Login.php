@@ -80,34 +80,6 @@ else if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['logout']))
 
 <div class="content">
 <?php if (isset($_COOKIE['name']) && isset($_COOKIE['login'])): ?>
-		
-
-
-  <!-- <div class="login-box">
-    <h2>INFORMATIONS</h2>
-      <center>
-      <div class="user-box">
-        <img class="css-shadow" src=<?php echo $_COOKIE['avatar']; ?> alt="" srcset="">
-      </div>
-      <div class="user-box">
-        <p>
-          <?= $_COOKIE['name'] ?>
-        </p>
-        <p>
-			    <?php echo $_COOKIE['login']; ?>
-		    </p>
-      </div>
-      <a href="#">
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <a href="?logout">Logout</a>
-      </a>
-      </center>
-    </div> -->
-
-    <!-- make link hiddin -->
     <center>
     <div class="wrapper">
          <div class="card front-face">
@@ -162,7 +134,7 @@ else if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['logout']))
       </a>
     </form>
     </div>
-  <?php endif; ?>
+<?php endif; ?>
 </div>
 
 
@@ -545,18 +517,14 @@ footer p {
   display: block;
   height: 40px;
   width: 40px;
-  /* color: #fff; */
   text-align: center;
   margin: 0 5px;
   line-height: 38px;
-  /* border: 2px solid transparent; */
   border-radius: 50%;
   background: linear-gradient(90deg, transparent, #03e9f4);
   transition: all 0.5s ease;
 }
 .back-face ul a:hover{
-  /* color: #1cc7d0;
-  border-color: #1cc7d0; */
   background: linear-gradient(90deg, transparent, #03e9f4);
 }
 
