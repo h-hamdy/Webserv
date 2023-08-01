@@ -11,21 +11,30 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         function deleteFile($filePath) {
             if (file_exists($filePath)) {
                 if (unlink($filePath)) {
-                    echo "File '$filePath' has been deleted successfully.";
-					exit();
+                    echo "File '$filePath' has been deleted successfully. ";
+                    echo '<a href="login.php">
+                          <button>Back Home</button>
+                        </a>';
+					          exit();
                 } else {
-                    echo "Error deleting the file '$filePath'.";
-					exit();
+                    echo "Error deleting the file '$filePath'. ";
+                    echo '<a href="login.php">
+                            <button>Back Home</button>
+                          </a>';
+					          exit();
                 }
             } else {
-                echo "File '$filePath' does not exist.";
-				exit();
+                echo "File '$filePath' does not exist. ";
+                echo '<a href="login.php">
+                        <button>Back Home</button>
+                      </a>';
+				        exit();
             }
         }
 
         deleteFile($fullFilePath);
     } else {
-        echo "Please select a file to delete.";
+        echo "Please select a file to delete. ";
 		exit();
     }
 }

@@ -21,9 +21,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
             if ($avatar_size < 1000000) 
             {
                 $avatar_name_new = uniqid('', true) . '.' . $avatar_actual_ext;
-                if (!file_exists("./uploadCGI/"))
-                    mkdir('uploadCGI');
-                $avatar_destination = './uploadCGI/' . $avatar_name_new;
+                if (!file_exists("./profiles/"))
+                    mkdir('profiles');
+                $avatar_destination = './profiles/' . $avatar_name_new;
                 move_uploaded_file($avatar_tmp_name, $avatar_destination);
                 $_COOKIE['name'] = $_POST['name'];
                 $_COOKIE['login'] = $_POST['login'];
@@ -39,19 +39,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
             } 
             else 
             {
-                echo 'File too big';
+                echo 'File too big ';
+                echo '<a href="login.php">
+                  <button>Back Home</button>
+                </a>';
                 exit(1);
             }
         } 
         else 
         {
-            echo 'Error';
+            echo 'Error ';
+            echo '<a href="login.php">
+                  <button>Back Home</button>
+                </a>';
             exit(1);
         }
     } 
     else 
     {
-        echo 'Not allowed';
+        echo 'Not allowed ';
+        echo '<a href="login.php">
+              <button>Back Home</button>
+            </a>';
         exit(1);
     }
 } 

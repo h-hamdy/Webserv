@@ -17,16 +17,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       mkdir('../uploads/', 0777, true);
     }
     if (move_uploaded_file ($tmpname ,$destination )) {
-      echo 'File uploaded successfully!';
+      echo 'File uploaded successfully! ';
+      echo '<a href="login.php">
+                <button>Back Home</button>
+            </a>';
       exit();
     } else {
-      echo 'Error while uploading file';
+      echo 'Error while uploading file ';
+      echo '<a href="login.php">
+                <button>Back Home</button>
+            </a>';
       exit();
     }
 
   } else {
-    // Output message if no file was uploaded
-    echo 'No file uploaded.';
+    echo 'No file uploaded. ';
+    echo '<a href="login.php">
+                <button>Back Home</button>
+            </a>';
     exit();
   }
 }
