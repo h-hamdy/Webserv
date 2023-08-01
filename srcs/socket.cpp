@@ -35,12 +35,6 @@ void    Socket::setupServer(){
         exit(1);
     }
     std::cout << "Socket created" << std::endl;
-    int server_flag = fcntl(ServerSocket,F_GETFL,0);
-    if (server_flag == -1 ) {
-        std::cout << "Error getting socket flags" << std::endl;
-        close(ServerSocket);
-        exit(1);
-    }
     if(fcntl(ServerSocket,F_SETFL,O_NONBLOCK) == -1){
         std::cout << "Error setting socket flags" << std::endl;
         close(ServerSocket);
@@ -139,8 +133,6 @@ void    Socket::acceptConnection(){
         if(select( _servers[i]->_maxFd,&copy_read_set,&copy_write_set,0,&timeout) == -1){
             std::cout << "Error selecting socket" << std::endl;
             continue;
-            // this->~Socket();
-            // exit(1);
         }
         if (FD_ISSET( _servers[i]->_ServerSocket,& _servers[i]->_read_set)) {
             memset(&_servers[i]->_ClientAddress,0,sizeof(_servers[i]->_ClientAddress));
@@ -148,8 +140,7 @@ void    Socket::acceptConnection(){
             if (clientSocket == -1) {
                 if(errno != EWOULDBLOCK && errno != EAGAIN){
                     std::cout << "Error accepting socket" << std::endl;
-                    close( _servers[i]->_ServerSocket);
-                    exit(1);
+					continue;
                 }
             }
             else{
@@ -178,13 +169,8 @@ void    Socket::acceptConnection(){
                 if ( _servers[i]->_bytesRead < 1) {
                     if(errno != EWOULDBLOCK && errno != EAGAIN) {
                         std::cout << "Error reading socket" << std::endl;
-                        close( _servers[i]->_pollfds[j].fd);
-                        FD_CLR( _servers[i]->_pollfds[j].fd,& _servers[i]->_read_set);
-                        FD_CLR( _servers[i]->_pollfds[j].fd,& _servers[i]->_write_set);
-                        _servers[i]->_requests.erase( _servers[i]->_pollfds[j].fd);
-                        _servers[i]->_responses.erase( _servers[i]->_pollfds[j].fd);
-                        _servers[i]->_pollfds.erase( _servers[i]->_pollfds.begin() + j);
-                        _servers[i]->_nclients--;
+                        _servers[i]->_responses[ _servers[i]->_pollfds[j].fd].close_connection = true;
+                        close_connection( *_servers[i], j);
                         continue;
                         
                     }
@@ -246,16 +232,8 @@ void    Socket::acceptConnection(){
                         }
                         send_chuncked_response(*_servers[i],j);
                     }
-                    if(_servers[i]->_responses[ _servers[i]->_pollfds[j].fd].close_connection == true && _servers[i]->_responses[ _servers[i]->_pollfds[j].fd].response_not_send == ""){
-                        std::cout << "Socket closed" << std::endl;
-                        close( _servers[i]->_pollfds[j].fd);
-                        FD_CLR( _servers[i]->_pollfds[j].fd,& _servers[i]->_read_set);
-                        FD_CLR( _servers[i]->_pollfds[j].fd,& _servers[i]->_write_set);
-                        _servers[i]->_requests.erase( _servers[i]->_pollfds[j].fd);
-                        _servers[i]->_responses.erase( _servers[i]->_pollfds[j].fd);
-                        _servers[i]->_pollfds.erase( _servers[i]->_pollfds.begin() + j);
-                        _servers[i]->_nclients--;
-                    }
+                    if(_servers[i]->_responses[ _servers[i]->_pollfds[j].fd].response_not_send == "")
+                        close_connection(*_servers[i],j);
                 }
             }
         }

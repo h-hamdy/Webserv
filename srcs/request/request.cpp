@@ -81,8 +81,10 @@ void	ParseRequest::ParseChunked (std::string _body, Server &server, int j)
 
 void ParseRequest::ParseBody (const std::string& _body, Server &server, int j) {
 	std::streampos fileSize = file.tellg();
-	if (fileSize > server.configs[0]->_max_body_size)
+	if (fileSize > server.configs[0]->_max_body_size) {
+		remove(server._requests[server._pollfds[j].fd].filePath.c_str());
 		throw 413;
+	}
 	std::map<std::string, std::string>::iterator it = header.find("Content-Length");
 	if (it != header.end()) {
 		file << _body;
