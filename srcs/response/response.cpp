@@ -252,7 +252,7 @@ void Response::DELETE(Server &serv, int j) {
 	}
 	else {
 		setResponse("<html><body><h1>File deleted.</h1></body></html>");
-		close_connection = true;
+		// close_connection = true;
 	}
 	// std::cout << "File deleted successfully." << std::endl;
 }

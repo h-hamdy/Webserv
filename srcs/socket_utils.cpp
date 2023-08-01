@@ -138,6 +138,7 @@ void    send_chuncked_response(Server &server,int j){
     if(response == "" && !server._responses[server._pollfds[j].fd].close_connection){
         return ;
     }
+    // std::cout << response << std::endl;
     int ret = send(server._pollfds[j].fd, response.c_str(), response.length(), 0);
     if(ret < 1 ){
         server._responses[server._pollfds[j].fd].response_not_send = response;
