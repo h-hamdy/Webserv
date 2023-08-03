@@ -77,7 +77,6 @@ void    Socket::content_type(){
     std::ifstream input_file("./conf/mime.types");
     if(!input_file){
         std::cout<<"Error opening file mime.types"<<std::endl;
-        // throw std::exception();
     }
     std::stringstream f;
     f << input_file.rdbuf();
@@ -110,7 +109,6 @@ int   Socket::content_type(Server &server,int j){
         return 1;
     }
     else{
-        // server._responses[server._pollfds[j].fd].setStatusCode("415");
         server._responses[server._pollfds[j].fd].setContentType("text/html");
         return 0;
     }
@@ -127,18 +125,14 @@ void    Socket::prepare_response(Server &server,int j){
 
 
 void    send_chuncked_response(Server &server,int j){
-	//response_not_send can be dont have /r/n and its valid
-	// server._responses[server._pollfds[j].fd].set_Header_Response(server,j);
 	std::string response = "";
 	if(server._responses[server._pollfds[j].fd].response_not_send == "")
 	    response = server._responses[server._pollfds[j].fd].getResponse();
 	else
 		response = server._responses[server._pollfds[j].fd].response_not_send;
-    // std::cout<<"response to send: "<<response<<std::endl;
     if(response == "" && !server._responses[server._pollfds[j].fd].close_connection){
         return ;
     }
-    // std::cout << response << std::endl;
     int ret = send(server._pollfds[j].fd, response.c_str(), response.length(), 0);
     if(ret < 1 ){
         server._responses[server._pollfds[j].fd].response_not_send = response;

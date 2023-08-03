@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mac <mac@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: omanar <omanar@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/10 14:23:17 by omanar            #+#    #+#             */
-/*   Updated: 2023/07/19 21:26:06 by mac              ###   ########.fr       */
+/*   Updated: 2023/08/03 16:14:17 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,9 +28,6 @@ Server::Server() {
 Server::~Server() {
 	for (std::vector<Config *>::iterator it = this->configs.begin(); it != this->configs.end(); ++it)
 		delete *it;
-	// for (std::vector<struct pollfd>::iterator it = _pollfds.begin(); it != _pollfds.end(); it++) {
-	// 	close(it->fd);
-	// }
 }
 
 void	Server::addConfig(Config *config) {

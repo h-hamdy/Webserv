@@ -122,7 +122,7 @@ void    POST (Server &_servers, int j, std::string &rest, std::string bb, std::s
     }
 }
 
-void    Socket::acceptConnection(){
+void    Socket::acceptConnection() {
     ParseRequest   request;
     size_t i = 0;
     while (true){
@@ -147,11 +147,6 @@ void    Socket::acceptConnection(){
                 if(fcntl(clientSocket,F_SETFL,O_NONBLOCK) == -1){
                     std::cout << "Error setting socket flags" << std::endl;
                     continue;
-                //sigpipe
-                // int set = 1;
-                // setsockopt(clientSocket,SOL_SOCKET,SO_NOSIGPIPE,&set,sizeof(int));
-                    // this->~Socket();
-                    // exit(1);
                 }
                 std::cout << "Socket accepted" << std::endl;
                  _servers[i]->_pollfds.push_back((struct pollfd){clientSocket,POLLIN,0});
@@ -208,13 +203,9 @@ void    Socket::acceptConnection(){
                             if (status == 201){
                                 std::cout << "Upload Created successfully!" << std::endl;
                                 _servers[i]->_responses[_servers[i]->_pollfds[j].fd].setStatusCode(std::to_string(status));
-                                // _servers[i]->_responses[_servers[i]->_pollfds[j].fd].setResponse("<html><head> <title>201 Created</title></head><body><h1>201 Created</h1><p>The request was successful, and a new resource has been created.</p> </body></html>");
                                 _servers[i]->_responses[_servers[i]->_pollfds[j].fd].close_connection = true;
-                                // _servers[i]->_requests[ _servers[i]->_pollfds[j].fd]._EOF = 0;
                             }
                             else {
-                                std::cout << status << std::endl;
-                                std::cout << "Throw error page" << std::endl; 
                                 _servers[i]->_responses[_servers[i]->_pollfds[j].fd].setStatusCode(std::to_string(status));
                                 _servers[i]->_responses[_servers[i]->_pollfds[j].fd].close_connection = true;
                                 _servers[i]->_requests[ _servers[i]->_pollfds[j].fd]._EOF = 0;
@@ -239,5 +230,4 @@ void    Socket::acceptConnection(){
         }
         i++;
     }
-    
 }

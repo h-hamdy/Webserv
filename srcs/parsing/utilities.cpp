@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utilities.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mac <mac@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: omanar <omanar@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/10 14:26:21 by omanar            #+#    #+#             */
-/*   Updated: 2023/07/22 17:47:24 by mac              ###   ########.fr       */
+/*   Updated: 2023/08/01 03:37:22 by omanar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -289,11 +289,17 @@ void	missing(Config *config) {
 			missing = false;
 		if (it->_root.empty())
 			throw std::runtime_error("Error: Missing root directive");
-		// if (it->_index.empty())
-		// 	throw std::runtime_error("Error: Missing index directive");
 	}
 	if (missing)
 		throw std::runtime_error("Error: Missing default location");
+}
+
+Server*	findServer(std::vector<Server *> &servers, std::string host, int port, std::string server_name) {
+	for (std::vector<Server*>::iterator it = servers.begin(); it != servers.end(); ++it) {
+		if ((*it)->configs[0]->_host == host && (*it)->configs[0]->_port == port && (*it)->configs[0]->_server_name == server_name)
+			return *it;
+	}
+	return nullptr;
 }
 
 Server*	findServer(std::vector<Server *> &servers, std::string host, int port) {
@@ -314,8 +320,10 @@ std::vector<Server *>	getServers(char *file) {
 	Config *config = getNextConfig(configFile);
 	while (config) {
 		missing(config);
-		Server *found = findServer(servers, config->_host, config->_port);
+		Server *found = findServer(servers, config->_host, config->_port, config->_server_name);
 		if (found != nullptr)
+			throw std::runtime_error("Error: should not setup the same port multiple times");
+		else if ((found = findServer(servers, config->_host, config->_port)))
 			found->configs.push_back(config);
 		else {
 			Server *server = new Server();

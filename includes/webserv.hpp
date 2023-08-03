@@ -31,6 +31,7 @@ class Server {
 	private:
 	public:
 		std::vector<Config *>	configs;
+		Config* _defaultConfig;
 		int _ServerSocket;
         struct sockaddr_in _ServerAddress;
 		int _ClientSocket;
@@ -47,8 +48,6 @@ class Server {
 		std::vector<Location>::iterator _location_match;
 
 		
-		//-----------------------------//
-		// Server(Config *config);
 		Server();
 		~Server();
 		void	addConfig(Config *config);

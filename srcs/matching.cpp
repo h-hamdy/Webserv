@@ -9,7 +9,6 @@ bool pathExists(const std::string& path) {
 }
 
 bool createDirectory(const std::string& path) {
-    std::cout << path << std::endl;
     int result = mkdir(path.c_str(), 0777);
     return (result == 0);
 }
@@ -32,46 +31,48 @@ void check_upload_path(std::string pathToCheck) {
 std::vector<Location>::iterator	Server::matching (const std::string &host, const std::string &port, ParseRequest &req, Server &server, int j) {
     (void)j;
     (void)server;
-    std::vector<Config *>::iterator it = configs.begin();
     std::vector<Location>::iterator location;
-    if (host == (*it)->_host || host == (*it)->_server_name) {
-        int Post = std::atoi(port.c_str());
-        if (Post == (*it)->_port) {
-            // std::cout << "Server matched" << std::endl;
-            location = (*it)->getLocation(req.requestLine.url);
-            if (location == (*it)->_locations->end())
-                throw 404;
-            std::map<std::string, std::string>::iterator it = req.header.find("Content-Type");
-            if (req.requestLine.method == "POST" && it->second.find("multipart/form-data; boundary=") != std::string::npos && (location->_cgi_extensions.size() == 0 || !location->_upload_path.empty()))
-                throw 400;
-            if (!location->_redirect.empty()) {
-                server._responses[server._pollfds[j].fd].setRedirect(location->_redirect);
-                throw 301;
-            }
-            if (location->_upload_path.empty()) {
-                std::string resource = req.requestLine.url.substr(location->_url.length());
-                req.path = "./root" + location->_root;
-                if (req.requestLine.method == "GET")
-                    req.path += resource;
-                return location;
-            }
-            else {
-                if (location->_upload_path[0] != '/' || location->_upload_path[location->_upload_path.size() - 1] != '/') {
-                    std::cout << "Failed to create directory!" << std::endl;
+    std::vector<Config *>::iterator it = configs.begin();
+    for (; it != configs.end(); it++)
+    {
+        if (host == (*it)->_host || host == (*it)->_server_name) {
+            int Post = std::atoi(port.c_str());
+            if (Post == (*it)->_port) {
+                location = (*it)->getLocation(req.requestLine.url);
+                if (location == (*it)->_locations->end())
                     throw 404;
+                std::map<std::string, std::string>::iterator it = req.header.find("Content-Type");
+                if (req.requestLine.method == "POST" && it->second.find("multipart/form-data; boundary=") != std::string::npos && (location->_cgi_extensions.size() == 0 || !location->_upload_path.empty()))
+                    throw 400;
+                if (!location->_redirect.empty()) {
+                    server._responses[server._pollfds[j].fd].setRedirect(location->_redirect);
+                    throw 301;
                 }
-                if (req.requestLine.method == "POST")
-                    req.path = "./root" + location->_root + location->_upload_path;
-                else {
+                if (location->_upload_path.empty()) {
                     std::string resource = req.requestLine.url.substr(location->_url.length());
-                    req.path = "./root" + location->_root + resource;
+                    req.path = "./root" + location->_root;
+                    if (req.requestLine.method == "GET" || req.requestLine.method == "DELETE" )
+                        req.path += resource;
+                    return location;
                 }
-                if (req.requestLine.method == "POST")
-                    check_upload_path(req.path);
+                else {
+                    if (location->_upload_path[0] != '/' || location->_upload_path[location->_upload_path.size() - 1] != '/') {
+                        std::cout << "Failed to create directory!" << std::endl;
+                        throw 404;
+                    }
+                    if (req.requestLine.method == "POST")
+                        req.path = "./root" + location->_root + location->_upload_path;
+                    else {
+                        std::string resource = req.requestLine.url.substr(location->_url.length());
+                        req.path = "./root" + location->_root + resource;
+                    }
+                    if (req.requestLine.method == "POST")
+                        check_upload_path(req.path);
+                }
+                return location;
             }
         }
     }
-    else
-        throw 401;
+    throw 401;
     return location;
 }
